@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="Burpee Workout Tracker - Count reps, track time, and stay motivated">
+    <title>Burpee Workout Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>WORKOUT TRACKER</h1>
+            <div class="streak-display" id="streakDisplay">
+                🔥 <span id="streakCount">0</span> Day Streak
+            </div>
+        </header>
+
+        <main>
+            <!-- Workout Configuration -->
+            <section class="config-section" id="configSection">
+                <div class="config-group">
+                    <label class="config-label">Workout Type:</label>
+                    <select class="config-select" id="workoutType">
+                        <option value="burpees">Burpees</option>
+                        <option value="pushups">Push-ups</option>
+                        <option value="squats">Squats</option>
+                        <option value="jumping-jacks">Jumping Jacks</option>
+                        <option value="plank">Plank Hold</option>
+                        <option value="mountain-climbers">Mountain Climbers</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label class="config-label">Difficulty:</label>
+                    <select class="config-select" id="difficulty">
+                        <option value="beginner">Beginner (10 min)</option>
+                        <option value="intermediate">Intermediate (15 min)</option>
+                        <option value="advanced" selected>Advanced (20 min)</option>
+                        <option value="elite">Elite (30 min)</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Timer Display -->
+            <section class="timer-section">
+                <div class="timer-display" id="timerDisplay">20:00</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </section>
+
+            <!-- Rep Counter -->
+            <section class="counter-section">
+                <div class="rep-counter" id="repCounter">
+                    <span class="rep-label">REPS</span>
+                    <span class="rep-number" id="repNumber">0</span>
+                </div>
+
+                <button class="count-button" id="countButton" aria-label="Count Rep">
+                    <span class="button-text">+ COUNT REP</span>
+                    <span class="button-hint">(SPACE)</span>
+                </button>
+            </section>
+
+            <!-- Stick Figure Animation -->
+            <section class="stick-figure-section" id="stickFigureSection">
+                <div class="stick-figure" id="stickFigure">
+                    <div class="figure-head"></div>
+                    <div class="figure-body"></div>
+                    <div class="figure-arm-left"></div>
+                    <div class="figure-arm-right"></div>
+                    <div class="figure-leg-left"></div>
+                    <div class="figure-leg-right"></div>
+                </div>
+            </section>
+
+            <!-- Motivational Message -->
+            <section class="motivation-section">
+                <div class="motivation-message" id="motivationMessage">
+                    Ready to start? Hit the Start button!
+                </div>
+            </section>
+
+            <!-- Metrics Display -->
+            <section class="metrics-section">
+                <div class="metric">
+                    <span class="metric-icon">🔥</span>
+                    <span class="metric-label">Calories:</span>
+                    <span class="metric-value" id="calorieDisplay">0</span>
+                </div>
+            </section>
+
+            <!-- Control Buttons -->
+            <section class="controls-section">
+                <button class="control-btn start-btn" id="startBtn">Start</button>
+                <button class="control-btn pause-btn" id="pauseBtn" disabled>Pause</button>
+                <button class="control-btn reset-btn" id="resetBtn">Reset</button>
+            </section>
+
+            <!-- History Toggle -->
+            <section class="history-toggle-section">
+                <button class="history-toggle-btn" id="historyToggleBtn">
+                    📜 View History
+                </button>
+            </section>
+        </main>
+
+        <!-- History Panel (Hidden by default) -->
+        <aside class="history-panel" id="historyPanel">
+            <div class="history-header">
+                <h2>Workout History</h2>
+                <button class="close-history-btn" id="closeHistoryBtn">✕</button>
+            </div>
+            <div class="history-stats" id="historyStats">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            <div class="history-list" id="historyList">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            <button class="clear-history-btn" id="clearHistoryBtn">Clear All History</button>
+        </aside>
+
+        <!-- Completion Modal -->
+        <div class="modal" id="completionModal">
+            <div class="modal-content">
+                <h2>Workout Complete!</h2>
+                <div class="completion-stats" id="completionStats">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                <button class="modal-btn" id="saveWorkoutBtn">Save & Close</button>
+                <button class="modal-btn secondary" id="discardWorkoutBtn">Discard</button>
+            </div>
+        </div>
+
+        <!-- Audio Elements -->
+        <audio id="audioBeep" preload="auto">
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBj6U2fHJeCkGKHvJ7+GQPA0PV7Pq6KRTEgxKouLuvWog" type="audio/wav">
+        </audio>
+        <audio id="audioSuccess" preload="auto">
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBj6U2fHJeCkGKHvJ7+GQPA0PV7Pq6KRTEgxKouLuvWog" type="audio/wav">
+        </audio>
+        <audio id="audioMilestone" preload="auto">
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBj6U2fHJeCkGKHvJ7+GQPA0PV7Pq6KRTEgxKouLuvWog" type="audio/wav">
+        </audio>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <a href="privacy.html" class="footer-link">Privacy Policy</a>
+            <span class="footer-separator">|</span>
+            <a href="imprint.html" class="footer-link">Imprint</a>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
