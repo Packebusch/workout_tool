@@ -148,6 +148,21 @@
                 <h2>Workout History</h2>
                 <button class="close-history-btn" id="closeHistoryBtn">✕</button>
             </div>
+
+            <!-- Lifetime Stats Dashboard -->
+            <div class="lifetime-stats" id="lifetimeStats">
+                <!-- Will be populated by JavaScript -->
+            </div>
+
+            <!-- Progress Chart -->
+            <div class="chart-section">
+                <div class="chart-controls">
+                    <button class="chart-period-btn active" data-period="7">7 Days</button>
+                    <button class="chart-period-btn" data-period="30">30 Days</button>
+                </div>
+                <canvas id="progressChart" width="400" height="200"></canvas>
+            </div>
+
             <div class="history-stats" id="historyStats">
                 <!-- Will be populated by JavaScript -->
             </div>
@@ -191,7 +206,7 @@
                 <span class="footer-separator">|</span>
                 <a href="imprint.html" class="footer-link">Imprint</a>
             </div>
-            <div class="footer-version">v1.2.0</div>
+            <div class="footer-version">v1.3.0</div>
         </footer>
     </div>
 

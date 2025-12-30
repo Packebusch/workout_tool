@@ -873,14 +873,233 @@ function getWorkoutHistory() {
     return stored ? JSON.parse(stored) : { sessions: [] };
 }
 
+// ==========================================
+// Lifetime Stats Dashboard
+// ==========================================
+
+function renderLifetimeStats() {
+    const history = getWorkoutHistory();
+    const lifetimeStatsEl = document.getElementById('lifetimeStats');
+
+    if (history.sessions.length === 0) {
+        lifetimeStatsEl.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">Complete your first workout to see lifetime stats!</p>';
+        return;
+    }
+
+    // Calculate lifetime totals
+    const totalWorkouts = history.sessions.length;
+    const totalReps = history.sessions.reduce((sum, s) => sum + s.reps, 0);
+    const totalCalories = history.sessions.reduce((sum, s) => sum + s.calories, 0);
+    const totalDuration = history.sessions.reduce((sum, s) => sum + s.duration, 0);
+
+    // Calculate most productive day of week
+    const dayOfWeekCounts = {};
+    history.sessions.forEach(session => {
+        const day = new Date(session.date).getDay();
+        dayOfWeekCounts[day] = (dayOfWeekCounts[day] || 0) + 1;
+    });
+    const mostProductiveDay = Object.keys(dayOfWeekCounts).reduce((a, b) =>
+        dayOfWeekCounts[a] > dayOfWeekCounts[b] ? a : b
+    );
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const mostProductiveDayName = dayNames[mostProductiveDay];
+
+    // Format total time
+    const totalHours = Math.floor(totalDuration / 3600);
+    const totalMinutes = Math.floor((totalDuration % 3600) / 60);
+
+    lifetimeStatsEl.innerHTML = `
+        <h3>Lifetime Stats</h3>
+        <div class="lifetime-grid">
+            <div class="lifetime-stat-box">
+                <div class="lifetime-stat-value">${totalWorkouts}</div>
+                <div class="lifetime-stat-label">Workouts</div>
+            </div>
+            <div class="lifetime-stat-box">
+                <div class="lifetime-stat-value">${totalReps.toLocaleString()}</div>
+                <div class="lifetime-stat-label">Total Reps</div>
+            </div>
+            <div class="lifetime-stat-box">
+                <div class="lifetime-stat-value">${totalCalories.toLocaleString()}</div>
+                <div class="lifetime-stat-label">Calories</div>
+            </div>
+            <div class="lifetime-stat-box">
+                <div class="lifetime-stat-value">${totalHours}h ${totalMinutes}m</div>
+                <div class="lifetime-stat-label">Total Time</div>
+            </div>
+        </div>
+        <div class="lifetime-insights">
+            <div class="lifetime-insights-text">💪 Most productive day: ${mostProductiveDayName}</div>
+        </div>
+    `;
+}
+
+// ==========================================
+// Progress Chart
+// ==========================================
+
+let currentChartPeriod = 7;
+
+function renderProgressChart(period = currentChartPeriod) {
+    const history = getWorkoutHistory();
+    const canvas = document.getElementById('progressChart');
+
+    if (!canvas || history.sessions.length === 0) return;
+
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height);
+
+    // Get last N days of data
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const dataPoints = [];
+    for (let i = period - 1; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toDateString();
+
+        // Find workouts on this day
+        const dayWorkouts = history.sessions.filter(s => {
+            const sessionDate = new Date(s.date);
+            return sessionDate.toDateString() === dateStr;
+        });
+
+        // Sum reps for the day
+        const totalReps = dayWorkouts.reduce((sum, s) => sum + s.reps, 0);
+        dataPoints.push({ date, reps: totalReps });
+    }
+
+    // Find max reps for scaling
+    const maxReps = Math.max(...dataPoints.map(d => d.reps), 1);
+
+    // Chart dimensions
+    const padding = 30;
+    const chartWidth = width - padding * 2;
+    const chartHeight = height - padding * 2;
+    const pointSpacing = chartWidth / (dataPoints.length - 1 || 1);
+
+    // Draw background grid
+    ctx.strokeStyle = 'rgba(0, 255, 204, 0.1)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+        const y = padding + (chartHeight / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(width - padding, y);
+        ctx.stroke();
+    }
+
+    // Draw axes
+    ctx.strokeStyle = '#00ffcc';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(padding, padding);
+    ctx.lineTo(padding, height - padding);
+    ctx.lineTo(width - padding, height - padding);
+    ctx.stroke();
+
+    // Draw data line
+    if (dataPoints.length > 0) {
+        ctx.strokeStyle = '#00ffcc';
+        ctx.fillStyle = 'rgba(0, 255, 204, 0.2)';
+        ctx.lineWidth = 3;
+
+        ctx.beginPath();
+        ctx.moveTo(padding, height - padding);
+
+        dataPoints.forEach((point, index) => {
+            const x = padding + index * pointSpacing;
+            const y = height - padding - (point.reps / maxReps) * chartHeight;
+
+            if (index === 0) {
+                ctx.lineTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+
+        // Close path for fill
+        ctx.lineTo(padding + (dataPoints.length - 1) * pointSpacing, height - padding);
+        ctx.closePath();
+        ctx.fill();
+
+        // Draw line
+        ctx.beginPath();
+        dataPoints.forEach((point, index) => {
+            const x = padding + index * pointSpacing;
+            const y = height - padding - (point.reps / maxReps) * chartHeight;
+
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+        ctx.stroke();
+
+        // Draw data points
+        dataPoints.forEach((point, index) => {
+            const x = padding + index * pointSpacing;
+            const y = height - padding - (point.reps / maxReps) * chartHeight;
+
+            ctx.fillStyle = point.reps > 0 ? '#00ffcc' : 'rgba(0, 255, 204, 0.3)';
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Add glow effect for non-zero points
+            if (point.reps > 0) {
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#00ffcc';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        });
+    }
+
+    // Draw Y-axis labels
+    ctx.fillStyle = '#ffaa00';
+    ctx.font = '10px Courier New';
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 4; i++) {
+        const value = Math.round((maxReps / 4) * (4 - i));
+        const y = padding + (chartHeight / 4) * i;
+        ctx.fillText(value, padding - 5, y + 3);
+    }
+
+    // Draw X-axis labels (every other day for 7-day, every 5 days for 30-day)
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffaa00';
+    const labelInterval = period === 7 ? 2 : 5;
+    dataPoints.forEach((point, index) => {
+        if (index % labelInterval === 0 || index === dataPoints.length - 1) {
+            const x = padding + index * pointSpacing;
+            const label = period === 7
+                ? point.date.toLocaleDateString('en-US', { weekday: 'short' })
+                : point.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
+            ctx.fillText(label, x, height - padding + 15);
+        }
+    });
+}
+
 function renderHistory() {
     const history = getWorkoutHistory();
 
     if (history.sessions.length === 0) {
         elements.historyList.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">No workout history yet. Complete a workout to see it here!</p>';
         elements.historyStats.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5);">No statistics available</p>';
+        document.getElementById('lifetimeStats').innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">Complete your first workout to see lifetime stats!</p>';
         return;
     }
+
+    // Render lifetime stats and progress chart
+    renderLifetimeStats();
+    renderProgressChart();
 
     // Calculate overall statistics
     const totalWorkouts = history.sessions.length;
@@ -1241,11 +1460,85 @@ function closeCompletionModal() {
     elements.completionModal.classList.remove('open');
 }
 
+// ==========================================
+// Workout Summary After Save
+// ==========================================
+
+function showWorkoutSummary() {
+    const history = getWorkoutHistory();
+
+    if (history.sessions.length === 0) {
+        showMotivationalMessage('Workout saved! Great job!');
+        return;
+    }
+
+    // Calculate this week's stats
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay()); // Start of week (Sunday)
+    weekStart.setHours(0, 0, 0, 0);
+
+    const thisWeekWorkouts = history.sessions.filter(s => {
+        const sessionDate = new Date(s.date);
+        return sessionDate >= weekStart;
+    });
+
+    const thisWeekReps = thisWeekWorkouts.reduce((sum, s) => sum + s.reps, 0);
+    const thisWeekCalories = thisWeekWorkouts.reduce((sum, s) => sum + s.calories, 0);
+
+    // Calculate this month's stats
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const thisMonthWorkouts = history.sessions.filter(s => {
+        const sessionDate = new Date(s.date);
+        return sessionDate >= monthStart;
+    });
+
+    const thisMonthReps = thisMonthWorkouts.reduce((sum, s) => sum + s.reps, 0);
+
+    // Best week ever
+    const weeklyGroups = {};
+    history.sessions.forEach(s => {
+        const date = new Date(s.date);
+        const weekKey = getWeekKey(date);
+        if (!weeklyGroups[weekKey]) {
+            weeklyGroups[weekKey] = [];
+        }
+        weeklyGroups[weekKey].push(s);
+    });
+
+    const bestWeekReps = Math.max(...Object.values(weeklyGroups).map(sessions =>
+        sessions.reduce((sum, s) => sum + s.reps, 0)
+    ));
+
+    const isBestWeek = thisWeekReps === bestWeekReps && thisWeekReps > 0;
+
+    // Build summary message
+    let summary = `Workout saved! 🎉\n`;
+    summary += `\nThis week: ${thisWeekWorkouts.length} workout${thisWeekWorkouts.length !== 1 ? 's' : ''}, ${thisWeekReps} reps, ${thisWeekCalories} cals`;
+    summary += `\nThis month: ${thisMonthWorkouts.length} workouts, ${thisMonthReps} reps`;
+
+    if (isBestWeek && history.sessions.length > 7) {
+        summary += `\n\n🏆 BEST WEEK EVER! Keep it up!`;
+    }
+
+    showMotivationalMessage(summary);
+}
+
+function getWeekKey(date) {
+    const d = new Date(date);
+    const dayOfWeek = d.getDay();
+    const diff = d.getDate() - dayOfWeek; // Adjust to Sunday
+    const sunday = new Date(d.setDate(diff));
+    return sunday.toISOString().split('T')[0];
+}
+
 function saveAndClose() {
     saveWorkoutToHistory();
     closeCompletionModal();
     resetWorkout();
-    showMotivationalMessage('Workout saved! Great job!');
+
+    // Show workout summary
+    showWorkoutSummary();
 }
 
 function discardAndClose() {
@@ -1282,6 +1575,20 @@ elements.closeHistoryBtn.addEventListener('click', toggleHistory);
 elements.clearHistoryBtn.addEventListener('click', clearHistory);
 elements.exportBtn.addEventListener('click', exportHistory);
 elements.importBtn.addEventListener('click', importHistory);
+
+// Progress chart period buttons
+document.querySelectorAll('.chart-period-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        // Update active state
+        document.querySelectorAll('.chart-period-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+
+        // Render chart with new period
+        const period = parseInt(e.target.dataset.period);
+        currentChartPeriod = period;
+        renderProgressChart(period);
+    });
+});
 
 // Completion modal
 elements.saveWorkoutBtn.addEventListener('click', saveAndClose);

@@ -849,6 +849,121 @@ header h1 {
     border: 2px solid rgba(0, 255, 204, 0.3);
 }
 
+/* Lifetime Stats Dashboard */
+.lifetime-stats {
+    background: linear-gradient(135deg, rgba(0, 255, 204, 0.08) 0%, rgba(255, 107, 157, 0.08) 100%);
+    border: 2px solid #00ffcc;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.lifetime-stats h3 {
+    color: #ff6b9d;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 15px;
+    text-shadow: 0 0 8px rgba(255, 107, 157, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.lifetime-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.lifetime-stat-box {
+    background: rgba(0, 255, 204, 0.05);
+    border: 2px solid rgba(0, 255, 204, 0.3);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+}
+
+.lifetime-stat-value {
+    font-size: 1.8rem;
+    color: #00ffcc;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+    margin-bottom: 5px;
+}
+
+.lifetime-stat-label {
+    font-size: 0.7rem;
+    color: #ffaa00;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.lifetime-insights {
+    background: rgba(255, 170, 0, 0.08);
+    border: 2px solid rgba(255, 170, 0, 0.3);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 12px;
+    text-align: center;
+}
+
+.lifetime-insights-text {
+    font-size: 0.8rem;
+    color: #ffaa00;
+    font-weight: 600;
+}
+
+/* Progress Chart */
+.chart-section {
+    margin-bottom: 20px;
+    background: rgba(0, 255, 204, 0.05);
+    border: 2px solid rgba(0, 255, 204, 0.3);
+    border-radius: 15px;
+    padding: 15px;
+}
+
+.chart-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.chart-period-btn {
+    padding: 8px 16px;
+    background: rgba(0, 255, 204, 0.1);
+    border: 2px solid rgba(0, 255, 204, 0.3);
+    border-radius: 20px;
+    color: #00ffcc;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.chart-period-btn:hover {
+    background: rgba(0, 255, 204, 0.2);
+    border-color: #00ffcc;
+}
+
+.chart-period-btn.active {
+    background: #00ffcc;
+    color: #0d0d1a;
+    border-color: #00ffcc;
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.6);
+}
+
+#progressChart {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
 .stat-row {
     display: flex;
     justify-content: space-between;
