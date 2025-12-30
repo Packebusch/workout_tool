@@ -65,6 +65,7 @@ const state = {
     difficulty: 'advanced',
     streak: 0,
     lastWorkoutDate: null,
+    wakeLock: null, // Screen Wake Lock
 };
 
 // DOM Elements
@@ -225,6 +226,53 @@ function updateProgressBar() {
     }
 }
 
+// ==========================================
+// Screen Wake Lock & Haptic Feedback
+// ==========================================
+
+async function requestWakeLock() {
+    // Prevent screen from sleeping during workout
+    if ('wakeLock' in navigator) {
+        try {
+            state.wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock activated - screen will stay awake');
+
+            // Re-acquire wake lock if visibility changes
+            state.wakeLock.addEventListener('release', () => {
+                console.log('Wake Lock released');
+            });
+        } catch (err) {
+            console.log('Wake Lock failed:', err);
+        }
+    }
+}
+
+async function releaseWakeLock() {
+    if (state.wakeLock) {
+        try {
+            await state.wakeLock.release();
+            state.wakeLock = null;
+            console.log('Wake Lock released manually');
+        } catch (err) {
+            console.log('Wake Lock release failed:', err);
+        }
+    }
+}
+
+// Re-acquire wake lock when page becomes visible again
+document.addEventListener('visibilitychange', async () => {
+    if (state.wakeLock !== null && document.visibilityState === 'visible' && state.isRunning && !state.isPaused) {
+        await requestWakeLock();
+    }
+});
+
+function hapticFeedback(pattern = 10) {
+    // Vibration feedback for mobile
+    if ('vibrate' in navigator) {
+        navigator.vibrate(pattern);
+    }
+}
+
 function startTimer() {
     if (state.isRunning) return;
 
@@ -249,6 +297,9 @@ function startTimer() {
     const workoutName = workoutConfigs[state.workoutType].name;
     showMotivationalMessage(`${workoutName} - ${difficultyLevels[state.difficulty].name} mode! LET'S GO!`);
     playSound(elements.audioMilestone);
+
+    // Request wake lock to keep screen awake
+    requestWakeLock();
 
     // Show and animate stick figure
     elements.stickFigureSection.classList.add('active');
@@ -285,12 +336,16 @@ function pauseTimer() {
         elements.pauseBtn.textContent = 'Resume';
         elements.countButton.disabled = true;
         showMotivationalMessage("Paused - Take a breath!");
+        // Release wake lock when paused
+        releaseWakeLock();
     } else {
         // Resume: restart the timer interval and animation
         startBurpeeAnimation();
         elements.pauseBtn.textContent = 'Pause';
         elements.countButton.disabled = false;
         showMotivationalMessage("Back to work! Let's go!");
+        // Re-request wake lock when resuming
+        requestWakeLock();
 
         // Restart the countdown interval
         state.timerInterval = setInterval(() => {
@@ -317,6 +372,7 @@ function resetWorkout() {
 
     clearInterval(state.timerInterval);
     stopBurpeeAnimation();
+    releaseWakeLock(); // Release wake lock on reset
 
     // Reset to selected difficulty duration
     const selectedDifficulty = elements.difficulty.value;
@@ -353,6 +409,7 @@ function resetWorkout() {
 function finishWorkout() {
     clearInterval(state.timerInterval);
     stopBurpeeAnimation();
+    releaseWakeLock(); // Release wake lock when workout completes
     state.isRunning = false;
 
     playSound(elements.audioMilestone);
@@ -404,6 +461,9 @@ function incrementRep() {
     updateRepCounter();
     updateMetrics();
 
+    // Haptic feedback - short vibration on each rep
+    hapticFeedback(10);
+
     // Play sound and show animation
     playSound(elements.audioBeep);
     elements.repNumber.classList.add('celebrating');
@@ -427,6 +487,13 @@ function checkRepMilestones() {
             showMotivationalMessage(motivationalMessages.repMilestones[milestone]);
             elements.countButton.classList.add('celebrating');
             setTimeout(() => elements.countButton.classList.remove('celebrating'), 500);
+
+            // Haptic feedback pattern for milestones - double pulse
+            if (milestone >= 100) {
+                hapticFeedback([50, 100, 50]); // Stronger pattern for major milestones
+            } else {
+                hapticFeedback([30, 50, 30]); // Medium pattern
+            }
 
             // Extra celebration for major milestones
             if (milestone >= 100) {
@@ -625,6 +692,41 @@ function getProgressComparison() {
         lastReps,
         currentReps,
         improvement
+    };
+}
+
+// ==========================================
+// Personal Records Tracking
+// ==========================================
+
+function getPersonalRecord() {
+    const history = getWorkoutHistory();
+    if (history.sessions.length === 0) return null;
+
+    // Find best performance for same workout type and difficulty
+    const similar = history.sessions.filter(s =>
+        s.workoutType === state.workoutType &&
+        s.difficulty === state.difficulty
+    );
+
+    if (similar.length === 0) return null;
+
+    // Find the session with most reps
+    const bestSession = similar.reduce((best, current) =>
+        current.reps > best.reps ? current : best
+    );
+
+    const currentReps = state.reps;
+    const recordReps = bestSession.reps;
+    const isNewRecord = currentReps > recordReps;
+    const improvement = isNewRecord ? currentReps - recordReps : 0;
+
+    return {
+        recordReps,
+        currentReps,
+        isNewRecord,
+        improvement,
+        recordDate: bestSession.date
     };
 }
 
@@ -1077,6 +1179,29 @@ function showCompletionModal() {
         `;
     }
 
+    // Check for personal record
+    const record = getPersonalRecord();
+    let recordHTML = '';
+    if (record && record.isNewRecord) {
+        recordHTML = `
+            <div class="personal-record" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 107, 157, 0.15)); border: 3px solid #FFD700; border-radius: 12px; padding: 18px; margin: 15px 0; animation: pulse 2s infinite;">
+                <div style="font-size: 2.5rem; text-align: center; margin-bottom: 8px;">🏆</div>
+                <div style="font-size: 1.1rem; color: #FFD700; font-weight: 700; text-align: center; text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); text-transform: uppercase; letter-spacing: 1px;">NEW PERSONAL RECORD!</div>
+                <div style="font-size: 0.85rem; color: #00ffcc; text-align: center; margin-top: 8px;">+${record.improvement} reps better than your best!</div>
+                <div style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.7); text-align: center; margin-top: 6px;">Previous record: ${record.recordReps} reps</div>
+            </div>
+        `;
+        // Haptic celebration for new record!
+        hapticFeedback([100, 50, 100, 50, 100]);
+    } else if (record) {
+        const diff = record.recordReps - record.currentReps;
+        recordHTML = `
+            <div style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); text-align: center; margin: 10px 0;">
+                Your record: ${record.recordReps} reps (${diff} reps away)
+            </div>
+        `;
+    }
+
     // Check for progression suggestion
     const suggestion = getProgressionSuggestion();
     let suggestionHTML = '';
@@ -1104,6 +1229,7 @@ function showCompletionModal() {
         <div class="fitness-level">
             Fitness Level: ${fitnessLevel}
         </div>
+        ${recordHTML}
         ${comparisonHTML}
         ${suggestionHTML}
     `;
