@@ -84,6 +84,8 @@ const elements = {
     historyList: document.getElementById('historyList'),
     historyStats: document.getElementById('historyStats'),
     clearHistoryBtn: document.getElementById('clearHistoryBtn'),
+    exportBtn: document.getElementById('exportBtn'),
+    importBtn: document.getElementById('importBtn'),
     completionModal: document.getElementById('completionModal'),
     completionStats: document.getElementById('completionStats'),
     saveWorkoutBtn: document.getElementById('saveWorkoutBtn'),
@@ -913,6 +915,130 @@ function toggleHistory() {
 }
 
 // ==========================================
+// Import/Export Functions
+// ==========================================
+
+function exportHistory() {
+    const data = {
+        version: '1.0.0',
+        exportDate: new Date().toISOString(),
+        history: JSON.parse(localStorage.getItem('burpeeWorkoutHistory') || '{"sessions":[]}'),
+        streak: JSON.parse(localStorage.getItem('workoutStreak') || '{"streak":0,"lastWorkoutDate":null,"longestStreak":0}')
+    };
+
+    // Create downloadable file
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `workout-history-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showMotivationalMessage('History exported successfully!');
+}
+
+function importHistory() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onload = (event) => {
+            try {
+                const data = JSON.parse(event.target.result);
+
+                // Validate data structure
+                if (!data.history || !data.streak) {
+                    throw new Error('Invalid file format. Missing required data.');
+                }
+
+                if (!data.history.sessions || !Array.isArray(data.history.sessions)) {
+                    throw new Error('Invalid history format.');
+                }
+
+                // Ask user: merge or replace
+                const merge = confirm(
+                    'Import options:\n\n' +
+                    'OK = Merge with existing data (recommended)\n' +
+                    'Cancel = Replace all existing data\n\n' +
+                    'Choose wisely!'
+                );
+
+                if (merge) {
+                    mergeHistory(data);
+                    showMotivationalMessage('History merged successfully!');
+                } else {
+                    localStorage.setItem('burpeeWorkoutHistory', JSON.stringify(data.history));
+                    localStorage.setItem('workoutStreak', JSON.stringify(data.streak));
+                    showMotivationalMessage('History replaced successfully!');
+                }
+
+                // Refresh displays
+                displayStreak();
+                renderHistory();
+
+            } catch (err) {
+                alert('Error importing file: ' + err.message);
+                console.error('Import error:', err);
+            }
+        };
+
+        reader.onerror = () => {
+            alert('Error reading file. Please try again.');
+        };
+
+        reader.readAsText(file);
+    };
+
+    input.click();
+}
+
+function mergeHistory(importedData) {
+    const existing = getWorkoutHistory();
+    const existingStreak = getStreakData();
+
+    // Merge sessions (avoiding duplicates by exact date match)
+    const existingDates = new Set(existing.sessions.map(s => s.date));
+    const newSessions = importedData.history.sessions.filter(s => !existingDates.has(s.date));
+
+    existing.sessions = [...existing.sessions, ...newSessions]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 50); // Keep max 50 most recent
+
+    // Merge streaks - use the better values
+    const mergedStreak = {
+        streak: Math.max(existingStreak.streak || 0, importedData.streak.streak || 0),
+        lastWorkoutDate: existingStreak.lastWorkoutDate || importedData.streak.lastWorkoutDate,
+        longestStreak: Math.max(
+            existingStreak.longestStreak || 0,
+            importedData.streak.longestStreak || 0
+        )
+    };
+
+    // Update most recent workout date
+    if (importedData.streak.lastWorkoutDate) {
+        const importedDate = new Date(importedData.streak.lastWorkoutDate);
+        const existingDate = existingStreak.lastWorkoutDate ? new Date(existingStreak.lastWorkoutDate) : new Date(0);
+
+        if (importedDate > existingDate) {
+            mergedStreak.lastWorkoutDate = importedData.streak.lastWorkoutDate;
+            mergedStreak.streak = importedData.streak.streak;
+        }
+    }
+
+    localStorage.setItem('burpeeWorkoutHistory', JSON.stringify(existing));
+    localStorage.setItem('workoutStreak', JSON.stringify(mergedStreak));
+}
+
+// ==========================================
 // Completion Modal Functions
 // ==========================================
 
@@ -1020,6 +1146,8 @@ document.addEventListener('keydown', (e) => {
 elements.historyToggleBtn.addEventListener('click', toggleHistory);
 elements.closeHistoryBtn.addEventListener('click', toggleHistory);
 elements.clearHistoryBtn.addEventListener('click', clearHistory);
+elements.exportBtn.addEventListener('click', exportHistory);
+elements.importBtn.addEventListener('click', importHistory);
 
 // Completion modal
 elements.saveWorkoutBtn.addEventListener('click', saveAndClose);
