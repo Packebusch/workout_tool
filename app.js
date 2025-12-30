@@ -592,6 +592,142 @@ function showRestDayReminder() {
 }
 
 // ==========================================
+// Progressive Overload Tracking Functions
+// ==========================================
+
+function getProgressComparison() {
+    const history = getWorkoutHistory();
+    if (history.sessions.length === 0) return null;
+
+    // Find last workout of same type and difficulty
+    const similar = history.sessions.find(s =>
+        s.workoutType === state.workoutType &&
+        s.difficulty === state.difficulty
+    );
+
+    if (!similar) return null;
+
+    const lastReps = similar.reps;
+    const currentReps = state.reps;
+    const improvement = Math.round(((currentReps - lastReps) / lastReps) * 100);
+
+    return {
+        lastReps,
+        currentReps,
+        improvement
+    };
+}
+
+function getProgressionSuggestion() {
+    const history = getWorkoutHistory();
+
+    // Get last 3 workouts of same type
+    const sameType = history.sessions.filter(s => s.workoutType === state.workoutType).slice(0, 3);
+
+    if (sameType.length < 3) return null;
+
+    // Check if all 3 were same difficulty and user performed well
+    const allSameDifficulty = sameType.every(s => s.difficulty === state.difficulty);
+    if (!allSameDifficulty) return null;
+
+    // Check if trending upward or maintaining high performance
+    const avgReps = sameType.reduce((sum, s) => sum + s.reps, 0) / sameType.length;
+    const targetReps = getTargetReps(state.workoutType, state.difficulty);
+
+    // If consistently beating target, suggest harder difficulty
+    if (avgReps > targetReps * 1.1) {
+        const nextDifficulty = getNextDifficulty(state.difficulty);
+        if (nextDifficulty) {
+            return `Ready to level up? Try ${difficultyLevels[nextDifficulty].name} mode!`;
+        }
+    }
+
+    return null;
+}
+
+function getTargetReps(workoutType, difficulty) {
+    // Target reps based on difficulty (rough estimates)
+    const targets = {
+        beginner: { burpees: 50, pushups: 100, squats: 100, 'jumping-jacks': 200, plank: 300, 'mountain-climbers': 150 },
+        intermediate: { burpees: 90, pushups: 180, squats: 150, 'jumping-jacks': 350, plank: 500, 'mountain-climbers': 250 },
+        advanced: { burpees: 120, pushups: 240, squats: 200, 'jumping-jacks': 450, plank: 700, 'mountain-climbers': 350 },
+        elite: { burpees: 180, pushups: 360, squats: 300, 'jumping-jacks': 700, plank: 1000, 'mountain-climbers': 500 }
+    };
+
+    return targets[difficulty]?.[workoutType] || 100;
+}
+
+function getNextDifficulty(current) {
+    const levels = ['beginner', 'intermediate', 'advanced', 'elite'];
+    const currentIndex = levels.indexOf(current);
+    if (currentIndex < levels.length - 1) {
+        return levels[currentIndex + 1];
+    }
+    return null;
+}
+
+function calculateTrend(sessions) {
+    if (sessions.length < 3) return 'neutral';
+
+    // Simple linear regression to detect trend
+    const reps = sessions.map(s => s.reps);
+    const avg = reps.reduce((a, b) => a + b, 0) / reps.length;
+    const recent = reps.slice(0, Math.ceil(reps.length / 2));
+    const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
+
+    if (recentAvg > avg * 1.05) return 'improving';
+    if (recentAvg < avg * 0.95) return 'declining';
+    return 'plateau';
+}
+
+function getLastWeekStats(sessions) {
+    const now = new Date();
+    const lastWeekStart = new Date(now);
+    lastWeekStart.setDate(now.getDate() - 14); // 2 weeks ago
+    const lastWeekEnd = new Date(now);
+    lastWeekEnd.setDate(now.getDate() - 7); // 1 week ago
+
+    const lastWeekSessions = sessions.filter(s => {
+        const date = new Date(s.date);
+        return date >= lastWeekStart && date < lastWeekEnd;
+    });
+
+    if (lastWeekSessions.length === 0) return null;
+
+    const totalReps = lastWeekSessions.reduce((sum, s) => sum + s.reps, 0);
+    return {
+        avgReps: totalReps / lastWeekSessions.length,
+        count: lastWeekSessions.length
+    };
+}
+
+function getThisWeekStats(sessions) {
+    const now = new Date();
+    const thisWeekStart = new Date(now);
+    thisWeekStart.setDate(now.getDate() - 7); // 1 week ago
+
+    const thisWeekSessions = sessions.filter(s => {
+        const date = new Date(s.date);
+        return date >= thisWeekStart;
+    });
+
+    if (thisWeekSessions.length === 0) return null;
+
+    const totalReps = thisWeekSessions.reduce((sum, s) => sum + s.reps, 0);
+    return {
+        avgReps: totalReps / thisWeekSessions.length,
+        count: thisWeekSessions.length
+    };
+}
+
+function compareWeeks(thisWeek, lastWeek) {
+    if (!thisWeek || !lastWeek) return null;
+
+    const improvement = ((thisWeek.avgReps - lastWeek.avgReps) / lastWeek.avgReps) * 100;
+    return Math.round(improvement);
+}
+
+// ==========================================
 // History Functions
 // ==========================================
 
@@ -656,12 +792,21 @@ function renderHistory() {
         const avgReps = Math.round(totalReps / sessions.length);
         const bestReps = Math.max(...sessions.map(s => s.reps));
 
+        // Calculate trend
+        const trend = calculateTrend(sessions);
+
+        // Calculate week-over-week comparison
+        const lastWeek = getLastWeekStats(sessions);
+        const thisWeek = getThisWeekStats(sessions);
+
         return {
             type,
             name: config?.name || 'Unknown',
             count: sessions.length,
             avgReps,
-            bestReps
+            bestReps,
+            trend,
+            weekComparison: compareWeeks(thisWeek, lastWeek)
         };
     }).sort((a, b) => b.count - a.count); // Sort by most frequent
 
@@ -687,13 +832,30 @@ function renderHistory() {
         `;
 
         typeStats.forEach(stat => {
+            // Trend indicator
+            const trendIcon = stat.trend === 'improving' ? '📈' : stat.trend === 'declining' ? '📉' : '➡️';
+            const trendColor = stat.trend === 'improving' ? '#00ffcc' : stat.trend === 'declining' ? '#ff6b9d' : '#ffaa00';
+            const trendText = stat.trend === 'improving' ? 'Improving!' : stat.trend === 'declining' ? 'Declining' : 'Steady';
+
+            // Week comparison
+            let weekHTML = '';
+            if (stat.weekComparison) {
+                const weekArrow = stat.weekComparison > 0 ? '↑' : stat.weekComparison < 0 ? '↓' : '→';
+                const weekColor = stat.weekComparison > 0 ? '#00ffcc' : stat.weekComparison < 0 ? '#ff6b9d' : '#ffaa00';
+                weekHTML = `<span style="color: ${weekColor};">${weekArrow} ${Math.abs(stat.weekComparison)}% vs last week</span>`;
+            }
+
             statsHTML += `
                 <div class="type-stat-item" style="margin-bottom: 12px; padding: 10px; background: rgba(0, 255, 204, 0.05); border-radius: 8px; border: 1px solid rgba(0, 255, 204, 0.2);">
-                    <div style="color: #00ffcc; font-weight: 700; margin-bottom: 6px; font-size: 0.85rem;">${stat.name}</div>
-                    <div style="display: flex; gap: 15px; font-size: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <div style="color: #00ffcc; font-weight: 700; font-size: 0.85rem;">${stat.name}</div>
+                        <div style="color: ${trendColor}; font-size: 0.75rem; font-weight: 600;">${trendIcon} ${trendText}</div>
+                    </div>
+                    <div style="display: flex; gap: 15px; font-size: 0.75rem; flex-wrap: wrap;">
                         <span style="color: rgba(255, 255, 255, 0.7);">${stat.count} sessions</span>
                         <span style="color: rgba(255, 255, 255, 0.7);">Avg: ${stat.avgReps}</span>
                         <span style="color: rgba(255, 255, 255, 0.7);">Best: ${stat.bestReps}</span>
+                        ${weekHTML ? `<span>${weekHTML}</span>` : ''}
                     </div>
                 </div>
             `;
@@ -759,6 +921,39 @@ function showCompletionModal() {
     const calories = parseInt(elements.calorieDisplay.textContent);
     const fitnessLevel = calculateFitnessLevel(state.reps, elapsedSeconds);
 
+    // Get comparison to last similar workout
+    const comparison = getProgressComparison();
+
+    let comparisonHTML = '';
+    if (comparison) {
+        const arrow = comparison.improvement > 0 ? '↑' : comparison.improvement < 0 ? '↓' : '→';
+        const color = comparison.improvement > 0 ? '#00ffcc' : comparison.improvement < 0 ? '#ff6b9d' : '#ffaa00';
+        const message = comparison.improvement > 0
+            ? `${Math.abs(comparison.improvement)}% BETTER than last time!`
+            : comparison.improvement < 0
+            ? `${Math.abs(comparison.improvement)}% below last time`
+            : 'Same as last time';
+
+        comparisonHTML = `
+            <div class="progress-comparison" style="background: rgba(0, 255, 204, 0.05); border: 2px solid ${color}; border-radius: 12px; padding: 15px; margin: 15px 0;">
+                <div style="font-size: 2rem; color: ${color}; text-align: center; margin-bottom: 8px; text-shadow: 0 0 10px ${color};">${arrow}</div>
+                <div style="font-size: 0.95rem; color: ${color}; font-weight: 700; text-align: center; text-shadow: 0 0 8px ${color};">${message}</div>
+                <div style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); text-align: center; margin-top: 6px;">Last: ${comparison.lastReps} reps → Now: ${state.reps} reps</div>
+            </div>
+        `;
+    }
+
+    // Check for progression suggestion
+    const suggestion = getProgressionSuggestion();
+    let suggestionHTML = '';
+    if (suggestion) {
+        suggestionHTML = `
+            <div class="progression-suggestion" style="background: rgba(255, 170, 0, 0.1); border: 2px solid #ffaa00; border-radius: 12px; padding: 12px; margin: 15px 0;">
+                <div style="font-size: 0.85rem; color: #ffaa00; font-weight: 700; text-align: center;">💪 ${suggestion}</div>
+            </div>
+        `;
+    }
+
     elements.completionStats.innerHTML = `
         <div class="completion-stat">
             <span class="completion-stat-label">Total Reps:</span>
@@ -775,6 +970,8 @@ function showCompletionModal() {
         <div class="fitness-level">
             Fitness Level: ${fitnessLevel}
         </div>
+        ${comparisonHTML}
+        ${suggestionHTML}
     `;
 
     elements.completionModal.classList.add('open');
