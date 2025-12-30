@@ -634,36 +634,75 @@ function renderHistory() {
         return;
     }
 
-    // Calculate statistics
+    // Calculate overall statistics
     const totalWorkouts = history.sessions.length;
-    const totalReps = history.sessions.reduce((sum, s) => sum + s.reps, 0);
-    const avgReps = Math.round(totalReps / totalWorkouts);
-    const bestReps = Math.max(...history.sessions.map(s => s.reps));
     const totalCalories = history.sessions.reduce((sum, s) => sum + s.calories, 0);
 
+    // Group sessions by workout type
+    const byType = {};
+    history.sessions.forEach(session => {
+        const type = session.workoutType || 'burpees';
+        if (!byType[type]) {
+            byType[type] = [];
+        }
+        byType[type].push(session);
+    });
+
+    // Calculate stats per workout type
+    const typeStats = Object.keys(byType).map(type => {
+        const sessions = byType[type];
+        const config = workoutConfigs[type];
+        const totalReps = sessions.reduce((sum, s) => sum + s.reps, 0);
+        const avgReps = Math.round(totalReps / sessions.length);
+        const bestReps = Math.max(...sessions.map(s => s.reps));
+
+        return {
+            type,
+            name: config?.name || 'Unknown',
+            count: sessions.length,
+            avgReps,
+            bestReps
+        };
+    }).sort((a, b) => b.count - a.count); // Sort by most frequent
+
     // Render stats
-    elements.historyStats.innerHTML = `
-        <div class="stat-row">
-            <span class="stat-label">Total Workouts:</span>
-            <span class="stat-value">${totalWorkouts}</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">Total Reps:</span>
-            <span class="stat-value">${totalReps}</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">Average Reps:</span>
-            <span class="stat-value">${avgReps}</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">Best Performance:</span>
-            <span class="stat-value">${bestReps} reps</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">Total Calories:</span>
-            <span class="stat-value">${totalCalories}</span>
+    let statsHTML = `
+        <div class="overall-stats">
+            <h3 style="color: #ff6b9d; font-size: 0.9rem; margin-bottom: 12px; text-shadow: 0 0 6px rgba(255, 107, 157, 0.5);">Overall Stats</h3>
+            <div class="stat-row">
+                <span class="stat-label">Total Workouts:</span>
+                <span class="stat-value">${totalWorkouts}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Total Calories Burned:</span>
+                <span class="stat-value">${totalCalories}</span>
+            </div>
         </div>
     `;
+
+    if (typeStats.length > 0) {
+        statsHTML += `
+            <div class="type-stats" style="margin-top: 20px;">
+                <h3 style="color: #ffaa00; font-size: 0.9rem; margin-bottom: 12px; text-shadow: 0 0 6px rgba(255, 170, 0, 0.5);">By Workout Type</h3>
+        `;
+
+        typeStats.forEach(stat => {
+            statsHTML += `
+                <div class="type-stat-item" style="margin-bottom: 12px; padding: 10px; background: rgba(0, 255, 204, 0.05); border-radius: 8px; border: 1px solid rgba(0, 255, 204, 0.2);">
+                    <div style="color: #00ffcc; font-weight: 700; margin-bottom: 6px; font-size: 0.85rem;">${stat.name}</div>
+                    <div style="display: flex; gap: 15px; font-size: 0.75rem;">
+                        <span style="color: rgba(255, 255, 255, 0.7);">${stat.count} sessions</span>
+                        <span style="color: rgba(255, 255, 255, 0.7);">Avg: ${stat.avgReps}</span>
+                        <span style="color: rgba(255, 255, 255, 0.7);">Best: ${stat.bestReps}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        statsHTML += '</div>';
+    }
+
+    elements.historyStats.innerHTML = statsHTML;
 
     // Render workout list
     elements.historyList.innerHTML = history.sessions.map(session => {
