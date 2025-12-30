@@ -1222,10 +1222,36 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/workout_tool/sw.js')
             .then((registration) => {
                 console.log('Service Worker registered successfully:', registration.scope);
+
+                // Check for updates every 60 seconds
+                setInterval(() => {
+                    registration.update();
+                }, 60000);
+
+                // Detect when new service worker is waiting
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // New service worker available, show update message
+                            showMotivationalMessage('📥 New version available! Reload to update.');
+                            console.log('New version available - please reload');
+                        }
+                    });
+                });
             })
             .catch((error) => {
                 console.log('Service Worker registration failed:', error);
             });
+
+        // Handle service worker controller change (after update)
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+                refreshing = true;
+                window.location.reload();
+            }
+        });
     });
 }
 

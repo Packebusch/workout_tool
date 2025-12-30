@@ -1,4 +1,4 @@
-const CACHE_NAME = 'workout-tracker-v1.1.0';
+const CACHE_NAME = 'workout-tracker-v1.1.1';
 const urlsToCache = [
   '/workout_tool/',
   '/workout_tool/index.html',
@@ -37,38 +37,52 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - network-first for core files, cache fallback for offline
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
+  const { request } = event;
+  const url = new URL(request.url);
 
-        // Clone the request
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest).then((response) => {
-          // Check if valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-
-          // Clone the response
-          const responseToCache = response.clone();
-
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
+  // Network-first strategy for HTML, CSS, JS (always get latest)
+  if (
+    request.method === 'GET' &&
+    (url.pathname.endsWith('.html') ||
+     url.pathname.endsWith('.css') ||
+     url.pathname.endsWith('.js') ||
+     url.pathname.endsWith('/'))
+  ) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // Got network response, update cache and return
+          if (response && response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseToCache);
             });
-
+          }
           return response;
-        }).catch(() => {
-          // Network failed, return offline page or cached version
-          return caches.match('/workout_tool/index.html');
+        })
+        .catch(() => {
+          // Network failed, try cache
+          return caches.match(request).then((cached) => {
+            return cached || caches.match('/workout_tool/index.html');
+          });
+        })
+    );
+  } else {
+    // Cache-first for other resources (images, fonts, etc.)
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        return cached || fetch(request).then((response) => {
+          if (response && response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseToCache);
+            });
+          }
+          return response;
         });
       })
-  );
+    );
+  }
 });
