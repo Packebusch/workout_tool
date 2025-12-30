@@ -78,6 +78,110 @@ header h1 {
     font-weight: 700;
 }
 
+/* About Section */
+.about-section {
+    margin-bottom: 25px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, rgba(0, 255, 204, 0.05) 0%, rgba(255, 107, 157, 0.05) 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 255, 204, 0.3);
+}
+
+.about-content {
+    text-align: center;
+}
+
+.about-text {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 12px;
+}
+
+.about-text strong {
+    color: #00ffcc;
+    font-weight: 700;
+}
+
+.about-features {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.feature-badge {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    background: rgba(0, 255, 204, 0.1);
+    border: 1px solid rgba(0, 255, 204, 0.3);
+    border-radius: 12px;
+    color: #00ffcc;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.about-toggle {
+    font-size: 0.75rem;
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid rgba(255, 170, 0, 0.4);
+    border-radius: 15px;
+    color: #ffaa00;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.about-toggle:hover {
+    background: rgba(255, 170, 0, 0.1);
+    border-color: #ffaa00;
+    box-shadow: 0 0 10px rgba(255, 170, 0, 0.3);
+}
+
+.about-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.about-details.open {
+    max-height: 200px;
+    margin-top: 12px;
+}
+
+.about-details p {
+    margin-bottom: 10px;
+}
+
+.about-details strong {
+    color: #ff6b9d;
+}
+
+.github-link {
+    color: #00ffcc;
+    text-decoration: underline;
+    transition: all 0.3s ease;
+}
+
+.github-link:hover {
+    color: #ffaa00;
+    text-shadow: 0 0 8px rgba(255, 170, 0, 0.5);
+}
+
+.privacy-highlight {
+    font-style: italic;
+    color: #00ffcc;
+    font-weight: 600;
+    margin-top: 10px;
+    text-shadow: 0 0 8px rgba(0, 255, 204, 0.3);
+}
+
 /* Config Section */
 .config-section {
     margin-bottom: 25px;

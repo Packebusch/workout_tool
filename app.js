@@ -100,6 +100,8 @@ const elements = {
     configSection: document.getElementById('configSection'),
     streakCount: document.getElementById('streakCount'),
     streakDisplay: document.getElementById('streakDisplay'),
+    aboutToggle: document.getElementById('aboutToggle'),
+    aboutDetails: document.getElementById('aboutDetails'),
 };
 
 // Motivational Messages
@@ -237,8 +239,11 @@ function startTimer() {
     state.isPaused = false;
     state.startTime = Date.now();
 
-    // Hide config section
+    // Hide config section and about section
     elements.configSection.style.display = 'none';
+    if (elements.aboutToggle) {
+        document.getElementById('aboutSection').style.display = 'none';
+    }
 
     // Show start message
     const workoutName = workoutConfigs[state.workoutType].name;
@@ -328,8 +333,11 @@ function resetWorkout() {
     updateRepCounter();
     updateMetrics();
 
-    // Show config section again
+    // Show config section and about section again
     elements.configSection.style.display = 'block';
+    if (elements.aboutToggle) {
+        document.getElementById('aboutSection').style.display = 'block';
+    }
 
     // Hide stick figure
     elements.stickFigureSection.classList.remove('active');
@@ -1158,6 +1166,14 @@ elements.historyPanel.addEventListener('click', (e) => {
     if (e.target === elements.historyPanel) {
         toggleHistory();
     }
+});
+
+// About section toggle
+elements.aboutToggle.addEventListener('click', () => {
+    elements.aboutDetails.classList.toggle('open');
+    elements.aboutToggle.textContent = elements.aboutDetails.classList.contains('open')
+        ? '✕ Close'
+        : 'ℹ️ Why this matters';
 });
 
 // ==========================================
