@@ -1109,6 +1109,64 @@ header h1 {
         font-size: 0.75rem;
         padding: 14px;
     }
+
+    /* Config dropdowns - prevent overflow */
+    .config-section {
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .config-group {
+        min-width: 0; /* Allow flex items to shrink below content size */
+    }
+
+    .config-label {
+        font-size: 0.65rem;
+    }
+
+    .config-select {
+        padding: 8px 10px;
+        font-size: 0.7rem;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    /* Make dropdown options smaller on mobile */
+    .config-select option {
+        font-size: 0.7rem;
+    }
+
+    /* About section */
+    .about-section {
+        padding: 12px 15px;
+        margin-bottom: 20px;
+    }
+
+    .about-text {
+        font-size: 0.75rem;
+    }
+
+    .feature-badge {
+        font-size: 0.65rem;
+        padding: 4px 10px;
+    }
+
+    .about-toggle {
+        font-size: 0.7rem;
+        padding: 8px 16px;
+    }
+}
+
+/* Extra small screens - stack dropdowns vertically */
+@media (max-width: 360px) {
+    .config-section {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .config-select {
+        font-size: 0.75rem;
+    }
 }
 
 /* Accessibility */
