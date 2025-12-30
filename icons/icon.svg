@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#0a0a12"/>
+
+  <!-- Outer glow circle -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#00ffcc" stroke-width="3" opacity="0.3"/>
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#00ffcc" stroke-width="2" opacity="0.5"/>
+
+  <!-- Main icon circle -->
+  <circle cx="256" cy="256" r="160" fill="none" stroke="#00ffcc" stroke-width="6"/>
+
+  <!-- Stick figure doing burpee -->
+  <!-- Head -->
+  <circle cx="256" cy="200" r="25" fill="#ff6b9d" stroke="#ff6b9d" stroke-width="3"/>
+
+  <!-- Body -->
+  <line x1="256" y1="225" x2="256" y2="300" stroke="#00ffcc" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- Arms (down position) -->
+  <line x1="256" y1="250" x2="210" y2="290" stroke="#00ffcc" stroke-width="6" stroke-linecap="round"/>
+  <line x1="256" y1="250" x2="302" y2="290" stroke="#00ffcc" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Legs (extended) -->
+  <line x1="256" y1="300" x2="220" y2="350" stroke="#ffaa00" stroke-width="6" stroke-linecap="round"/>
+  <line x1="256" y1="300" x2="292" y2="350" stroke="#ffaa00" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Lightning bolt accent (energy) -->
+  <path d="M 256 120 L 246 160 L 266 155 L 256 180" fill="none" stroke="#ffaa00" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Stars -->
+  <circle cx="150" cy="150" r="3" fill="#fff" opacity="0.8"/>
+  <circle cx="362" cy="150" r="2" fill="#fff" opacity="0.6"/>
+  <circle cx="150" cy="362" r="2.5" fill="#fff" opacity="0.7"/>
+  <circle cx="362" cy="362" r="3" fill="#fff" opacity="0.8"/>
+  <circle cx="200" cy="100" r="2" fill="#00ffcc" opacity="0.5"/>
+  <circle cx="312" cy="100" r="2" fill="#ff6b9d" opacity="0.5"/>
+</svg>
