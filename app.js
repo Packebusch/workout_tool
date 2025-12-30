@@ -939,13 +939,26 @@ function renderLifetimeStats() {
 // ==========================================
 
 let currentChartPeriod = 7;
-let currentChartType = 'all';
 
-function renderProgressChart(period = currentChartPeriod, workoutType = currentChartType) {
+// Workout type colors
+const workoutTypeColors = {
+    burpees: '#E1523D',
+    pushups: '#FF8C00',
+    squats: '#FFD700',
+    'jumping-jacks': '#00CED1',
+    plank: '#9370DB',
+    'mountain-climbers': '#FF69B4'
+};
+
+function renderProgressChart(period = currentChartPeriod) {
     const history = getWorkoutHistory();
     const canvas = document.getElementById('progressChart');
+    const legendEl = document.getElementById('chartLegend');
 
-    if (!canvas || history.sessions.length === 0) return;
+    if (!canvas || history.sessions.length === 0) {
+        if (legendEl) legendEl.innerHTML = '';
+        return;
+    }
 
     const ctx = canvas.getContext('2d');
     const width = canvas.width;
@@ -954,40 +967,45 @@ function renderProgressChart(period = currentChartPeriod, workoutType = currentC
     // Clear canvas
     ctx.clearRect(0, 0, width, height);
 
-    // Get last N days of data
+    // Get last N days
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const dataPoints = [];
+    const dates = [];
     for (let i = period - 1; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
-        const dateStr = date.toDateString();
-
-        // Find workouts on this day, filtered by workout type
-        const dayWorkouts = history.sessions.filter(s => {
-            const sessionDate = new Date(s.date);
-            const matchesDate = sessionDate.toDateString() === dateStr;
-            const matchesType = workoutType === 'all' || s.workoutType === workoutType;
-            return matchesDate && matchesType;
-        });
-
-        // Sum reps for the day
-        const totalReps = dayWorkouts.reduce((sum, s) => sum + s.reps, 0);
-        dataPoints.push({ date, reps: totalReps });
+        dates.push(date);
     }
 
-    // Find max reps for scaling
-    const maxReps = Math.max(...dataPoints.map(d => d.reps), 1);
+    // Group workouts by type
+    const workoutTypes = [...new Set(history.sessions.map(s => s.workoutType || 'burpees'))];
+
+    // Create data series for each workout type
+    const series = {};
+    workoutTypes.forEach(type => {
+        series[type] = dates.map(date => {
+            const dateStr = date.toDateString();
+            const dayWorkouts = history.sessions.filter(s => {
+                const sessionDate = new Date(s.date);
+                return sessionDate.toDateString() === dateStr && (s.workoutType || 'burpees') === type;
+            });
+            return dayWorkouts.reduce((sum, s) => sum + s.reps, 0);
+        });
+    });
+
+    // Find max reps across all series for scaling
+    const allReps = Object.values(series).flat();
+    const maxReps = Math.max(...allReps, 1);
 
     // Chart dimensions
     const padding = 30;
     const chartWidth = width - padding * 2;
     const chartHeight = height - padding * 2;
-    const pointSpacing = chartWidth / (dataPoints.length - 1 || 1);
+    const pointSpacing = chartWidth / (dates.length - 1 || 1);
 
     // Draw background grid
-    ctx.strokeStyle = 'rgba(225, 82, 61, 0.1)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
     ctx.lineWidth = 1;
     for (let i = 0; i <= 4; i++) {
         const y = padding + (chartHeight / 4) * i;
@@ -998,7 +1016,7 @@ function renderProgressChart(period = currentChartPeriod, workoutType = currentC
     }
 
     // Draw axes
-    ctx.strokeStyle = '#E1523D';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(padding, padding);
@@ -1006,39 +1024,27 @@ function renderProgressChart(period = currentChartPeriod, workoutType = currentC
     ctx.lineTo(width - padding, height - padding);
     ctx.stroke();
 
-    // Draw data line
-    if (dataPoints.length > 0) {
-        ctx.strokeStyle = '#E1523D';
-        ctx.fillStyle = 'rgba(225, 82, 61, 0.2)';
-        ctx.lineWidth = 3;
+    // Draw each workout type as a separate line
+    workoutTypes.forEach(type => {
+        const color = workoutTypeColors[type] || '#E1523D';
+        const data = series[type];
 
-        ctx.beginPath();
-        ctx.moveTo(padding, height - padding);
-
-        dataPoints.forEach((point, index) => {
-            const x = padding + index * pointSpacing;
-            const y = height - padding - (point.reps / maxReps) * chartHeight;
-
-            if (index === 0) {
-                ctx.lineTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
-        });
-
-        // Close path for fill
-        ctx.lineTo(padding + (dataPoints.length - 1) * pointSpacing, height - padding);
-        ctx.closePath();
-        ctx.fill();
+        // Skip if no data for this type
+        if (data.every(v => v === 0)) return;
 
         // Draw line
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
-        dataPoints.forEach((point, index) => {
-            const x = padding + index * pointSpacing;
-            const y = height - padding - (point.reps / maxReps) * chartHeight;
 
-            if (index === 0) {
+        let firstPoint = true;
+        data.forEach((reps, index) => {
+            const x = padding + index * pointSpacing;
+            const y = height - padding - (reps / maxReps) * chartHeight;
+
+            if (firstPoint) {
                 ctx.moveTo(x, y);
+                firstPoint = false;
             } else {
                 ctx.lineTo(x, y);
             }
@@ -1046,24 +1052,24 @@ function renderProgressChart(period = currentChartPeriod, workoutType = currentC
         ctx.stroke();
 
         // Draw data points
-        dataPoints.forEach((point, index) => {
-            const x = padding + index * pointSpacing;
-            const y = height - padding - (point.reps / maxReps) * chartHeight;
+        data.forEach((reps, index) => {
+            if (reps > 0) {
+                const x = padding + index * pointSpacing;
+                const y = height - padding - (reps / maxReps) * chartHeight;
 
-            ctx.fillStyle = point.reps > 0 ? '#E1523D' : 'rgba(225, 82, 61, 0.3)';
-            ctx.beginPath();
-            ctx.arc(x, y, 4, 0, Math.PI * 2);
-            ctx.fill();
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+                ctx.fill();
 
-            // Add glow effect for non-zero points
-            if (point.reps > 0) {
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = '#E1523D';
+                // Add glow effect
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = color;
                 ctx.fill();
                 ctx.shadowBlur = 0;
             }
         });
-    }
+    });
 
     // Draw Y-axis labels
     ctx.fillStyle = '#F5F5F5';
@@ -1075,19 +1081,37 @@ function renderProgressChart(period = currentChartPeriod, workoutType = currentC
         ctx.fillText(value, padding - 5, y + 3);
     }
 
-    // Draw X-axis labels (every other day for 7-day, every 5 days for 30-day)
+    // Draw X-axis labels
     ctx.textAlign = 'center';
     ctx.fillStyle = '#F5F5F5';
     const labelInterval = period === 7 ? 2 : 5;
-    dataPoints.forEach((point, index) => {
-        if (index % labelInterval === 0 || index === dataPoints.length - 1) {
+    dates.forEach((date, index) => {
+        if (index % labelInterval === 0 || index === dates.length - 1) {
             const x = padding + index * pointSpacing;
             const label = period === 7
-                ? point.date.toLocaleDateString('en-US', { weekday: 'short' })
-                : point.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
+                ? date.toLocaleDateString('en-US', { weekday: 'short' })
+                : date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
             ctx.fillText(label, x, height - padding + 15);
         }
     });
+
+    // Build legend
+    if (legendEl) {
+        let legendHTML = '';
+        workoutTypes.forEach(type => {
+            if (!series[type].every(v => v === 0)) {
+                const color = workoutTypeColors[type] || '#E1523D';
+                const name = workoutConfigs[type]?.name || type;
+                legendHTML += `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: ${color};"></div>
+                        <span>${name}</span>
+                    </div>
+                `;
+            }
+        });
+        legendEl.innerHTML = legendHTML;
+    }
 }
 
 function renderHistory() {
@@ -1589,18 +1613,9 @@ document.querySelectorAll('.chart-period-btn').forEach(btn => {
         // Render chart with new period
         const period = parseInt(e.target.dataset.period);
         currentChartPeriod = period;
-        renderProgressChart(period, currentChartType);
+        renderProgressChart(period);
     });
 });
-
-// Progress chart workout type selector
-const chartTypeSelect = document.getElementById('chartTypeSelect');
-if (chartTypeSelect) {
-    chartTypeSelect.addEventListener('change', (e) => {
-        currentChartType = e.target.value;
-        renderProgressChart(currentChartPeriod, currentChartType);
-    });
-}
 
 // Completion modal
 elements.saveWorkoutBtn.addEventListener('click', saveAndClose);
