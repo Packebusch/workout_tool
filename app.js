@@ -939,8 +939,9 @@ function renderLifetimeStats() {
 // ==========================================
 
 let currentChartPeriod = 7;
+let currentChartType = 'all';
 
-function renderProgressChart(period = currentChartPeriod) {
+function renderProgressChart(period = currentChartPeriod, workoutType = currentChartType) {
     const history = getWorkoutHistory();
     const canvas = document.getElementById('progressChart');
 
@@ -963,10 +964,12 @@ function renderProgressChart(period = currentChartPeriod) {
         date.setDate(date.getDate() - i);
         const dateStr = date.toDateString();
 
-        // Find workouts on this day
+        // Find workouts on this day, filtered by workout type
         const dayWorkouts = history.sessions.filter(s => {
             const sessionDate = new Date(s.date);
-            return sessionDate.toDateString() === dateStr;
+            const matchesDate = sessionDate.toDateString() === dateStr;
+            const matchesType = workoutType === 'all' || s.workoutType === workoutType;
+            return matchesDate && matchesType;
         });
 
         // Sum reps for the day
@@ -1586,9 +1589,18 @@ document.querySelectorAll('.chart-period-btn').forEach(btn => {
         // Render chart with new period
         const period = parseInt(e.target.dataset.period);
         currentChartPeriod = period;
-        renderProgressChart(period);
+        renderProgressChart(period, currentChartType);
     });
 });
+
+// Progress chart workout type selector
+const chartTypeSelect = document.getElementById('chartTypeSelect');
+if (chartTypeSelect) {
+    chartTypeSelect.addEventListener('change', (e) => {
+        currentChartType = e.target.value;
+        renderProgressChart(currentChartPeriod, currentChartType);
+    });
+}
 
 // Completion modal
 elements.saveWorkoutBtn.addEventListener('click', saveAndClose);

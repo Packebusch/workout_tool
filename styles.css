@@ -745,6 +745,31 @@ header h1 {
     padding: 20px;
 }
 
+.chart-header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.chart-type-select {
+    padding: 10px 16px;
+    background: var(--peloton-dark-gray);
+    border: 2px solid var(--peloton-light-gray);
+    border-radius: 12px;
+    color: var(--peloton-white);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chart-type-select:hover,
+.chart-type-select:focus {
+    border-color: var(--peloton-red);
+    outline: none;
+}
+
 .chart-controls {
     display: flex;
     justify-content: center;
