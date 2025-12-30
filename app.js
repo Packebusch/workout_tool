@@ -984,7 +984,7 @@ function renderProgressChart(period = currentChartPeriod) {
     const pointSpacing = chartWidth / (dataPoints.length - 1 || 1);
 
     // Draw background grid
-    ctx.strokeStyle = 'rgba(0, 255, 204, 0.1)';
+    ctx.strokeStyle = 'rgba(225, 82, 61, 0.1)';
     ctx.lineWidth = 1;
     for (let i = 0; i <= 4; i++) {
         const y = padding + (chartHeight / 4) * i;
@@ -995,7 +995,7 @@ function renderProgressChart(period = currentChartPeriod) {
     }
 
     // Draw axes
-    ctx.strokeStyle = '#00ffcc';
+    ctx.strokeStyle = '#E1523D';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(padding, padding);
@@ -1005,8 +1005,8 @@ function renderProgressChart(period = currentChartPeriod) {
 
     // Draw data line
     if (dataPoints.length > 0) {
-        ctx.strokeStyle = '#00ffcc';
-        ctx.fillStyle = 'rgba(0, 255, 204, 0.2)';
+        ctx.strokeStyle = '#E1523D';
+        ctx.fillStyle = 'rgba(225, 82, 61, 0.2)';
         ctx.lineWidth = 3;
 
         ctx.beginPath();
@@ -1047,7 +1047,7 @@ function renderProgressChart(period = currentChartPeriod) {
             const x = padding + index * pointSpacing;
             const y = height - padding - (point.reps / maxReps) * chartHeight;
 
-            ctx.fillStyle = point.reps > 0 ? '#00ffcc' : 'rgba(0, 255, 204, 0.3)';
+            ctx.fillStyle = point.reps > 0 ? '#E1523D' : 'rgba(225, 82, 61, 0.3)';
             ctx.beginPath();
             ctx.arc(x, y, 4, 0, Math.PI * 2);
             ctx.fill();
@@ -1055,7 +1055,7 @@ function renderProgressChart(period = currentChartPeriod) {
             // Add glow effect for non-zero points
             if (point.reps > 0) {
                 ctx.shadowBlur = 10;
-                ctx.shadowColor = '#00ffcc';
+                ctx.shadowColor = '#E1523D';
                 ctx.fill();
                 ctx.shadowBlur = 0;
             }
@@ -1063,8 +1063,8 @@ function renderProgressChart(period = currentChartPeriod) {
     }
 
     // Draw Y-axis labels
-    ctx.fillStyle = '#ffaa00';
-    ctx.font = '10px Courier New';
+    ctx.fillStyle = '#F5F5F5';
+    ctx.font = '10px -apple-system, sans-serif';
     ctx.textAlign = 'right';
     for (let i = 0; i <= 4; i++) {
         const value = Math.round((maxReps / 4) * (4 - i));
@@ -1074,7 +1074,7 @@ function renderProgressChart(period = currentChartPeriod) {
 
     // Draw X-axis labels (every other day for 7-day, every 5 days for 30-day)
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#ffaa00';
+    ctx.fillStyle = '#F5F5F5';
     const labelInterval = period === 7 ? 2 : 5;
     dataPoints.forEach((point, index) => {
         if (index % labelInterval === 0 || index === dataPoints.length - 1) {
