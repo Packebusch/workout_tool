@@ -1128,34 +1128,228 @@ body.celebrating .container {
 
 /* Responsive Design */
 @media (max-width: 480px) {
+    body {
+        padding: 10px;
+        align-items: flex-start;
+    }
+
     .container {
-        padding: 30px 20px;
+        padding: 20px 15px;
+        margin-top: 10px;
+    }
+
+    /* Compact header */
+    header {
+        margin-bottom: 15px;
     }
 
     header h1 {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
+        letter-spacing: 2px;
+        margin-bottom: 6px;
+    }
+
+    .streak-display {
+        font-size: 0.75rem;
+        margin-top: 4px;
+    }
+
+    .streak-display #streakCount {
+        font-size: 0.95rem;
+    }
+
+    /* About section - more compact */
+    .about-section {
+        padding: 12px 15px;
+        margin-bottom: 15px;
+    }
+
+    .about-text {
+        font-size: 0.75rem;
+        line-height: 1.4;
+        margin-bottom: 8px;
+    }
+
+    .feature-badge {
+        font-size: 0.65rem;
+        padding: 4px 8px;
+    }
+
+    .about-toggle {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+    }
+
+    /* Config section - more compact */
+    .config-section {
+        margin-bottom: 15px;
+        gap: 10px;
+    }
+
+    .config-group {
+        gap: 6px;
+    }
+
+    .config-label {
+        font-size: 0.7rem;
+    }
+
+    .config-select {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+
+    /* Compact timer section */
+    .timer-section {
+        margin-bottom: 15px;
     }
 
     .timer-display {
-        font-size: 3.5rem;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .progress-bar-container {
+        height: 6px;
+        margin-bottom: 8px;
+    }
+
+    /* Compact rep counter */
+    .counter-section {
+        margin: 15px 0;
+    }
+
+    .rep-counter {
+        margin-bottom: 15px;
+    }
+
+    .rep-label {
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+        margin-bottom: 5px;
     }
 
     .rep-number {
-        font-size: 4.5rem;
+        font-size: 3rem;
     }
 
+    /* HUGE count button for easy tapping during workout */
     .count-button {
-        font-size: 1rem;
-        padding: 22px;
+        font-size: 1.1rem;
+        padding: 35px 20px;
+        min-height: 120px;
+        letter-spacing: 1.5px;
+        margin-bottom: 15px;
+    }
+
+    .button-hint {
+        font-size: 0.65rem;
+    }
+
+    /* Hide stick figure on mobile to save space */
+    .stick-figure-section {
+        display: none;
+    }
+
+    /* Compact motivation */
+    .motivation-section {
+        margin: 10px 0;
     }
 
     .motivation-message {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
+        padding: 10px 12px;
+        min-height: 40px;
+    }
+
+    /* Compact metrics */
+    .metrics-section {
+        margin: 10px 0 15px;
+    }
+
+    .metric {
+        font-size: 0.75rem;
+        padding: 8px 12px;
+    }
+
+    .metric-icon {
+        font-size: 1rem;
+    }
+
+    /* Compact control buttons */
+    .controls-section {
+        gap: 8px;
+        margin-bottom: 15px;
     }
 
     .control-btn {
-        font-size: 0.7rem;
-        padding: 13px;
+        font-size: 0.75rem;
+        padding: 12px;
+        min-width: 70px;
+    }
+
+    /* Compact history toggle */
+    .history-toggle-section {
+        margin-top: 15px;
+    }
+
+    .history-toggle-btn {
+        font-size: 0.75rem;
+        padding: 10px 16px;
+    }
+
+    /* Footer */
+    .app-footer {
+        margin-top: 15px;
+        padding-top: 15px;
+    }
+
+    .footer-links {
+        font-size: 0.65rem;
+    }
+
+    .footer-version {
+        font-size: 0.65rem;
+    }
+
+    /* Modal adjustments */
+    .modal-content {
+        padding: 25px 20px;
+        margin: 20px;
+    }
+
+    .modal-content h2 {
+        font-size: 1.3rem;
+    }
+
+    .completion-stat {
+        font-size: 0.85rem;
+    }
+
+    .modal-btn {
+        font-size: 0.85rem;
+        padding: 12px 20px;
+    }
+}
+
+/* Extra small phones - ultra compact */
+@media (max-width: 360px) {
+    .container {
+        padding: 15px 12px;
+    }
+
+    .timer-display {
+        font-size: 2rem;
+    }
+
+    .rep-number {
+        font-size: 2.5rem;
+    }
+
+    .count-button {
+        min-height: 100px;
+        padding: 30px 15px;
+        font-size: 1rem;
     }
 }
 
