@@ -9,10 +9,16 @@ const workoutConfigs = {
         caloriesPerRep: 1,
         repUnit: 'reps'
     },
-    pushups: {
-        name: 'Push-ups',
-        caloriesPerMinute: 7,
-        caloriesPerRep: 0.5,
+    rows: {
+        name: 'Rows',
+        caloriesPerMinute: 6,
+        caloriesPerRep: 0.7,
+        repUnit: 'reps'
+    },
+    pullups: {
+        name: 'Pull-ups',
+        caloriesPerMinute: 8,
+        caloriesPerRep: 1.2,
         repUnit: 'reps'
     },
     squats: {
@@ -26,12 +32,6 @@ const workoutConfigs = {
         caloriesPerMinute: 9,
         caloriesPerRep: 0.4,
         repUnit: 'reps'
-    },
-    plank: {
-        name: 'Plank Hold',
-        caloriesPerMinute: 5,
-        caloriesPerRep: 0,
-        repUnit: 'seconds'
     },
     'mountain-climbers': {
         name: 'Mountain Climbers',
@@ -760,10 +760,10 @@ function getProgressionSuggestion() {
 function getTargetReps(workoutType, difficulty) {
     // Target reps based on difficulty (rough estimates)
     const targets = {
-        beginner: { burpees: 50, pushups: 100, squats: 100, 'jumping-jacks': 200, plank: 300, 'mountain-climbers': 150 },
-        intermediate: { burpees: 90, pushups: 180, squats: 150, 'jumping-jacks': 350, plank: 500, 'mountain-climbers': 250 },
-        advanced: { burpees: 120, pushups: 240, squats: 200, 'jumping-jacks': 450, plank: 700, 'mountain-climbers': 350 },
-        elite: { burpees: 180, pushups: 360, squats: 300, 'jumping-jacks': 700, plank: 1000, 'mountain-climbers': 500 }
+        beginner: { burpees: 50, rows: 80, pullups: 30, squats: 100, 'jumping-jacks': 200, 'mountain-climbers': 150 },
+        intermediate: { burpees: 90, rows: 140, pullups: 55, squats: 150, 'jumping-jacks': 350, 'mountain-climbers': 250 },
+        advanced: { burpees: 120, rows: 180, pullups: 75, squats: 200, 'jumping-jacks': 450, 'mountain-climbers': 350 },
+        elite: { burpees: 180, rows: 270, pullups: 110, squats: 300, 'jumping-jacks': 700, 'mountain-climbers': 500 }
     };
 
     return targets[difficulty]?.[workoutType] || 100;
@@ -943,10 +943,10 @@ let currentChartPeriod = 7;
 // Workout type colors
 const workoutTypeColors = {
     burpees: '#E1523D',
-    pushups: '#FF8C00',
+    rows: '#FF8C00',
+    pullups: '#9370DB',
     squats: '#FFD700',
     'jumping-jacks': '#00CED1',
-    plank: '#9370DB',
     'mountain-climbers': '#FF69B4'
 };
 
