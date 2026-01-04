@@ -39,6 +39,9 @@ class WorkoutApp {
         // Current chart period
         this.currentChartPeriod = 7;
 
+        // Performance optimization: batch UI updates
+        this.pendingUIUpdate = false;
+
         // Initialize app
         this.#init();
     }
@@ -263,9 +266,24 @@ class WorkoutApp {
             return;
         }
 
+        // Increment rep immediately (no delay)
         this.stateManager.incrementReps();
-        this.#updateMetrics();
+
+        // Update rep counter immediately
+        const reps = this.stateManager.get('reps');
+        this.ui.updateRepCounter(reps);
+
+        // Check milestones (lightweight check)
         this.workoutService.checkRepMilestones();
+
+        // Batch expensive UI updates using requestAnimationFrame
+        if (!this.pendingUIUpdate) {
+            this.pendingUIUpdate = true;
+            requestAnimationFrame(() => {
+                this.#updateMetrics();
+                this.pendingUIUpdate = false;
+            });
+        }
     }
 
     /**

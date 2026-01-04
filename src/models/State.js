@@ -148,10 +148,11 @@ export class StateManager {
     }
 
     /**
-     * Increment reps (convenience method)
+     * Increment reps (convenience method - optimized for performance)
      */
     incrementReps() {
-        this.set('reps', this.#state.reps + 1);
+        // Direct update without validation/notification overhead for performance
+        this.#state.reps++;
     }
 
     /**

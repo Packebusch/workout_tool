@@ -15,30 +15,35 @@ export class WorkoutService {
     }
 
     /**
-     * Check for rep milestones
+     * Check for rep milestones (optimized for performance)
      */
     checkRepMilestones() {
         const currentReps = this.#stateManager.get('reps');
-        const lastMilestone = this.#stateManager.get('lastMilestoneRep');
 
-        for (const milestone of REP_MILESTONES) {
-            if (currentReps === milestone && lastMilestone < milestone) {
-                this.#stateManager.set('lastMilestoneRep', milestone);
-
-                if (this.#onMilestone) {
-                    this.#onMilestone({
-                        type: 'rep',
-                        value: milestone,
-                        message: MOTIVATIONAL_MESSAGES.repMilestones[milestone],
-                        isMajor: milestone >= 100
-                    });
-                }
-                break;
-            }
+        // Quick check: only proceed if this could be a milestone
+        if (currentReps % 5 !== 0 || currentReps === 0) {
+            return; // Skip expensive checks for non-milestone numbers
         }
 
-        // Performance-based motivation every 30 reps
-        if (currentReps % 30 === 0 && currentReps > 0 && !REP_MILESTONES.includes(currentReps)) {
+        const lastMilestone = this.#stateManager.get('lastMilestoneRep');
+
+        // Check actual milestones
+        if (MOTIVATIONAL_MESSAGES.repMilestones[currentReps] && lastMilestone < currentReps) {
+            this.#stateManager.set('lastMilestoneRep', currentReps);
+
+            if (this.#onMilestone) {
+                this.#onMilestone({
+                    type: 'rep',
+                    value: currentReps,
+                    message: MOTIVATIONAL_MESSAGES.repMilestones[currentReps],
+                    isMajor: currentReps >= 100
+                });
+            }
+            return;
+        }
+
+        // Performance-based motivation every 30 reps (only if not a rep milestone)
+        if (currentReps % 30 === 0) {
             const message = this.#getPerformanceMessage();
             if (message && this.#onMilestone) {
                 this.#onMilestone({
