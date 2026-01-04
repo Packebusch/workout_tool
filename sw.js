@@ -1,12 +1,25 @@
-const CACHE_NAME = 'workout-tracker-v1.5.3';
+const CACHE_NAME = 'workout-tracker-v2.0.0';
 const urlsToCache = [
   '/workout_tool/',
   '/workout_tool/index.html',
   '/workout_tool/styles.css',
-  '/workout_tool/app.js',
   '/workout_tool/privacy.html',
   '/workout_tool/imprint.html',
-  '/workout_tool/manifest.json'
+  '/workout_tool/manifest.json',
+  '/workout_tool/src/app.js',
+  '/workout_tool/src/config/constants.js',
+  '/workout_tool/src/models/State.js',
+  '/workout_tool/src/services/StorageManager.js',
+  '/workout_tool/src/services/TimerService.js',
+  '/workout_tool/src/services/WorkoutService.js',
+  '/workout_tool/src/services/HistoryService.js',
+  '/workout_tool/src/services/StreakService.js',
+  '/workout_tool/src/services/ChartService.js',
+  '/workout_tool/src/services/WakeLockService.js',
+  '/workout_tool/src/ui/UIController.js',
+  '/workout_tool/src/ui/HistoryUIController.js',
+  '/workout_tool/src/utils/dateUtils.js',
+  '/workout_tool/src/utils/calculations.js'
 ];
 
 // Install event - cache assets
