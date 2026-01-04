@@ -32,7 +32,8 @@ export class UIController {
             streakDisplay: document.getElementById('streakDisplay'),
             aboutToggle: document.getElementById('aboutToggle'),
             aboutDetails: document.getElementById('aboutDetails'),
-            aboutSection: document.getElementById('aboutSection')
+            aboutSection: document.getElementById('aboutSection'),
+            historyToggleBtn: document.getElementById('historyToggleBtn')
         };
     }
 
@@ -102,16 +103,6 @@ export class UIController {
      */
     updateRepCounter(reps) {
         this.#elements.repNumber.textContent = reps;
-    }
-
-    /**
-     * Celebrate rep (animation)
-     */
-    celebrateRep() {
-        this.#elements.repNumber.classList.add(CSS_CLASSES.CELEBRATING);
-        setTimeout(() => {
-            this.#elements.repNumber.classList.remove(CSS_CLASSES.CELEBRATING);
-        }, 500);
     }
 
     /**

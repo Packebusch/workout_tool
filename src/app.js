@@ -264,7 +264,6 @@ class WorkoutApp {
         }
 
         this.stateManager.incrementReps();
-        this.ui.celebrateRep();
         this.#updateMetrics();
         this.workoutService.checkRepMilestones();
     }
