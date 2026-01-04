@@ -60,7 +60,6 @@ const state = {
     pausedTime: 0,
     lastMilestoneRep: 0,
     lastMilestoneTime: 1200,
-    burpeeAnimationInterval: null,
     workoutType: 'burpees',
     difficulty: 'advanced',
     streak: 0,
@@ -91,11 +90,6 @@ const elements = {
     completionStats: document.getElementById('completionStats'),
     saveWorkoutBtn: document.getElementById('saveWorkoutBtn'),
     discardWorkoutBtn: document.getElementById('discardWorkoutBtn'),
-    audioBeep: document.getElementById('audioBeep'),
-    audioSuccess: document.getElementById('audioSuccess'),
-    audioMilestone: document.getElementById('audioMilestone'),
-    stickFigure: document.getElementById('stickFigure'),
-    stickFigureSection: document.getElementById('stickFigureSection'),
     workoutType: document.getElementById('workoutType'),
     difficulty: document.getElementById('difficulty'),
     configSection: document.getElementById('configSection'),
@@ -169,18 +163,6 @@ const motivationalMessages = {
     },
 };
 
-// Audio Configuration
-const audioConfig = {
-    beepVolume: 0.3,
-    successVolume: 0.4,
-    milestoneVolume: 0.5,
-};
-
-// Initialize audio volumes
-elements.audioBeep.volume = audioConfig.beepVolume;
-elements.audioSuccess.volume = audioConfig.successVolume;
-elements.audioMilestone.volume = audioConfig.milestoneVolume;
-
 // ==========================================
 // Timer Functions
 // ==========================================
@@ -227,7 +209,7 @@ function updateProgressBar() {
 }
 
 // ==========================================
-// Screen Wake Lock & Haptic Feedback
+// Screen Wake Lock
 // ==========================================
 
 async function requestWakeLock() {
@@ -266,13 +248,6 @@ document.addEventListener('visibilitychange', async () => {
     }
 });
 
-function hapticFeedback(pattern = 10) {
-    // Vibration feedback for mobile
-    if ('vibrate' in navigator) {
-        navigator.vibrate(pattern);
-    }
-}
-
 function startTimer() {
     if (state.isRunning) return;
 
@@ -296,14 +271,9 @@ function startTimer() {
     // Show start message
     const workoutName = workoutConfigs[state.workoutType].name;
     showMotivationalMessage(`${workoutName} - ${difficultyLevels[state.difficulty].name} mode! LET'S GO!`);
-    playSound(elements.audioMilestone);
 
     // Request wake lock to keep screen awake
     requestWakeLock();
-
-    // Show and animate stick figure
-    elements.stickFigureSection.classList.add('active');
-    startBurpeeAnimation();
 
     // Update UI
     elements.startBtn.disabled = true;
@@ -332,15 +302,13 @@ function pauseTimer() {
 
     if (state.isPaused) {
         clearInterval(state.timerInterval);
-        stopBurpeeAnimation();
         elements.pauseBtn.textContent = 'Resume';
         elements.countButton.disabled = true;
         showMotivationalMessage("Paused - Take a breath!");
         // Release wake lock when paused
         releaseWakeLock();
     } else {
-        // Resume: restart the timer interval and animation
-        startBurpeeAnimation();
+        // Resume: restart the timer interval
         elements.pauseBtn.textContent = 'Pause';
         elements.countButton.disabled = false;
         showMotivationalMessage("Back to work! Let's go!");
@@ -371,7 +339,6 @@ function resetWorkout() {
     if (!confirmed) return;
 
     clearInterval(state.timerInterval);
-    stopBurpeeAnimation();
     releaseWakeLock(); // Release wake lock on reset
 
     // Reset to selected difficulty duration
@@ -395,9 +362,6 @@ function resetWorkout() {
         document.getElementById('aboutSection').style.display = 'block';
     }
 
-    // Hide stick figure
-    elements.stickFigureSection.classList.remove('active');
-
     elements.startBtn.disabled = false;
     elements.pauseBtn.disabled = true;
     elements.pauseBtn.textContent = 'Pause';
@@ -408,11 +372,9 @@ function resetWorkout() {
 
 function finishWorkout() {
     clearInterval(state.timerInterval);
-    stopBurpeeAnimation();
     releaseWakeLock(); // Release wake lock when workout completes
     state.isRunning = false;
 
-    playSound(elements.audioMilestone);
     showMotivationalMessage("WORKOUT COMPLETE! Amazing job!");
 
     // Show completion modal
@@ -425,19 +387,15 @@ function checkTimeBasedMilestones() {
     // Check for time milestones and show messages
     if (state.remainingSeconds === 900 && state.lastMilestoneTime !== 900) { // 15 min (5 min done)
         state.lastMilestoneTime = 900;
-        playSound(elements.audioMilestone);
         showMotivationalMessage(getRandomMessage(motivationalMessages.quarter));
     } else if (state.remainingSeconds === 600 && state.lastMilestoneTime !== 600) { // 10 min (halfway)
         state.lastMilestoneTime = 600;
-        playSound(elements.audioMilestone);
         showMotivationalMessage(getRandomMessage(motivationalMessages.mid));
     } else if (state.remainingSeconds === 300 && state.lastMilestoneTime !== 300) { // 5 min (15 min done)
         state.lastMilestoneTime = 300;
-        playSound(elements.audioMilestone);
         showMotivationalMessage(getRandomMessage(motivationalMessages.threequarter));
     } else if (state.remainingSeconds === 60 && state.lastMilestoneTime !== 60) { // 1 min
         state.lastMilestoneTime = 60;
-        playSound(elements.audioMilestone);
         showMotivationalMessage(getRandomMessage(motivationalMessages.final));
     }
 
@@ -461,11 +419,7 @@ function incrementRep() {
     updateRepCounter();
     updateMetrics();
 
-    // Haptic feedback - short vibration on each rep
-    hapticFeedback(10);
-
-    // Play sound and show animation
-    playSound(elements.audioBeep);
+    // Show animation
     elements.repNumber.classList.add('celebrating');
     setTimeout(() => elements.repNumber.classList.remove('celebrating'), 500);
 
@@ -483,17 +437,9 @@ function checkRepMilestones() {
     for (const milestone of milestones) {
         if (state.reps === milestone && state.lastMilestoneRep < milestone) {
             state.lastMilestoneRep = milestone;
-            playSound(elements.audioSuccess);
             showMotivationalMessage(motivationalMessages.repMilestones[milestone]);
             elements.countButton.classList.add('celebrating');
             setTimeout(() => elements.countButton.classList.remove('celebrating'), 500);
-
-            // Haptic feedback pattern for milestones - double pulse
-            if (milestone >= 100) {
-                hapticFeedback([50, 100, 50]); // Stronger pattern for major milestones
-            } else {
-                hapticFeedback([30, 50, 30]); // Medium pattern
-            }
 
             // Extra celebration for major milestones
             if (milestone >= 100) {
@@ -565,40 +511,6 @@ function showMotivationalMessage(message) {
 
 function getRandomMessage(messages) {
     return messages[Math.floor(Math.random() * messages.length)];
-}
-
-function playSound(audioElement) {
-    audioElement.currentTime = 0;
-    audioElement.play().catch(err => {
-        // Silently handle audio errors (user may not have interacted yet)
-        console.log('Audio playback prevented:', err.message);
-    });
-}
-
-// ==========================================
-// Stick Figure Animation Functions
-// ==========================================
-
-function startBurpeeAnimation() {
-    // Animate burpee motion: standing -> down -> standing
-    let isDown = false;
-
-    state.burpeeAnimationInterval = setInterval(() => {
-        if (isDown) {
-            elements.stickFigure.classList.remove('burpee-down');
-        } else {
-            elements.stickFigure.classList.add('burpee-down');
-        }
-        isDown = !isDown;
-    }, 1000); // Complete cycle every 2 seconds
-}
-
-function stopBurpeeAnimation() {
-    if (state.burpeeAnimationInterval) {
-        clearInterval(state.burpeeAnimationInterval);
-        state.burpeeAnimationInterval = null;
-        elements.stickFigure.classList.remove('burpee-down');
-    }
 }
 
 // ==========================================
@@ -1437,8 +1349,6 @@ function showCompletionModal() {
                 <div style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.7); text-align: center; margin-top: 6px;">Previous record: ${record.recordReps} reps</div>
             </div>
         `;
-        // Haptic celebration for new record!
-        hapticFeedback([100, 50, 100, 50, 100]);
     } else if (record) {
         const diff = record.recordReps - record.currentReps;
         recordHTML = `
