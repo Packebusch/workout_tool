@@ -1,4 +1,4 @@
-const CACHE_NAME = 'workout-tracker-v2.0.6';
+const CACHE_NAME = 'workout-tracker-v2.0.7';
 const urlsToCache = [
   '/workout_tool/',
   '/workout_tool/index.html',
@@ -21,6 +21,13 @@ const urlsToCache = [
   '/workout_tool/src/utils/dateUtils.js',
   '/workout_tool/src/utils/calculations.js'
 ];
+
+// Listen for skip waiting message
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
 
 // Install event - cache assets
 self.addEventListener('install', (event) => {

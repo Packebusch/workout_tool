@@ -545,17 +545,20 @@ if ('serviceWorker' in navigator) {
             .then((registration) => {
                 console.log('Service Worker registered:', registration.scope);
 
-                // Check for updates every 60 seconds
+                // Check for updates immediately and every 10 seconds
+                registration.update();
                 setInterval(() => {
                     registration.update();
-                }, 60000);
+                }, 10000);
 
                 // Handle updates
                 registration.addEventListener('updatefound', () => {
                     const newWorker = registration.installing;
                     newWorker.addEventListener('statechange', () => {
                         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            console.log('New version available - please reload');
+                            console.log('New version available - reloading...');
+                            // Tell the new worker to skip waiting and take over
+                            newWorker.postMessage({ type: 'SKIP_WAITING' });
                         }
                     });
                 });
@@ -569,6 +572,7 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (!refreshing) {
                 refreshing = true;
+                console.log('Controller changed - reloading page');
                 window.location.reload();
             }
         });
