@@ -177,10 +177,18 @@ class WorkoutApp {
         // Chart period buttons
         document.querySelectorAll('.chart-period-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.chart-period-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
+                e.preventDefault();
+                e.stopPropagation();
 
-                this.currentChartPeriod = parseInt(e.target.dataset.period);
+                // Use currentTarget instead of target for mobile compatibility
+                const clickedButton = e.currentTarget;
+
+                // Update active state
+                document.querySelectorAll('.chart-period-btn').forEach(b => b.classList.remove('active'));
+                clickedButton.classList.add('active');
+
+                // Update chart
+                this.currentChartPeriod = parseInt(clickedButton.dataset.period);
                 this.#renderChart();
             });
         });
