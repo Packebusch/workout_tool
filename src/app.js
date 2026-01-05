@@ -187,9 +187,13 @@ class WorkoutApp {
                 document.querySelectorAll('.chart-period-btn').forEach(b => b.classList.remove('active'));
                 clickedButton.classList.add('active');
 
-                // Update chart
-                this.currentChartPeriod = parseInt(clickedButton.dataset.period);
-                this.#renderChart();
+                // Update chart period and clear cache to force re-render
+                const newPeriod = parseInt(clickedButton.dataset.period);
+                if (newPeriod !== this.currentChartPeriod) {
+                    this.currentChartPeriod = newPeriod;
+                    this.chartService.clearCache();
+                    this.#renderChart();
+                }
             });
         });
     }

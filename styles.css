@@ -355,10 +355,11 @@ header h1 {
 }
 
 .count-button:disabled {
-    opacity: 0.3;
+    opacity: 0.15;
     cursor: not-allowed;
-    background: var(--peloton-gray);
+    background: var(--peloton-dark-gray);
     box-shadow: none;
+    transform: scale(0.98);
 }
 
 .count-button.celebrating {
