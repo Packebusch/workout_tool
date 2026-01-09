@@ -258,6 +258,7 @@ header h1 {
 
 .progress-bar {
     height: 100%;
+    width: 0%;
     background: linear-gradient(90deg, var(--peloton-red) 0%, #FF6B00 100%);
     transition: width 0.5s ease;
     border-radius: 10px;
