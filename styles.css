@@ -28,6 +28,7 @@ body {
     padding: 20px;
     -webkit-user-select: none;
     user-select: none;
+    overflow-x: hidden;
 }
 
 .container {
@@ -345,6 +346,8 @@ header h1 {
     text-transform: uppercase;
     letter-spacing: 1px;
     box-shadow: 0 4px 16px rgba(225, 82, 61, 0.4);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .count-button:hover:not(:disabled) {
@@ -410,6 +413,8 @@ header h1 {
     gap: 4px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .quick-count-btn:hover:not(:disabled) {
@@ -1134,6 +1139,10 @@ header h1 {
     body {
         padding: 10px;
         align-items: flex-start;
+        overflow-y: auto;
+        height: 100vh;
+        position: fixed;
+        width: 100%;
     }
 
     .container {
@@ -1161,6 +1170,22 @@ header h1 {
         font-size: 1rem;
         padding: 28px 20px;
         height: 100px;
+        transition: none;
+    }
+
+    .count-button:hover:not(:disabled),
+    .count-button:active:not(:disabled) {
+        transform: none;
+        box-shadow: 0 4px 16px rgba(225, 82, 61, 0.4);
+    }
+
+    .quick-count-btn {
+        transition: none;
+    }
+
+    .quick-count-btn:hover:not(:disabled),
+    .quick-count-btn:active:not(:disabled) {
+        transform: none;
     }
 
     .motivation-message {
