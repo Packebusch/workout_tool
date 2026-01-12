@@ -137,7 +137,7 @@ class WorkoutApp {
             const confirmed = confirm('Discard this workout without saving?');
             if (confirmed) {
                 this.historyUI.closeCompletionModal();
-                this.#resetWorkout();
+                this.#resetWorkout(true); // Skip confirmation, already confirmed above
             }
         });
     }
@@ -256,13 +256,16 @@ class WorkoutApp {
     /**
      * Reset workout
      */
-    #resetWorkout() {
-        const state = this.stateManager.getState();
-        const confirmed = state.reps > 0 || state.remainingSeconds < state.totalSeconds
-            ? confirm('Are you sure you want to reset? Current progress will be lost.')
-            : true;
+    #resetWorkout(skipConfirmation = false) {
+        // Only ask for confirmation if manually resetting during an active workout
+        if (!skipConfirmation) {
+            const state = this.stateManager.getState();
+            const confirmed = state.reps > 0 || state.remainingSeconds < state.totalSeconds
+                ? confirm('Are you sure you want to reset? Current progress will be lost.')
+                : true;
 
-        if (!confirmed) return;
+            if (!confirmed) return;
+        }
 
         this.timerService.stop();
         this.wakeLockService.release();
@@ -432,7 +435,7 @@ class WorkoutApp {
         StreakService.updateStreak();
 
         this.historyUI.closeCompletionModal();
-        this.#resetWorkout();
+        this.#resetWorkout(true); // Skip confirmation, workout already saved
         this.#updateStreak();
 
         // Show week summary
