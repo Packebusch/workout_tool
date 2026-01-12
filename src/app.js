@@ -83,14 +83,22 @@ class WorkoutApp {
 
         // Rep counter
         this.ui.getElement('countButton').addEventListener('click', () => this.#incrementRep());
+        this.ui.getElement('count5Button').addEventListener('click', () => this.#addReps(5));
+        this.ui.getElement('count10Button').addEventListener('click', () => this.#addReps(10));
 
-        // Keyboard support (spacebar)
+        // Keyboard support
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' &&
-                !this.stateManager.get('isPaused') &&
-                this.stateManager.get('isRunning')) {
-                e.preventDefault();
-                this.#incrementRep();
+            if (!this.stateManager.get('isPaused') && this.stateManager.get('isRunning')) {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    this.#incrementRep();
+                } else if (e.code === 'Digit5' || e.code === 'Numpad5') {
+                    e.preventDefault();
+                    this.#addReps(5);
+                } else if (e.code === 'Digit0' || e.code === 'Numpad0') {
+                    e.preventDefault();
+                    this.#addReps(10);
+                }
             }
         });
 
@@ -280,6 +288,34 @@ class WorkoutApp {
 
         // Increment rep immediately (no delay)
         this.stateManager.incrementReps();
+
+        // Update rep counter immediately
+        const reps = this.stateManager.get('reps');
+        this.ui.updateRepCounter(reps);
+
+        // Check milestones (lightweight check)
+        this.workoutService.checkRepMilestones();
+
+        // Batch expensive UI updates using requestAnimationFrame
+        if (!this.pendingUIUpdate) {
+            this.pendingUIUpdate = true;
+            requestAnimationFrame(() => {
+                this.#updateMetrics();
+                this.pendingUIUpdate = false;
+            });
+        }
+    }
+
+    /**
+     * Add multiple reps at once
+     */
+    #addReps(count) {
+        if (!this.stateManager.get('isRunning') || this.stateManager.get('isPaused')) {
+            return;
+        }
+
+        // Add reps immediately (no delay)
+        this.stateManager.addReps(count);
 
         // Update rep counter immediately
         const reps = this.stateManager.get('reps');

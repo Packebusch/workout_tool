@@ -20,6 +20,8 @@ export class UIController {
             progressBar: document.getElementById('progressBar'),
             repNumber: document.getElementById('repNumber'),
             countButton: document.getElementById('countButton'),
+            count5Button: document.getElementById('count5Button'),
+            count10Button: document.getElementById('count10Button'),
             motivationMessage: document.getElementById('motivationMessage'),
             calorieDisplay: document.getElementById('calorieDisplay'),
             startBtn: document.getElementById('startBtn'),
@@ -165,6 +167,8 @@ export class UIController {
                 this.#elements.startBtn.disabled = true;
                 this.#elements.pauseBtn.disabled = false;
                 this.#elements.countButton.disabled = false;
+                this.#elements.count5Button.disabled = false;
+                this.#elements.count10Button.disabled = false;
                 this.#elements.configSection.style.display = 'none';
                 if (this.#elements.aboutSection) {
                     this.#elements.aboutSection.style.display = 'none';
@@ -174,11 +178,15 @@ export class UIController {
             case 'paused':
                 this.#elements.pauseBtn.textContent = 'Resume';
                 this.#elements.countButton.disabled = true;
+                this.#elements.count5Button.disabled = true;
+                this.#elements.count10Button.disabled = true;
                 break;
 
             case 'resumed':
                 this.#elements.pauseBtn.textContent = 'Pause';
                 this.#elements.countButton.disabled = false;
+                this.#elements.count5Button.disabled = false;
+                this.#elements.count10Button.disabled = false;
                 break;
 
             case 'reset':
@@ -186,6 +194,8 @@ export class UIController {
                 this.#elements.pauseBtn.disabled = true;
                 this.#elements.pauseBtn.textContent = 'Pause';
                 this.#elements.countButton.disabled = true;
+                this.#elements.count5Button.disabled = true;
+                this.#elements.count10Button.disabled = true;
                 this.#elements.configSection.style.display = 'block';
                 if (this.#elements.aboutSection) {
                     this.#elements.aboutSection.style.display = 'block';

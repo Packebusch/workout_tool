@@ -93,9 +93,20 @@ export class HistoryService {
 
         // Calculate stats for each type
         return Object.entries(byType).map(([type, sessions]) => {
+            // Calculate average reps per minute (normalized)
+            const totalRepsPerMin = sessions.reduce((sum, s) => {
+                const minutes = s.duration / 60;
+                return sum + (s.reps / minutes);
+            }, 0);
+            const avgRepsPerMin = totalRepsPerMin / sessions.length;
+
+            // Best reps per minute
+            const bestRepsPerMin = Math.max(...sessions.map(s => s.reps / (s.duration / 60)));
+
+            // For display, also calculate average total reps (but this is for context only)
             const totalReps = sessions.reduce((sum, s) => sum + s.reps, 0);
             const avgReps = Math.round(totalReps / sessions.length);
-            const bestReps = Math.max(...sessions.map(s => s.reps));
+
             const trend = calculateTrend(sessions);
 
             const lastWeek = this.#getWeekStats(sessions, 2);
@@ -105,8 +116,9 @@ export class HistoryService {
             return {
                 type,
                 count: sessions.length,
-                avgReps,
-                bestReps,
+                avgReps,  // For display context
+                avgRepsPerMin: avgRepsPerMin.toFixed(1),  // Normalized metric
+                bestRepsPerMin: bestRepsPerMin.toFixed(1),  // Normalized best
                 trend,
                 weekComparison
             };

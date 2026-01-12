@@ -156,6 +156,14 @@ export class StateManager {
     }
 
     /**
+     * Add multiple reps at once (convenience method - optimized for performance)
+     */
+    addReps(count) {
+        // Direct update without validation/notification overhead for performance
+        this.#state.reps += count;
+    }
+
+    /**
      * Decrement remaining time (convenience method)
      */
     decrementTime() {

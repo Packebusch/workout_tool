@@ -382,6 +382,60 @@ header h1 {
     letter-spacing: 0;
 }
 
+/* Quick Count Buttons */
+.quick-count-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.quick-count-btn {
+    flex: 1;
+    padding: 16px;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--peloton-white);
+    background: var(--peloton-gray);
+    border: 2px solid var(--peloton-light-gray);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.quick-count-btn:hover:not(:disabled) {
+    border-color: var(--peloton-red);
+    background: rgba(225, 82, 61, 0.1);
+}
+
+.quick-count-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.quick-count-btn:disabled {
+    opacity: 0.3 !important;
+    cursor: not-allowed;
+    background: var(--peloton-dark-gray) !important;
+    border-color: var(--peloton-gray) !important;
+}
+
+.quick-count-text {
+    font-size: 1.1rem;
+    font-weight: 900;
+}
+
+.quick-count-hint {
+    font-size: 0.65rem;
+    opacity: 0.7;
+    font-weight: 600;
+}
+
 /* Stick Figure */
 .stick-figure-section {
     display: flex;
@@ -487,7 +541,7 @@ header h1 {
 
 .motivation-message {
     text-align: center;
-    min-height: 60px;
+    height: 90px;
     padding: 16px 20px;
     background: var(--peloton-gray);
     border-radius: 16px;
@@ -500,6 +554,7 @@ header h1 {
     color: var(--peloton-white);
     white-space: pre-line;
     border-left: 4px solid var(--peloton-red);
+    overflow: hidden;
 }
 
 /* Metrics */

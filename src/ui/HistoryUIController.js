@@ -127,8 +127,8 @@ export class HistoryUIController {
                     </div>
                     <div style="display: flex; gap: 15px; font-size: 0.75rem; flex-wrap: wrap;">
                         <span style="color: rgba(255, 255, 255, 0.7);">${stat.count} sessions</span>
-                        <span style="color: rgba(255, 255, 255, 0.7);">Avg: ${stat.avgReps}</span>
-                        <span style="color: rgba(255, 255, 255, 0.7);">Best: ${stat.bestReps}</span>
+                        <span style="color: rgba(255, 255, 255, 0.7);">Avg: ${stat.avgRepsPerMin} reps/min</span>
+                        <span style="color: rgba(255, 255, 255, 0.7);">Best: ${stat.bestRepsPerMin} reps/min</span>
                         ${weekHTML ? `<span>${weekHTML}</span>` : ''}
                     </div>
                 </div>
