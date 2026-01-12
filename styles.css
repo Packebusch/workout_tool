@@ -6,102 +6,41 @@
     box-sizing: border-box;
 }
 
-/* Theme Variables - Modern & Elegant (2025 Design Standards) */
+/* Theme Variables */
 :root {
-    /* Peloton Theme - Refined Energy & Power */
-    --primary: #E74C3C;
-    --primary-light: #FF6B6B;
-    --primary-dark: #C0392B;
-    --primary-glow: rgba(231, 76, 60, 0.25);
-
-    /* Material Design 3 Background Hierarchy */
-    --bg-black: #121212;
-    --bg-dark: #1E1E1E;
-    --bg-medium: #2D2D2D;
-    --bg-light: #3D3D3D;
-    --bg-lighter: #4D4D4D;
-
-    /* WCAG AA+ Compliant Text Colors */
-    --text-primary: #FFFFFF;
-    --text-secondary: #E0E0E0;
-    --text-tertiary: #B0B0B0;
-
-    /* Premium Gradients */
-    --gradient-primary: linear-gradient(135deg, #FF6B6B 0%, #E74C3C 50%, #C0392B 100%);
-    --gradient-button: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 50%, var(--primary-dark) 100%);
-    --gradient-ambient: linear-gradient(135deg, rgba(231, 76, 60, 0.15) 0%, rgba(231, 76, 60, 0.05) 100%);
-
-    /* Accent Colors */
-    --accent-success: #2ECC71;
-    --accent-warning: #F39C12;
+    /* Default: Peloton Theme */
+    --primary: #E1523D;
+    --primary-dark: #C93526;
+    --bg-black: #0B0B0B;
+    --bg-dark: #1A1A1A;
+    --bg-medium: #2A2A2A;
+    --bg-light: #4A4A4A;
+    --text-white: #FFFFFF;
+    --text-off-white: #F5F5F5;
 }
 
-/* Sunset Theme - Sophisticated Warmth & Golden Hour */
+/* Sunset Theme */
 [data-theme="sunset"] {
     --primary: #FF6B35;
-    --primary-light: #FF8856;
-    --primary-dark: #E85A2A;
-    --primary-glow: rgba(255, 107, 53, 0.3);
-
-    /* Secondary Accents */
-    --secondary: #FFA142;
-    --secondary-dark: #F2994A;
-    --tertiary: #D19B6B;
-
-    /* Warm-tinted Background Hierarchy */
+    --primary-dark: #E85D2A;
     --bg-black: #1A0F0A;
     --bg-dark: #2D1810;
     --bg-medium: #3D2418;
-    --bg-light: #4D3428;
-    --bg-lighter: #5D4438;
-
-    /* Warm Text Colors */
-    --text-primary: #FFF5F0;
-    --text-secondary: #FFE8DC;
-    --text-tertiary: #CCAA99;
-
-    /* Premium Sunset Gradients */
-    --gradient-primary: linear-gradient(135deg, #FF6B35 0%, #FFA142 50%, #F2994A 100%);
-    --gradient-button: linear-gradient(135deg, #FF8856 0%, #FF6B35 50%, #E85A2A 100%);
-    --gradient-ambient: linear-gradient(135deg, rgba(255, 107, 53, 0.15) 0%, rgba(255, 161, 66, 0.1) 100%);
-
-    /* Accent Colors */
-    --accent-success: #52C77A;
-    --accent-warning: #FFB84D;
+    --bg-light: #5D3A28;
+    --text-white: #FFF5F0;
+    --text-off-white: #FFE8DC;
 }
 
-/* Ocean Theme - Refined Calm & Clarity */
+/* Ocean Theme */
 [data-theme="ocean"] {
-    --primary: #00D4AA;
-    --primary-light: #26E5C3;
-    --primary-dark: #00B894;
-    --primary-glow: rgba(0, 212, 170, 0.3);
-
-    /* Secondary Accents */
-    --secondary: #0984E3;
-    --secondary-dark: #0766B3;
-    --tertiary: #74B9FF;
-
-    /* Cool-tinted Background Hierarchy */
+    --primary: #00D4FF;
+    --primary-dark: #00B8E6;
     --bg-black: #0A1520;
     --bg-dark: #0F1F2E;
     --bg-medium: #1A2A3A;
-    --bg-light: #253A4E;
-    --bg-lighter: #304A5E;
-
-    /* Cool Text Colors */
-    --text-primary: #F0FAFF;
-    --text-secondary: #E0F4FF;
-    --text-tertiary: #99CCDD;
-
-    /* Premium Ocean Gradients */
-    --gradient-primary: linear-gradient(135deg, #00D4AA 0%, #0984E3 100%);
-    --gradient-button: linear-gradient(135deg, #26E5C3 0%, #00D4AA 50%, #00B894 100%);
-    --gradient-ambient: linear-gradient(135deg, rgba(0, 212, 170, 0.15) 0%, rgba(9, 132, 227, 0.1) 100%);
-
-    /* Accent Colors */
-    --accent-success: #00E5AA;
-    --accent-warning: #74B9FF;
+    --bg-light: #2A3F52;
+    --text-white: #F0FAFF;
+    --text-off-white: #E0F4FF;
 }
 
 body {
@@ -124,16 +63,8 @@ body {
     background: var(--bg-dark);
     border-radius: 24px;
     padding: 40px 32px;
-    box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.5),
-        0 0 1px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     position: relative;
-
-    /* Subtle gradient overlay for depth */
-    background-image:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%),
-        var(--bg-dark);
-    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* Header */
@@ -206,19 +137,6 @@ header h1 {
     background: var(--bg-medium);
     border-radius: 16px;
     border-left: 4px solid var(--primary);
-
-    /* Premium elevation */
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-left: 4px solid var(--primary);
-    box-shadow:
-        0 4px 16px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.03);
-
-    /* Subtle gradient overlay */
-    background-image:
-        var(--gradient-ambient),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%),
-        var(--bg-medium);
 }
 
 .about-content {
@@ -403,24 +321,22 @@ header h1 {
 .progress-bar {
     height: 100%;
     width: 0%;
-    background: var(--gradient-primary);
+    background: linear-gradient(90deg, var(--primary) 0%, #FF6B00 100%);
     transition: width 0.5s ease;
     border-radius: 10px;
-    box-shadow: 0 0 10px var(--primary-glow);
 }
 
 .progress-bar.mid {
-    background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary) 100%);
+    background: linear-gradient(90deg, #FFA500 0%, #FF8C00 100%);
 }
 
 .progress-bar.final {
-    background: var(--gradient-button);
+    background: linear-gradient(90deg, #FF6B00 0%, var(--primary) 100%);
 }
 
 .progress-bar.critical {
-    background: var(--gradient-button);
+    background: var(--primary);
     animation: pulse 1s infinite;
-    box-shadow: 0 0 20px var(--primary-glow);
 }
 
 @keyframes pulse {
@@ -470,18 +386,18 @@ header h1 {
     50% { transform: scale(1.1); color: var(--primary); }
 }
 
-/* Count Button - Premium Modern Style */
+/* Count Button - Peloton Style */
 .count-button {
     width: 100%;
     padding: 24px;
     font-size: 1.2rem;
     font-weight: 900;
-    color: var(--text-primary);
-    background: var(--gradient-button);
+    color: var(--text-white);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     border: none;
     border-radius: 16px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
     height: 80px;
     display: flex;
     flex-direction: column;
@@ -490,34 +406,19 @@ header h1 {
     gap: 6px;
     text-transform: uppercase;
     letter-spacing: 1px;
-
-    /* Modern elevation with glow (not shadow) */
-    box-shadow:
-        0 4px 20px var(--primary-glow),
-        0 0 40px rgba(231, 76, 60, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-
-    /* Subtle text depth */
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-
+    box-shadow: 0 4px 16px rgba(225, 82, 61, 0.4);
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
 }
 
 .count-button:hover:not(:disabled) {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow:
-        0 6px 30px var(--primary-glow),
-        0 0 60px rgba(231, 76, 60, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(225, 82, 61, 0.6);
 }
 
 .count-button:active:not(:disabled) {
-    transform: translateY(0) scale(0.98);
-    box-shadow:
-        0 2px 10px var(--primary-glow),
-        0 0 20px rgba(231, 76, 60, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(225, 82, 61, 0.4);
 }
 
 .count-button:disabled {
@@ -559,12 +460,12 @@ header h1 {
     padding: 16px;
     font-size: 1rem;
     font-weight: 800;
-    color: var(--text-primary);
+    color: var(--text-white);
     background: var(--bg-medium);
     border: 2px solid var(--bg-light);
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
     height: 64px;
     display: flex;
     flex-direction: column;
@@ -575,28 +476,15 @@ header h1 {
     letter-spacing: 0.5px;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-
-    /* Subtle elevation */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-
-    /* Gradient overlay for depth */
-    background-image:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%),
-        var(--bg-medium);
 }
 
 .quick-count-btn:hover:not(:disabled) {
     border-color: var(--primary);
-    background: var(--bg-light);
-    box-shadow:
-        0 4px 12px var(--primary-glow),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    transform: translateY(-1px);
+    background: rgba(225, 82, 61, 0.1);
 }
 
 .quick-count-btn:active:not(:disabled) {
-    transform: translateY(0) scale(0.98);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    transform: scale(0.95);
 }
 
 .quick-count-btn:disabled {
@@ -732,21 +620,10 @@ header h1 {
     font-size: 0.95rem;
     line-height: 1.5;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--text-white);
     white-space: pre-line;
     border-left: 4px solid var(--primary);
     overflow: hidden;
-
-    /* Premium styling */
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-left: 4px solid var(--primary);
-    box-shadow:
-        0 2px 12px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.03);
-    background-image:
-        var(--gradient-ambient),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%),
-        var(--bg-medium);
 }
 
 /* Metrics */
