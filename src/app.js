@@ -86,21 +86,18 @@ class WorkoutApp {
         this.ui.getElement('count5Button').addEventListener('click', () => this.#addReps(5));
         this.ui.getElement('count10Button').addEventListener('click', () => this.#addReps(10));
 
-        // Keyboard support
-        document.addEventListener('keydown', (e) => {
-            if (!this.stateManager.get('isPaused') && this.stateManager.get('isRunning')) {
-                if (e.code === 'Space') {
-                    e.preventDefault();
-                    this.#incrementRep();
-                } else if (e.code === 'Digit5' || e.code === 'Numpad5') {
-                    e.preventDefault();
-                    this.#addReps(5);
-                } else if (e.code === 'Digit0' || e.code === 'Numpad0') {
-                    e.preventDefault();
-                    this.#addReps(10);
+        // Keyboard support (desktop only - disable on mobile to prevent jumping)
+        const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (!isMobile) {
+            document.addEventListener('keydown', (e) => {
+                if (!this.stateManager.get('isPaused') && this.stateManager.get('isRunning')) {
+                    if (e.code === 'Space') {
+                        e.preventDefault();
+                        this.#incrementRep();
+                    }
                 }
-            }
-        });
+            });
+        }
 
         // Difficulty change
         this.ui.getElement('difficulty').addEventListener('change', () => {
