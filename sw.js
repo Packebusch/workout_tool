@@ -1,4 +1,4 @@
-const CACHE_NAME = 'workout-tracker-v2.1.4';
+const CACHE_NAME = 'workout-tracker-v2.2.0';
 const urlsToCache = [
   '/workout_tool/',
   '/workout_tool/index.html',
@@ -16,6 +16,7 @@ const urlsToCache = [
   '/workout_tool/src/services/StreakService.js',
   '/workout_tool/src/services/ChartService.js',
   '/workout_tool/src/services/WakeLockService.js',
+  '/workout_tool/src/services/ThemeService.js',
   '/workout_tool/src/ui/UIController.js',
   '/workout_tool/src/ui/HistoryUIController.js',
   '/workout_tool/src/utils/dateUtils.js',
