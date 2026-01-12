@@ -135,10 +135,13 @@
                 <button class="control-btn reset-btn" id="resetBtn">Reset</button>
             </section>
 
-            <!-- History Toggle -->
+            <!-- History and Coach Toggle -->
             <section class="history-toggle-section">
                 <button class="history-toggle-btn" id="historyToggleBtn">
                     📜 View History
+                </button>
+                <button class="coach-toggle-btn" id="coachToggleBtn">
+                    🎯 Personal Coach
                 </button>
             </section>
         </main>
@@ -180,6 +183,48 @@
             </div>
         </aside>
 
+        <!-- Coach Panel (Hidden by default) -->
+        <aside class="coach-panel" id="coachPanel">
+            <div class="coach-header">
+                <h2>Your Personal Coach</h2>
+                <button class="close-coach-btn" id="closeCoachBtn">✕</button>
+            </div>
+
+            <div class="coach-content">
+                <!-- Daily Recommendation Card -->
+                <section class="coach-recommendation" id="coachRecommendation">
+                    <h3>Today's Recommendation</h3>
+                    <div id="recommendationContent"></div>
+                </section>
+
+                <!-- Tab Navigation -->
+                <div class="coach-tabs">
+                    <button class="coach-tab active" data-tab="goals">Goals</button>
+                    <button class="coach-tab" data-tab="soreness">Soreness</button>
+                    <button class="coach-tab" data-tab="insights">Insights</button>
+                </div>
+
+                <!-- Goals Tab -->
+                <div class="coach-tab-content active" id="goalsTab">
+                    <button class="create-goal-btn" id="createGoalBtn">+ New Goal</button>
+                    <div id="goalsList"></div>
+                </div>
+
+                <!-- Soreness Tab -->
+                <div class="coach-tab-content" id="sorenessTab">
+                    <button class="log-soreness-btn" id="logSorenessBtn">Log Soreness</button>
+                    <div id="sorenessHistory"></div>
+                </div>
+
+                <!-- Insights Tab -->
+                <div class="coach-tab-content" id="insightsTab">
+                    <div id="performanceInsights"></div>
+                    <div id="recoveryInsights"></div>
+                    <div id="achievementsList"></div>
+                </div>
+            </div>
+        </aside>
+
         <!-- Completion Modal -->
         <div class="modal" id="completionModal">
             <div class="modal-content">
@@ -187,10 +232,125 @@
                 <div class="completion-stats" id="completionStats">
                     <!-- Will be populated by JavaScript -->
                 </div>
+                <div class="goal-suggestion-card" id="goalSuggestionCard" style="display: none;">
+                    <!-- Will be populated by JavaScript -->
+                </div>
                 <button class="modal-btn" id="saveWorkoutBtn">Save & Close</button>
                 <button class="modal-btn secondary" id="discardWorkoutBtn">Discard</button>
             </div>
         </div>
+
+        <!-- Goal Creation Modal -->
+        <div class="modal" id="goalModal">
+            <div class="modal-content">
+                <h3>Create New Goal</h3>
+                <form id="goalForm">
+                    <div class="form-group">
+                        <label>Workout Type:</label>
+                        <select id="goalWorkoutType" required>
+                            <option value="burpees">Burpees</option>
+                            <option value="rows">Rows</option>
+                            <option value="pullups">Pull-ups</option>
+                            <option value="squats">Squats</option>
+                            <option value="jumping-jacks">Jumping Jacks</option>
+                            <option value="mountain-climbers">Mountain Climbers</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Difficulty:</label>
+                        <select id="goalDifficulty" required>
+                            <option value="beginner">Beginner (10 min)</option>
+                            <option value="intermediate">Intermediate (15 min)</option>
+                            <option value="advanced">Advanced (20 min)</option>
+                            <option value="elite">Elite (30 min)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Target Reps:</label>
+                        <input type="number" id="goalTargetReps" min="1" required>
+                        <small class="form-hint" id="goalHint"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Target Time (minutes):</label>
+                        <input type="number" id="goalTargetTime" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Deadline (optional):</label>
+                        <input type="date" id="goalDeadline">
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="submit" class="modal-btn">Create Goal</button>
+                        <button type="button" class="modal-btn secondary" id="cancelGoalBtn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Soreness Logging Modal -->
+        <div class="modal" id="sorenessModal">
+            <div class="modal-content">
+                <h3>Log Muscle Soreness</h3>
+                <form id="sorenessForm">
+                    <div class="form-group">
+                        <label>Overall Soreness Level:</label>
+                        <div class="soreness-slider">
+                            <input type="range" id="overallSoreness" min="0" max="5" value="0">
+                            <span class="soreness-level-text" id="sorenessLevelText">None</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Affected Muscle Groups:</label>
+                        <div class="muscle-group-grid">
+                            <div class="muscle-group-item">
+                                <label>💪 Chest</label>
+                                <input type="range" min="0" max="5" value="0" data-muscle="chest">
+                            </div>
+                            <div class="muscle-group-item">
+                                <label>🦴 Back</label>
+                                <input type="range" min="0" max="5" value="0" data-muscle="back">
+                            </div>
+                            <div class="muscle-group-item">
+                                <label>🏋️ Shoulders</label>
+                                <input type="range" min="0" max="5" value="0" data-muscle="shoulders">
+                            </div>
+                            <div class="muscle-group-item">
+                                <label>💪 Arms</label>
+                                <input type="range" min="0" max="5" value="0" data-muscle="arms">
+                            </div>
+                            <div class="muscle-group-item">
+                                <label>🎯 Core</label>
+                                <input type="range" min="0" max="5" value="0" data-muscle="core">
+                            </div>
+                            <div class="muscle-group-item">
+                                <label>🦵 Legs</label>
+                                <input type="range" min="0" max="5" value="0" data-muscle="legs">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes (optional):</label>
+                        <textarea id="sorenessNotes" rows="3" placeholder="How are you feeling?"></textarea>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="submit" class="modal-btn">Log Soreness</button>
+                        <button type="button" class="modal-btn secondary" id="cancelSorenessBtn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Soreness Log Button (floating) -->
+        <button class="quick-soreness-btn" id="quickSorenessBtn" title="How sore are you?">
+            💪
+        </button>
 
         <!-- Footer -->
         <footer class="app-footer">

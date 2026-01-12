@@ -171,6 +171,17 @@ export class StorageManager {
                 streak: 0,
                 lastWorkoutDate: null,
                 longestStreak: 0
+            }),
+            goals: this.load(STORAGE_KEYS.GOALS, { goals: [] }),
+            soreness: this.load(STORAGE_KEYS.SORENESS, { entries: [], latestEntry: null }),
+            coachState: this.load(STORAGE_KEYS.COACH_STATE, {
+                lastRecommendation: null,
+                preferences: {
+                    notificationsEnabled: true,
+                    coachingStyle: 'balanced',
+                    reminderFrequency: 'daily'
+                },
+                achievements: []
             })
         };
     }
@@ -189,11 +200,27 @@ export class StorageManager {
                 throw new Error('Invalid import data: history.sessions must be an array');
             }
 
+            // Ensure new fields exist with defaults
+            if (!data.goals) data.goals = { goals: [] };
+            if (!data.soreness) data.soreness = { entries: [], latestEntry: null };
+            if (!data.coachState) data.coachState = {
+                lastRecommendation: null,
+                preferences: {
+                    notificationsEnabled: true,
+                    coachingStyle: 'balanced',
+                    reminderFrequency: 'daily'
+                },
+                achievements: []
+            };
+
             if (merge) {
                 return this.#mergeImportData(data);
             } else {
                 this.save(STORAGE_KEYS.HISTORY, data.history);
                 this.save(STORAGE_KEYS.STREAK, data.streak);
+                this.save(STORAGE_KEYS.GOALS, data.goals);
+                this.save(STORAGE_KEYS.SORENESS, data.soreness);
+                this.save(STORAGE_KEYS.COACH_STATE, data.coachState);
                 return { success: true, merged: false };
             }
         } catch (error) {
@@ -212,6 +239,17 @@ export class StorageManager {
                 streak: 0,
                 lastWorkoutDate: null,
                 longestStreak: 0
+            }),
+            goals: this.load(STORAGE_KEYS.GOALS, { goals: [] }),
+            soreness: this.load(STORAGE_KEYS.SORENESS, { entries: [], latestEntry: null }),
+            coachState: this.load(STORAGE_KEYS.COACH_STATE, {
+                lastRecommendation: null,
+                preferences: {
+                    notificationsEnabled: true,
+                    coachingStyle: 'balanced',
+                    reminderFrequency: 'daily'
+                },
+                achievements: []
             })
         };
 
@@ -248,14 +286,60 @@ export class StorageManager {
             }
         }
 
+        // Merge goals (avoid duplicates by id)
+        const existingGoalIds = new Set(existing.goals.goals.map(g => g.id));
+        const newGoals = importedData.goals.goals.filter(g => !existingGoalIds.has(g.id));
+        existing.goals.goals = [...existing.goals.goals, ...newGoals]
+            .sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate))
+            .slice(0, 30); // Keep max 30 most recent
+
+        // Merge soreness entries (avoid duplicates by id)
+        const existingSorenessIds = new Set(existing.soreness.entries.map(e => e.id));
+        const newSorenessEntries = importedData.soreness.entries.filter(e => !existingSorenessIds.has(e.id));
+        existing.soreness.entries = [...existing.soreness.entries, ...newSorenessEntries]
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+            .slice(0, 200); // Keep max 200 most recent entries
+
+        // Update latest soreness entry
+        if (existing.soreness.entries.length > 0) {
+            existing.soreness.latestEntry = {
+                timestamp: existing.soreness.entries[0].timestamp,
+                overallLevel: existing.soreness.entries[0].overallLevel,
+                affectedAreas: existing.soreness.entries[0].affectedAreas.map(a => a.area)
+            };
+        }
+
+        // Merge coach state - prefer imported if more recent
+        if (importedData.coachState.lastRecommendation &&
+            importedData.coachState.lastRecommendation.timestamp >
+            (existing.coachState.lastRecommendation?.timestamp || 0)) {
+            existing.coachState.lastRecommendation = importedData.coachState.lastRecommendation;
+        }
+
+        // Merge achievements (avoid duplicates)
+        const existingAchievements = new Set(existing.coachState.achievements.map(a =>
+            `${a.type}-${a.date}`
+        ));
+        const newAchievements = importedData.coachState.achievements.filter(a =>
+            !existingAchievements.has(`${a.type}-${a.date}`)
+        );
+        existing.coachState.achievements = [...existing.coachState.achievements, ...newAchievements]
+            .sort((a, b) => new Date(b.date) - new Date(a.date));
+
         // Save merged data
         this.save(STORAGE_KEYS.HISTORY, existing.history);
         this.save(STORAGE_KEYS.STREAK, mergedStreak);
+        this.save(STORAGE_KEYS.GOALS, existing.goals);
+        this.save(STORAGE_KEYS.SORENESS, existing.soreness);
+        this.save(STORAGE_KEYS.COACH_STATE, existing.coachState);
 
         return {
             success: true,
             merged: true,
-            newSessions: newSessions.length
+            newSessions: newSessions.length,
+            newGoals: newGoals.length,
+            newSorenessEntries: newSorenessEntries.length,
+            newAchievements: newAchievements.length
         };
     }
 }

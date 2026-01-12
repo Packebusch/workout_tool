@@ -4,6 +4,9 @@
 export const STORAGE_KEYS = {
     HISTORY: 'burpeeWorkoutHistory',
     STREAK: 'workoutStreak',
+    GOALS: 'workoutGoals',
+    SORENESS: 'sorenessLog',
+    COACH_STATE: 'coachState',
     VERSION: 1
 };
 
@@ -191,3 +194,107 @@ export const CHART_CONFIG = {
     POINT_RADIUS: 3.5,
     LINE_WIDTH: 2.5
 };
+
+// Soreness levels
+export const SORENESS_LEVELS = {
+    0: { name: 'None', color: '#00ffcc', emoji: '✓' },
+    1: { name: 'Mild', color: '#90EE90', emoji: '😊' },
+    2: { name: 'Moderate', color: '#FFD700', emoji: '😐' },
+    3: { name: 'Significant', color: '#FFA500', emoji: '😣' },
+    4: { name: 'Very Sore', color: '#FF6347', emoji: '😫' },
+    5: { name: 'Severe', color: '#FF0000', emoji: '🚨' }
+};
+
+// Muscle groups
+export const MUSCLE_GROUPS = {
+    chest: { name: 'Chest', icon: '💪' },
+    back: { name: 'Back', icon: '🦴' },
+    shoulders: { name: 'Shoulders', icon: '🏋️' },
+    arms: { name: 'Arms', icon: '💪' },
+    core: { name: 'Core', icon: '🎯' },
+    legs: { name: 'Legs', icon: '🦵' }
+};
+
+// Workout muscle impact
+export const WORKOUT_MUSCLE_IMPACT = {
+    burpees: {
+        primary: ['legs', 'chest', 'core'],
+        secondary: ['arms', 'shoulders'],
+        intensity: 5
+    },
+    rows: {
+        primary: ['back', 'arms'],
+        secondary: ['core'],
+        intensity: 4
+    },
+    pullups: {
+        primary: ['back', 'arms'],
+        secondary: ['core', 'shoulders'],
+        intensity: 5
+    },
+    squats: {
+        primary: ['legs'],
+        secondary: ['core'],
+        intensity: 4
+    },
+    'jumping-jacks': {
+        primary: ['legs', 'shoulders'],
+        secondary: ['core'],
+        intensity: 3
+    },
+    'mountain-climbers': {
+        primary: ['core', 'legs'],
+        secondary: ['shoulders', 'arms'],
+        intensity: 4
+    }
+};
+
+// Coach messages
+export const COACH_MESSAGES = {
+    restDay: [
+        "Your body needs recovery time. Rest is when you get stronger! 💪",
+        "Take a well-earned rest day. You've been crushing it! 🛌",
+        "Recovery is part of training. Your muscles will thank you! 🌟",
+        "Smart athletes know when to rest. Today is that day! 🧠"
+    ],
+    goalEncouragement: [
+        "You're making great progress toward your goal! 🎯",
+        "Keep pushing! Every rep gets you closer! 💪",
+        "Your dedication is impressive! Stay consistent! 🔥",
+        "You've got this! Your goal is within reach! ⭐"
+    ],
+    varietySuggestion: [
+        "Mix it up! Try a different workout to keep things fresh! 🔄",
+        "Let's work different muscles today for balanced fitness! ⚖️",
+        "Variety is key to well-rounded fitness! 🎨",
+        "Time to challenge different muscle groups! 🎯"
+    ],
+    sorenessAwareness: [
+        "I noticed you're sore. Let's work muscles that need less recovery! 🤔",
+        "Smart training means listening to your body! 🎯",
+        "Let's give those sore muscles a break today! 😌"
+    ],
+    goalSuggestion: [
+        "Based on your performance, here's your next challenge!",
+        "You're ready for the next level! Let's set a new goal!",
+        "Time to push your limits a bit further!",
+        "Your progress is impressive! Ready for more?"
+    ],
+    goalCompleted: [
+        "🎉 GOAL CRUSHED! You're absolutely unstoppable!",
+        "🏆 GOAL ACHIEVED! That's what champions are made of!",
+        "💪 YOU DID IT! What an incredible achievement!",
+        "⭐ GOAL COMPLETE! You're stronger than you think!"
+    ]
+};
+
+// Recovery thresholds
+export const RECOVERY_THRESHOLDS = {
+    sorenessRest: 3,
+    streakRest: 6,
+    intensityRest: 4.5,
+    minRecoveryHours: 24
+};
+
+// Goal milestones for celebrations
+export const GOAL_MILESTONES = [25, 50, 75, 90, 100];

@@ -10,9 +10,13 @@ import { StreakService } from './services/StreakService.js';
 import { ChartService } from './services/ChartService.js';
 import { WakeLockService } from './services/WakeLockService.js';
 import { ThemeService } from './services/ThemeService.js';
+import { GoalService } from './services/GoalService.js';
+import { SorenessService } from './services/SorenessService.js';
+import { CoachService } from './services/CoachService.js';
 import { UIController } from './ui/UIController.js';
 import { HistoryUIController } from './ui/HistoryUIController.js';
-import { DIFFICULTY_LEVELS, WORKOUT_CONFIGS, MOTIVATIONAL_MESSAGES } from './config/constants.js';
+import { CoachUIController } from './ui/CoachUIController.js';
+import { DIFFICULTY_LEVELS, WORKOUT_CONFIGS, MOTIVATIONAL_MESSAGES, SORENESS_LEVELS } from './config/constants.js';
 import { getRandomItem } from './utils/calculations.js';
 
 class WorkoutApp {
@@ -23,6 +27,7 @@ class WorkoutApp {
         // Initialize UI controllers
         this.ui = new UIController();
         this.historyUI = new HistoryUIController();
+        this.coachUI = new CoachUIController();
 
         // Initialize services
         this.timerService = new TimerService(this.stateManager, {
@@ -72,6 +77,9 @@ class WorkoutApp {
 
         // Initialize history panel handlers
         this.#setupHistoryHandlers();
+
+        // Initialize coach panel handlers
+        this.#setupCoachHandlers();
 
         console.log('Workout Tracker initialized!');
     }
@@ -151,6 +159,57 @@ class WorkoutApp {
                 this.#resetWorkout(true); // Skip confirmation, already confirmed above
             }
         });
+
+        // Goal suggestion handlers (event delegation)
+        document.getElementById('completionModal').addEventListener('click', (e) => {
+            if (e.target.id === 'acceptGoalBtn') {
+                this.#handleAcceptGoal();
+            } else if (e.target.id === 'modifyGoalBtn') {
+                this.#handleModifyGoal();
+            } else if (e.target.id === 'dismissGoalBtn') {
+                this.#handleDismissGoal();
+            }
+        });
+    }
+
+    /**
+     * Handle accepting coach goal suggestion
+     */
+    #handleAcceptGoal() {
+        if (this.pendingGoalSuggestion) {
+            GoalService.createGoalFromSuggestion(this.pendingGoalSuggestion);
+            this.coachUI.hideGoalSuggestion();
+            this.ui.showMotivationalMessage('Goal accepted! Let\'s crush it! 🎯');
+            this.pendingGoalSuggestion = null;
+        }
+    }
+
+    /**
+     * Handle modifying coach goal suggestion
+     */
+    #handleModifyGoal() {
+        if (this.pendingGoalSuggestion) {
+            // Pre-fill the goal form with suggestion
+            document.getElementById('goalWorkoutType').value = this.pendingGoalSuggestion.workoutType;
+            document.getElementById('goalDifficulty').value = this.pendingGoalSuggestion.difficulty;
+            document.getElementById('goalTargetReps').value = this.pendingGoalSuggestion.targetReps;
+            document.getElementById('goalTargetTime').value = this.pendingGoalSuggestion.targetDuration / 60;
+            if (this.pendingGoalSuggestion.deadline) {
+                document.getElementById('goalDeadline').value = this.pendingGoalSuggestion.deadline;
+            }
+
+            // Hide suggestion card and show goal modal
+            this.coachUI.hideGoalSuggestion();
+            this.coachUI.showGoalModal();
+        }
+    }
+
+    /**
+     * Handle dismissing coach goal suggestion
+     */
+    #handleDismissGoal() {
+        this.coachUI.hideGoalSuggestion();
+        this.pendingGoalSuggestion = null;
     }
 
     /**
@@ -212,6 +271,143 @@ class WorkoutApp {
                 }
             });
         });
+    }
+
+    /**
+     * Set up coach panel handlers
+     */
+    #setupCoachHandlers() {
+        // Toggle coach panel
+        this.ui.getElement('coachToggleBtn').addEventListener('click', () => {
+            const isOpen = this.coachUI.toggleCoachPanel();
+            if (isOpen) {
+                this.#renderCoachPanel();
+            }
+        });
+
+        document.getElementById('closeCoachBtn').addEventListener('click', () => {
+            this.coachUI.closeCoachPanel();
+        });
+
+        // Close on outside click
+        document.getElementById('coachPanel').addEventListener('click', (e) => {
+            if (e.target.id === 'coachPanel') {
+                this.coachUI.closeCoachPanel();
+            }
+        });
+
+        // Tab switching
+        document.querySelectorAll('.coach-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                this.coachUI.switchTab(e.target.dataset.tab);
+            });
+        });
+
+        // Create goal button
+        document.getElementById('createGoalBtn').addEventListener('click', () => {
+            this.coachUI.showGoalModal();
+        });
+
+        // Cancel goal button
+        document.getElementById('cancelGoalBtn').addEventListener('click', () => {
+            this.coachUI.hideGoalModal();
+        });
+
+        // Goal form submission
+        document.getElementById('goalForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const goalData = {
+                workoutType: document.getElementById('goalWorkoutType').value,
+                difficulty: document.getElementById('goalDifficulty').value,
+                targetReps: parseInt(document.getElementById('goalTargetReps').value),
+                targetDuration: parseInt(document.getElementById('goalTargetTime').value) * 60,
+                deadline: document.getElementById('goalDeadline').value || null
+            };
+
+            GoalService.createGoal(goalData);
+            this.coachUI.hideGoalModal();
+            this.#renderCoachPanel();
+            this.ui.showMotivationalMessage('Goal created! Let\'s crush it! 🎯');
+        });
+
+        // Log soreness button
+        document.getElementById('logSorenessBtn').addEventListener('click', () => {
+            this.coachUI.showSorenessModal();
+        });
+
+        // Quick soreness button
+        document.getElementById('quickSorenessBtn').addEventListener('click', () => {
+            this.coachUI.showSorenessModal();
+        });
+
+        // Cancel soreness button
+        document.getElementById('cancelSorenessBtn').addEventListener('click', () => {
+            this.coachUI.hideSorenessModal();
+        });
+
+        // Soreness slider update
+        document.getElementById('overallSoreness').addEventListener('input', (e) => {
+            const level = parseInt(e.target.value);
+            const levelText = SORENESS_LEVELS[level].name;
+            document.getElementById('sorenessLevelText').textContent = levelText;
+        });
+
+        // Soreness form submission
+        document.getElementById('sorenessForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const overallLevel = parseInt(document.getElementById('overallSoreness').value);
+            const affectedAreas = [];
+
+            document.querySelectorAll('.muscle-group-item input[type="range"]').forEach(input => {
+                const level = parseInt(input.value);
+                if (level > 0) {
+                    affectedAreas.push({
+                        area: input.dataset.muscle,
+                        level: level
+                    });
+                }
+            });
+
+            const sorenessData = {
+                overallLevel,
+                affectedAreas,
+                notes: document.getElementById('sorenessNotes').value
+            };
+
+            SorenessService.logSoreness(sorenessData);
+            this.coachUI.hideSorenessModal();
+            this.#renderCoachPanel();
+            this.ui.showMotivationalMessage('Soreness logged! Listen to your body! 💪');
+        });
+    }
+
+    /**
+     * Render coach panel
+     */
+    #renderCoachPanel() {
+        const history = HistoryService.getHistory();
+
+        // Render daily recommendation
+        const recommendation = CoachService.getWorkoutRecommendation(history);
+        this.coachUI.renderDailyRecommendation(recommendation);
+
+        // Render goals
+        const goals = GoalService.getGoals('active');
+        this.coachUI.renderGoalsList(goals);
+
+        // Render soreness history
+        const sorenessHistory = SorenessService.getSorenessHistory(7);
+        this.coachUI.renderSorenessHistory(sorenessHistory);
+
+        // Render insights
+        const trend = CoachService.getPerformanceTrend(history);
+        const goalsSummary = GoalService.getGoalsSummary();
+        this.coachUI.renderPerformanceInsights(trend, goalsSummary);
+
+        const recoveryRec = CoachService.getRecoveryRecommendation();
+        const sorenessPattern = SorenessService.getSorenessPattern(14);
+        this.coachUI.renderRecoveryInsights(recoveryRec, sorenessPattern);
     }
 
     /**
@@ -424,6 +620,20 @@ class WorkoutApp {
         const suggestion = this.workoutService.getProgressionSuggestion(history);
 
         this.historyUI.showCompletionModal(summary, record, comparison, suggestion);
+
+        // Get coach goal suggestion
+        const goalSuggestion = CoachService.assessAndSuggestGoal(
+            state.workoutType,
+            state.difficulty,
+            history,
+            SorenessService
+        );
+
+        // Store suggestion for later use
+        this.pendingGoalSuggestion = goalSuggestion;
+
+        // Render goal suggestion in completion modal
+        this.coachUI.renderGoalSuggestion(goalSuggestion);
     }
 
     /**
@@ -445,6 +655,18 @@ class WorkoutApp {
         HistoryService.saveWorkout(workout);
         StreakService.updateStreak();
 
+        // Update goals - record attempts for matching goals
+        const matchingGoals = GoalService.getGoalsForWorkout(summary.workoutType, summary.difficulty);
+        matchingGoals.forEach(goal => {
+            GoalService.recordAttempt(goal.id, workout);
+        });
+
+        // Check for goal completions
+        const completedGoals = matchingGoals.filter(g => {
+            const updated = GoalService.getGoalById(g.id);
+            return updated && updated.status === 'completed';
+        });
+
         this.historyUI.closeCompletionModal();
         this.#resetWorkout(true); // Skip confirmation, workout already saved
         this.#updateStreak();
@@ -453,8 +675,14 @@ class WorkoutApp {
         const weekSummary = HistoryService.getWeekSummary();
         const monthSummary = HistoryService.getMonthSummary();
 
+        let message = `Workout saved! 🎉\n`;
+
+        // Add goal completion celebration
+        if (completedGoals.length > 0) {
+            message += `\n🏆 GOAL COMPLETED! You're unstoppable!\n`;
+        }
+
         if (weekSummary) {
-            let message = `Workout saved! 🎉\n`;
             message += `\nThis week: ${weekSummary.workouts} workout${weekSummary.workouts !== 1 ? 's' : ''}, ${weekSummary.reps} reps, ${weekSummary.calories} cals`;
 
             if (monthSummary) {
@@ -467,7 +695,7 @@ class WorkoutApp {
 
             this.ui.showMotivationalMessage(message);
         } else {
-            this.ui.showMotivationalMessage('Workout saved! Great job!');
+            this.ui.showMotivationalMessage(message);
         }
     }
 
