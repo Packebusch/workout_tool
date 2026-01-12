@@ -1139,10 +1139,6 @@ header h1 {
     body {
         padding: 10px;
         align-items: flex-start;
-        overflow-y: auto;
-        height: 100vh;
-        position: fixed;
-        width: 100%;
     }
 
     .container {
