@@ -430,6 +430,29 @@ class WorkoutApp {
         document.getElementById('postWorkoutReminders').addEventListener('change', (e) => {
             NotificationService.togglePostWorkoutReminders(e.target.checked);
         });
+
+        // Start recommended workout (event delegation for dynamic button)
+        document.getElementById('recommendationContent').addEventListener('click', (e) => {
+            if (e.target.classList.contains('start-recommended-workout-btn')) {
+                const workoutType = e.target.dataset.workoutType;
+                const difficulty = e.target.dataset.difficulty;
+
+                // Set workout configuration
+                document.getElementById('workoutType').value = workoutType;
+                document.getElementById('difficulty').value = difficulty;
+
+                // Close coach panel
+                this.coachUI.closeCoachPanel();
+
+                // Start workout
+                this.#startWorkout();
+
+                // Show confirmation
+                const workoutName = WORKOUT_CONFIGS[workoutType].name;
+                const difficultyName = DIFFICULTY_LEVELS[difficulty].name;
+                this.ui.showMotivationalMessage(`Starting ${workoutName} - ${difficultyName}! Let's go! 💪`);
+            }
+        });
     }
 
     /**

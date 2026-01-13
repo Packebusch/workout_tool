@@ -85,6 +85,11 @@ export class CoachUIController {
                         <strong>Suggested:</strong> ${workoutName} - ${difficultyName}
                     </div>
                     <div class="recommendation-reason">Why: ${recommendation.reason}</div>
+                    <button class="start-recommended-workout-btn"
+                            data-workout-type="${recommendation.workoutType}"
+                            data-difficulty="${recommendation.difficulty}">
+                        ▶️ Start This Workout
+                    </button>
                 </div>
             `;
         }

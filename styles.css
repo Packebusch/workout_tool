@@ -1507,6 +1507,31 @@ body.celebrating {
     margin-top: 4px;
 }
 
+.start-recommended-workout-btn {
+    margin-top: 16px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--primary-color), #00ccaa);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(0, 255, 204, 0.3);
+}
+
+.start-recommended-workout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 255, 204, 0.5);
+}
+
+.start-recommended-workout-btn:active {
+    transform: translateY(0);
+}
+
 /* Tab Navigation */
 .coach-tabs {
     display: flex;
