@@ -1980,7 +1980,7 @@ body.celebrating {
 /* Quick Soreness Button (Floating) */
 .quick-soreness-btn {
     position: fixed;
-    bottom: 20px;
+    bottom: calc(56px + env(safe-area-inset-bottom, 0) + 20px);
     right: 20px;
     width: 60px;
     height: 60px;
@@ -1991,7 +1991,7 @@ body.celebrating {
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
     transition: all 0.3s ease;
-    z-index: 900;
+    z-index: 1001;
 }
 
 .quick-soreness-btn:hover {
@@ -2192,7 +2192,7 @@ body.celebrating {
 }
 
 .tab-main {
-    padding: 0 20px 40px;
+    padding: 0;
 }
 
 /* ========================================
@@ -2307,10 +2307,10 @@ body.celebrating {
 
 /* Adjust existing container for tab views */
 .tab-view .container {
-    margin: 0;
+    margin: 0 auto;
     border-radius: 0;
     box-shadow: none;
-    max-width: 100%;
+    max-width: 450px;
     background: transparent;
     padding: 20px;
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0) + 20px);

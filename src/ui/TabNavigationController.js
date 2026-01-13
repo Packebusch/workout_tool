@@ -18,9 +18,18 @@ export class TabNavigationController {
     static attachTabListeners() {
         const tabButtons = document.querySelectorAll('.tab-button');
 
+        console.log('TabNavigationController: Found', tabButtons.length, 'tab buttons');
+
+        if (tabButtons.length === 0) {
+            console.error('TabNavigationController: No tab buttons found! Check HTML structure.');
+            return;
+        }
+
         tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
                 const tab = button.dataset.tab;
+                console.log('TabNavigationController: Switching to tab:', tab);
                 this.switchTab(tab);
             });
         });
