@@ -1956,6 +1956,79 @@ body.celebrating {
     transform: scale(0.95);
 }
 
+/* Notification Preferences */
+.notification-preferences {
+    background: rgba(255, 170, 0, 0.05);
+    border: 2px solid rgba(255, 170, 0, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.notification-preferences h3 {
+    color: #ffaa00;
+    font-size: 1.1rem;
+    margin: 0 0 16px 0;
+}
+
+.preference-item {
+    margin-bottom: 16px;
+}
+
+.preference-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--text-white);
+    font-weight: 600;
+}
+
+.preference-label-text {
+    display: block;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.preference-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+.preference-input {
+    width: 100%;
+    background: var(--bg-medium);
+    border: 2px solid var(--bg-light);
+    color: var(--text-white);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.preference-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.preference-description {
+    margin: 6px 0 0 30px;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+.preference-group {
+    margin-top: 16px;
+    padding-left: 20px;
+    border-left: 3px solid rgba(255, 170, 0, 0.3);
+}
+
 /* Responsive Adjustments for Coach */
 @media (max-width: 768px) {
     .coach-panel {

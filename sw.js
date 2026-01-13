@@ -1,4 +1,4 @@
-const CACHE_NAME = 'workout-tracker-v2.2.1';
+const CACHE_NAME = 'workout-tracker-v2.3.1';
 const urlsToCache = [
   '/workout_tool/',
   '/workout_tool/index.html',
@@ -17,10 +17,16 @@ const urlsToCache = [
   '/workout_tool/src/services/ChartService.js',
   '/workout_tool/src/services/WakeLockService.js',
   '/workout_tool/src/services/ThemeService.js',
+  '/workout_tool/src/services/GoalService.js',
+  '/workout_tool/src/services/SorenessService.js',
+  '/workout_tool/src/services/CoachService.js',
+  '/workout_tool/src/services/NotificationService.js',
   '/workout_tool/src/ui/UIController.js',
   '/workout_tool/src/ui/HistoryUIController.js',
+  '/workout_tool/src/ui/CoachUIController.js',
   '/workout_tool/src/utils/dateUtils.js',
-  '/workout_tool/src/utils/calculations.js'
+  '/workout_tool/src/utils/calculations.js',
+  '/workout_tool/src/utils/utils.js'
 ];
 
 // Listen for skip waiting message
@@ -106,4 +112,46 @@ self.addEventListener('fetch', (event) => {
       })
     );
   }
+});
+
+// Notification click event - handle user clicking on notification
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const data = event.notification.data || {};
+  const action = data.action || 'open_app';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // Check if app is already open
+        for (let i = 0; i < clientList.length; i++) {
+          const client = clientList[i];
+          if (client.url.includes('/workout_tool') && 'focus' in client) {
+            // Focus existing window and send message
+            client.focus();
+            client.postMessage({
+              type: 'notification_action',
+              action: action,
+              data: data
+            });
+            return;
+          }
+        }
+
+        // App not open, open new window
+        if (clients.openWindow) {
+          let url = '/workout_tool/';
+
+          // Add query parameter to trigger action
+          if (action === 'open_soreness_modal') {
+            url += '?action=soreness';
+          } else if (action === 'open_coach_panel') {
+            url += '?action=coach';
+          }
+
+          return clients.openWindow(url);
+        }
+      })
+  );
 });

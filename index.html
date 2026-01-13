@@ -221,6 +221,33 @@
                     <div id="performanceInsights"></div>
                     <div id="recoveryInsights"></div>
                     <div id="achievementsList"></div>
+
+                    <!-- Notification Preferences -->
+                    <div class="notification-preferences">
+                        <h3>Notification Settings</h3>
+                        <div class="preference-item">
+                            <label class="preference-label">
+                                <input type="checkbox" id="notificationsEnabled" class="preference-checkbox">
+                                <span>Enable soreness reminders</span>
+                            </label>
+                            <p class="preference-description">Get daily reminders to log muscle soreness</p>
+                        </div>
+
+                        <div class="preference-group" id="notificationSettings" style="display: none;">
+                            <div class="preference-item">
+                                <label class="preference-label-text">Daily reminder time</label>
+                                <input type="time" id="dailyReminderTime" class="preference-input" value="20:00">
+                            </div>
+
+                            <div class="preference-item">
+                                <label class="preference-label">
+                                    <input type="checkbox" id="postWorkoutReminders" class="preference-checkbox" checked>
+                                    <span>Post-workout recovery checks</span>
+                                </label>
+                                <p class="preference-description">Reminders 24-48h after intense workouts</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </aside>

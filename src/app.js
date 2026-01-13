@@ -13,6 +13,7 @@ import { ThemeService } from './services/ThemeService.js';
 import { GoalService } from './services/GoalService.js';
 import { SorenessService } from './services/SorenessService.js';
 import { CoachService } from './services/CoachService.js';
+import { NotificationService } from './services/NotificationService.js';
 import { UIController } from './ui/UIController.js';
 import { HistoryUIController } from './ui/HistoryUIController.js';
 import { CoachUIController } from './ui/CoachUIController.js';
@@ -65,6 +66,9 @@ class WorkoutApp {
             this.ui.showMotivationalMessage('Warning: Storage not available. Data will not be saved.');
         }
 
+        // Initialize notifications
+        NotificationService.init();
+
         // Set up event listeners
         this.#setupEventListeners();
 
@@ -80,6 +84,12 @@ class WorkoutApp {
 
         // Initialize coach panel handlers
         this.#setupCoachHandlers();
+
+        // Handle URL parameters (e.g., from notification click)
+        this.#handleURLParameters();
+
+        // Listen for service worker messages
+        this.#setupServiceWorkerListener();
 
         console.log('Workout Tracker initialized!');
     }
@@ -379,6 +389,46 @@ class WorkoutApp {
             this.coachUI.hideSorenessModal();
             this.#renderCoachPanel();
             this.ui.showMotivationalMessage('Soreness logged! Listen to your body! 💪');
+        });
+
+        // Notification preferences
+        const notificationsCheckbox = document.getElementById('notificationsEnabled');
+        const notificationSettings = document.getElementById('notificationSettings');
+
+        // Load current preferences
+        const prefs = NotificationService.getPreferences();
+        notificationsCheckbox.checked = prefs.notificationsEnabled;
+        document.getElementById('dailyReminderTime').value = prefs.dailyReminderTime || '20:00';
+        document.getElementById('postWorkoutReminders').checked = prefs.postWorkoutReminders !== false;
+        notificationSettings.style.display = prefs.notificationsEnabled ? 'block' : 'none';
+
+        // Toggle notifications
+        notificationsCheckbox.addEventListener('change', async (e) => {
+            if (e.target.checked) {
+                const enabled = await NotificationService.enable();
+                if (enabled) {
+                    notificationSettings.style.display = 'block';
+                    this.ui.showMotivationalMessage('Notifications enabled! We\'ll remind you to log soreness 🔔');
+                } else {
+                    e.target.checked = false;
+                    this.ui.showMotivationalMessage('Notification permission denied. Check your browser settings.');
+                }
+            } else {
+                NotificationService.disable();
+                notificationSettings.style.display = 'none';
+                this.ui.showMotivationalMessage('Notifications disabled');
+            }
+        });
+
+        // Daily reminder time
+        document.getElementById('dailyReminderTime').addEventListener('change', (e) => {
+            NotificationService.updateDailyReminderTime(e.target.value);
+            this.ui.showMotivationalMessage('Reminder time updated!');
+        });
+
+        // Post-workout reminders toggle
+        document.getElementById('postWorkoutReminders').addEventListener('change', (e) => {
+            NotificationService.togglePostWorkoutReminders(e.target.checked);
         });
     }
 
@@ -801,6 +851,45 @@ class WorkoutApp {
         };
 
         input.click();
+    }
+
+    /**
+     * Handle URL parameters (e.g., from notification clicks)
+     */
+    #handleURLParameters() {
+        const params = new URLSearchParams(window.location.search);
+        const action = params.get('action');
+
+        if (action === 'soreness') {
+            this.coachUI.showSorenessModal();
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else if (action === 'coach') {
+            this.coachUI.toggleCoachPanel();
+            this.#renderCoachPanel();
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }
+
+    /**
+     * Setup service worker message listener
+     */
+    #setupServiceWorkerListener() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'notification_action') {
+                    const { action, data } = event.data;
+
+                    if (action === 'open_soreness_modal') {
+                        this.coachUI.showSorenessModal();
+                    } else if (action === 'open_coach_panel') {
+                        this.coachUI.toggleCoachPanel();
+                        this.#renderCoachPanel();
+                    }
+                }
+            });
+        }
     }
 }
 
