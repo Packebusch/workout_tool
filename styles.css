@@ -105,10 +105,8 @@ body {
     background: var(--bg-black);
     color: var(--text-white);
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+    margin: 0;
+    padding: 0;
     -webkit-user-select: none;
     user-select: none;
     overflow-x: hidden;
@@ -2169,9 +2167,8 @@ body.celebrating {
 /* Tab Views */
 .tab-view {
     display: none;
-    min-height: 100vh;
-    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0));
-    overflow-y: auto;
+    width: 100%;
+    height: 100%;
 }
 
 .tab-view.active {
@@ -2297,24 +2294,26 @@ body.celebrating {
 
 #app {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
 #tab-content {
     flex: 1;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* Adjust existing container for tab views */
 .tab-view .container {
-    min-height: calc(100vh - 56px - env(safe-area-inset-bottom, 0));
     margin: 0;
     border-radius: 0;
     box-shadow: none;
     max-width: 100%;
     background: transparent;
+    padding: 20px;
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0) + 20px);
 }
 
 /* ========================================

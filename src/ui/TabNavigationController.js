@@ -61,15 +61,15 @@ export class TabNavigationController {
         switch(tabName) {
             case 'history':
                 // Refresh history view when tab becomes active
-                if (window.app && window.app.historyUI) {
-                    window.app.historyUI.render();
+                if (window.workoutApp && window.workoutApp.historyUI) {
+                    window.workoutApp.historyUI.render();
                 }
                 break;
 
             case 'coach':
                 // Refresh coach recommendations
-                if (window.app && window.app.coachUI) {
-                    window.app.coachUI.refresh();
+                if (window.workoutApp && window.workoutApp.coachUI) {
+                    window.workoutApp.coachUI.refresh();
                 }
                 break;
 
