@@ -1463,7 +1463,7 @@ body.celebrating {
     border: 2px solid #ffaa00;
     border-radius: 12px;
     padding: 20px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .coach-recommendation h3 {
@@ -1544,6 +1544,7 @@ body.celebrating {
 
 .coach-tab-content.active {
     display: block;
+    padding: 20px 0;
 }
 
 /* Create Goal Button */
@@ -1551,7 +1552,7 @@ body.celebrating {
 .log-soreness-btn {
     width: 100%;
     background: linear-gradient(135deg, var(--primary-color), #00ccaa);
-    color: var(--bg-dark);
+    color: white;
     border: none;
     padding: 14px;
     font-size: 1rem;
@@ -1560,6 +1561,8 @@ body.celebrating {
     cursor: pointer;
     transition: all 0.3s ease;
     margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .create-goal-btn:hover,
