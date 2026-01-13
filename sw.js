@@ -26,9 +26,11 @@ const urlsToCache = [
   '/workout_tool/src/ui/CoachUIController.js',
   '/workout_tool/src/ui/TabNavigationController.js',
   '/workout_tool/src/ui/SettingsController.js',
+  '/workout_tool/src/ui/BottomSheet.js',
   '/workout_tool/src/utils/dateUtils.js',
   '/workout_tool/src/utils/calculations.js',
-  '/workout_tool/src/utils/utils.js'
+  '/workout_tool/src/utils/utils.js',
+  '/workout_tool/src/utils/haptics.js'
 ];
 
 // Listen for skip waiting message
