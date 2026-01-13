@@ -2425,3 +2425,102 @@ body.celebrating {
         padding-bottom: 40px;
     }
 }
+
+/* ========================================
+   Bottom Sheet Modals (iOS Style)
+   ======================================== */
+
+/* Bottom Sheet Overlay */
+.bottom-sheet-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 9998;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+.bottom-sheet-overlay.visible {
+    opacity: 1;
+}
+
+/* Bottom Sheet Container */
+.bottom-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-surface);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    max-height: 90vh;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9999;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+}
+
+.bottom-sheet.visible {
+    transform: translateY(0);
+}
+
+/* Drag Handle */
+.bottom-sheet-handle {
+    width: 36px;
+    height: 5px;
+    background: var(--color-text-tertiary);
+    border-radius: 3px;
+    margin: 12px auto 8px;
+    cursor: grab;
+    flex-shrink: 0;
+    opacity: 0.3;
+    transition: opacity 0.2s ease;
+}
+
+.bottom-sheet-handle:active {
+    cursor: grabbing;
+    opacity: 0.6;
+}
+
+/* Bottom Sheet Content */
+.bottom-sheet-content {
+    padding: var(--spacing-md) var(--spacing-lg);
+    overflow-y: auto;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Bottom Sheet Headers */
+.bottom-sheet-content h2,
+.bottom-sheet-content h3 {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-primary);
+}
+
+/* Bottom Sheet Buttons */
+.bottom-sheet-content .modal-btn {
+    margin-top: var(--spacing-sm);
+}
+
+/* Desktop Bottom Sheets */
+@media (min-width: 768px) {
+    .bottom-sheet {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%) translateY(100%);
+        max-width: 600px;
+        width: 100%;
+        border-radius: var(--radius-xl);
+    }
+
+    .bottom-sheet.visible {
+        transform: translateX(-50%) translateY(0);
+    }
+}
