@@ -33,6 +33,7 @@ export class GoalService {
     static createGoal(goalData) {
         const data = StorageManager.load(STORAGE_KEYS.GOALS, { goals: [] });
 
+        const now = new Date().toISOString();
         const newGoal = {
             id: generateId(),
             workoutType: goalData.workoutType,
@@ -40,7 +41,7 @@ export class GoalService {
             targetReps: goalData.targetReps,
             targetDuration: goalData.targetDuration,
             deadline: goalData.deadline || null,
-            createdDate: new Date().toISOString(),
+            createdDate: now,
             status: 'active',
             completedDate: null,
             source: goalData.source || 'manual', // 'manual' or 'coach_suggested'
@@ -50,7 +51,9 @@ export class GoalService {
                 date: null,
                 percentageAchieved: 0
             },
-            attempts: 0
+            attempts: 0,
+            // Track timestamp to prevent retroactive completion
+            createdTimestamp: new Date(now).getTime()
         };
 
         data.goals.unshift(newGoal);
@@ -100,6 +103,16 @@ export class GoalService {
     static recordAttempt(goalId, workoutSummary) {
         const goal = this.getGoalById(goalId);
         if (!goal) return null;
+
+        // Don't count workouts that happened before or at the same time as goal creation
+        // This prevents retroactive completion (e.g., creating a goal with current workout stats)
+        const workoutTimestamp = new Date(workoutSummary.date || new Date()).getTime();
+        const goalCreatedTimestamp = goal.createdTimestamp || new Date(goal.createdDate).getTime();
+
+        if (workoutTimestamp <= goalCreatedTimestamp) {
+            // This workout happened before/during goal creation, don't record it
+            return goal;
+        }
 
         // Calculate progress percentage
         const repsProgress = (workoutSummary.reps / goal.targetReps) * 100;

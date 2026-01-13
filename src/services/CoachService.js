@@ -20,11 +20,16 @@ export class CoachService {
     /**
      * MAIN GOAL SUGGESTION - Smart goal generation with progressive overload
      */
-    static assessAndSuggestGoal(workoutType, difficulty, history, sorenessService) {
+    static assessAndSuggestGoal(workoutType, difficulty, history, sorenessService, currentWorkout = null) {
         // Check if user has history for this workout type + difficulty
-        const relevantWorkouts = history.sessions.filter(
+        let relevantWorkouts = history.sessions.filter(
             w => w.workoutType === workoutType && w.difficulty === difficulty
         );
+
+        // Include current workout if provided (e.g., from completion modal)
+        if (currentWorkout && currentWorkout.workoutType === workoutType && currentWorkout.difficulty === difficulty) {
+            relevantWorkouts = [currentWorkout, ...relevantWorkouts];
+        }
 
         // INITIAL ASSESSMENT - No history, conservative starting goal
         if (relevantWorkouts.length === 0) {

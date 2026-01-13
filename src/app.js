@@ -683,12 +683,21 @@ class WorkoutApp {
 
         this.historyUI.showCompletionModal(summary, record, comparison, suggestion);
 
-        // Get coach goal suggestion
+        // Get coach goal suggestion (include current workout for accurate suggestion)
+        const currentWorkout = {
+            workoutType: state.workoutType,
+            difficulty: state.difficulty,
+            reps: state.reps,
+            duration: summary.duration,
+            date: new Date().toISOString()
+        };
+
         const goalSuggestion = CoachService.assessAndSuggestGoal(
             state.workoutType,
             state.difficulty,
             history,
-            SorenessService
+            SorenessService,
+            currentWorkout
         );
 
         // Store suggestion for later use
