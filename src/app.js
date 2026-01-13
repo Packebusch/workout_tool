@@ -9,7 +9,6 @@ import { HistoryService } from './services/HistoryService.js';
 import { StreakService } from './services/StreakService.js';
 import { ChartService } from './services/ChartService.js';
 import { WakeLockService } from './services/WakeLockService.js';
-import { ThemeService } from './services/ThemeService.js';
 import { GoalService } from './services/GoalService.js';
 import { SorenessService } from './services/SorenessService.js';
 import { CoachService } from './services/CoachService.js';
@@ -57,9 +56,6 @@ class WorkoutApp {
      * Initialize application
      */
     #init() {
-        // Initialize theme
-        ThemeService.init();
-
         // Check storage availability
         if (!StorageManager.isAvailable()) {
             console.error('localStorage not available');
@@ -120,13 +116,6 @@ class WorkoutApp {
                 }
             });
         }
-
-        // Theme toggle
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            const newTheme = ThemeService.cycleTheme();
-            const themeName = ThemeService.getThemeName(newTheme);
-            this.ui.showMotivationalMessage(`Theme changed to ${themeName}! 🎨`);
-        });
 
         // Difficulty change
         this.ui.getElement('difficulty').addEventListener('change', () => {

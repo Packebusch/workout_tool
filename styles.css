@@ -6,9 +6,8 @@
     box-sizing: border-box;
 }
 
-/* Theme Variables */
+/* CSS Variables */
 :root {
-    /* Default: Peloton Theme */
     --primary: #E1523D;
     --primary-dark: #C93526;
     --bg-black: #0B0B0B;
@@ -17,30 +16,6 @@
     --bg-light: #4A4A4A;
     --text-white: #FFFFFF;
     --text-off-white: #F5F5F5;
-}
-
-/* Sunset Theme */
-[data-theme="sunset"] {
-    --primary: #FF6B35;
-    --primary-dark: #E85D2A;
-    --bg-black: #1A0F0A;
-    --bg-dark: #2D1810;
-    --bg-medium: #3D2418;
-    --bg-light: #5D3A28;
-    --text-white: #FFF5F0;
-    --text-off-white: #FFE8DC;
-}
-
-/* Ocean Theme */
-[data-theme="ocean"] {
-    --primary: #00D4FF;
-    --primary-dark: #00B8E6;
-    --bg-black: #0A1520;
-    --bg-dark: #0F1F2E;
-    --bg-medium: #1A2A3A;
-    --bg-light: #2A3F52;
-    --text-white: #F0FAFF;
-    --text-off-white: #E0F4FF;
 }
 
 body {
@@ -73,48 +48,13 @@ header {
     margin-bottom: 32px;
 }
 
-.header-top {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    margin-bottom: 12px;
-}
-
 header h1 {
     font-size: 1.5rem;
     color: var(--text-white);
     font-weight: 900;
     letter-spacing: -0.5px;
     text-transform: uppercase;
-}
-
-.theme-toggle {
-    position: absolute;
-    right: 0;
-    width: 44px;
-    height: 44px;
-    background: var(--bg-medium);
-    border: 2px solid var(--bg-light);
-    border-radius: 50%;
-    color: var(--text-white);
-    font-size: 1.3rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-}
-
-.theme-toggle:hover {
-    border-color: var(--primary);
-    background: var(--bg-light);
-    transform: rotate(90deg) scale(1.1);
-}
-
-.theme-toggle:active {
-    transform: rotate(90deg) scale(0.95);
+    margin-bottom: 12px;
 }
 
 .streak-display {
