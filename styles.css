@@ -6,20 +6,102 @@
     box-sizing: border-box;
 }
 
-/* CSS Variables */
+/* CSS Variables - iOS-Inspired Design System */
 :root {
+    /* Legacy variables (keep for backwards compatibility during transition) */
     --primary: #E1523D;
     --primary-dark: #C93526;
-    --bg-black: #0B0B0B;
-    --bg-dark: #1A1A1A;
-    --bg-medium: #2A2A2A;
-    --bg-light: #4A4A4A;
+
+    /* New Design System - Light Mode Defaults */
+    --color-background: #F2F2F7;        /* iOS system background */
+    --color-surface: #FFFFFF;            /* Card/panel background */
+    --color-surface-secondary: #E5E5EA;  /* Secondary surfaces */
+    --color-text-primary: #000000;
+    --color-text-secondary: #3C3C43;
+    --color-text-tertiary: #8E8E93;
+
+    /* Accent Colors */
+    --color-accent-primary: #E1523D;     /* Keep Peloton red */
+    --color-accent-secondary: #007AFF;   /* iOS blue for secondary actions */
+    --color-success: #34C759;
+    --color-warning: #FF9500;
+    --color-error: #FF3B30;
+
+    /* Spacing Scale (iOS 8pt grid) */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-xxl: 48px;
+
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+
+    /* Shadows - iOS style (subtle) */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.10);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+    /* Typography */
+    --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    /* Backwards compatibility mappings */
+    --bg-black: var(--color-background);
+    --bg-dark: var(--color-surface);
+    --bg-medium: var(--color-surface-secondary);
+    --bg-light: var(--color-text-tertiary);
+    --text-white: var(--color-text-primary);
+    --text-off-white: var(--color-text-secondary);
+}
+
+/* Dark Mode - System Preference */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-background: #000000;
+        --color-surface: #1C1C1E;
+        --color-surface-secondary: #2C2C2E;
+        --color-text-primary: #FFFFFF;
+        --color-text-secondary: #EBEBF5;
+        --color-text-tertiary: #98989F;
+
+        /* Update backwards compatibility for dark mode */
+        --bg-black: #000000;
+        --bg-dark: #1C1C1E;
+        --bg-medium: #2C2C2E;
+        --bg-light: #3A3A3C;
+        --text-white: #FFFFFF;
+        --text-off-white: #EBEBF5;
+    }
+}
+
+/* Dark Mode - Manual Toggle */
+body.dark-mode {
+    --color-background: #000000;
+    --color-surface: #1C1C1E;
+    --color-surface-secondary: #2C2C2E;
+    --color-text-primary: #FFFFFF;
+    --color-text-secondary: #EBEBF5;
+    --color-text-tertiary: #98989F;
+
+    /* Update backwards compatibility for dark mode */
+    --bg-black: #000000;
+    --bg-dark: #1C1C1E;
+    --bg-medium: #2C2C2E;
+    --bg-light: #3A3A3C;
     --text-white: #FFFFFF;
-    --text-off-white: #F5F5F5;
+    --text-off-white: #EBEBF5;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-family: var(--font-system);
     background: var(--bg-black);
     color: var(--text-white);
     min-height: 100vh;
@@ -30,6 +112,8 @@ body {
     -webkit-user-select: none;
     user-select: none;
     overflow-x: hidden;
+    /* Smooth theme transitions */
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -2015,5 +2099,329 @@ body.celebrating {
 
     .muscle-group-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* ========================================
+   iOS-Style Bottom Tab Bar Navigation
+   ======================================== */
+
+/* Tab Bar Container */
+.tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: var(--color-surface);
+    border-top: 0.5px solid var(--color-surface-secondary);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    height: calc(56px + env(safe-area-inset-bottom, 0));
+    z-index: 1000;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Tab Buttons */
+.tab-button {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: none;
+    background: transparent;
+    color: var(--color-text-tertiary);
+    transition: color 0.2s ease, transform 0.1s ease;
+    cursor: pointer;
+    padding: 8px 0;
+    min-height: 56px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tab-button:active {
+    transform: scale(0.95);
+}
+
+.tab-button.active {
+    color: var(--color-accent-primary);
+}
+
+/* Tab Icons */
+.tab-icon {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Tab Labels */
+.tab-label {
+    font-size: 10px;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.2px;
+}
+
+/* Tab Views */
+.tab-view {
+    display: none;
+    min-height: 100vh;
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0));
+    overflow-y: auto;
+}
+
+.tab-view.active {
+    display: block;
+}
+
+/* Tab Headers (for History, Coach, Settings) */
+.tab-header {
+    text-align: center;
+    padding: 24px 0 16px;
+    border-bottom: 1px solid var(--color-surface-secondary);
+    margin-bottom: 24px;
+}
+
+.tab-header h1 {
+    font-size: 1.2rem;
+    color: var(--color-text-primary);
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    text-transform: uppercase;
+}
+
+.tab-main {
+    padding: 0 20px 40px;
+}
+
+/* ========================================
+   Settings View - iOS Style Lists
+   ======================================== */
+
+.settings-section {
+    margin-bottom: 32px;
+}
+
+.section-header {
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    padding: 0 16px;
+}
+
+/* Inset Grouped Lists (iOS Settings Style) */
+.inset-list {
+    background: transparent;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.inset-list-item {
+    background: var(--color-surface);
+    padding: var(--spacing-md);
+    border-bottom: 0.5px solid var(--color-surface-secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    text-decoration: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-family: var(--font-system);
+}
+
+.inset-list-item:first-child {
+    border-top-left-radius: var(--radius-md);
+    border-top-right-radius: var(--radius-md);
+}
+
+.inset-list-item:last-child {
+    border-bottom: none;
+    border-bottom-left-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+}
+
+.inset-list-item:active {
+    background: var(--color-surface-secondary);
+}
+
+.inset-list-item.danger {
+    color: var(--color-error);
+}
+
+/* Chevron Right Indicator */
+.chevron-right {
+    font-size: 1.2rem;
+    color: var(--color-text-tertiary);
+    font-weight: 300;
+}
+
+/* Secondary Text in Lists */
+.text-secondary {
+    color: var(--color-text-tertiary);
+    font-size: 0.95rem;
+}
+
+/* Setting Select Dropdowns */
+.setting-select {
+    background: transparent;
+    border: none;
+    color: var(--color-text-tertiary);
+    font-size: 0.95rem;
+    font-family: var(--font-system);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+}
+
+.setting-select:focus {
+    outline: none;
+    background: var(--color-surface-secondary);
+}
+
+/* ========================================
+   App Container Adjustments for Tabs
+   ======================================== */
+
+#app {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#tab-content {
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Adjust existing container for tab views */
+.tab-view .container {
+    min-height: calc(100vh - 56px - env(safe-area-inset-bottom, 0));
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    max-width: 100%;
+    background: transparent;
+}
+
+/* ========================================
+   Responsive - Hide old panel toggles
+   ======================================== */
+
+.history-toggle-section {
+    display: none;
+}
+
+/* Hide old panel close buttons */
+.close-history-btn,
+.close-coach-btn {
+    display: none;
+}
+
+/* Hide old panels (they're now tabs) */
+.history-panel,
+.coach-panel {
+    display: none !important;
+}
+
+/* ========================================
+   iOS Safe Area Support
+   ======================================== */
+
+@supports (padding: env(safe-area-inset-bottom)) {
+    body {
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .quick-soreness-btn {
+        bottom: calc(70px + env(safe-area-inset-bottom, 0));
+    }
+}
+
+/* ========================================
+   Desktop/Tablet Responsive
+   ======================================== */
+
+@media (min-width: 768px) {
+    .tab-bar {
+        max-width: 600px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+
+    .tab-view .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 40px 32px;
+    }
+}
+
+@media (min-width: 1024px) {
+    /* Side navigation for desktop */
+    #app {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: var(--spacing-xl);
+    }
+
+    .tab-bar {
+        position: fixed;
+        left: 50%;
+        margin-left: -600px;
+        width: 280px;
+        height: 100vh;
+        flex-direction: column;
+        padding: var(--spacing-xl) 0;
+        border-top: none;
+        border-right: 0.5px solid var(--color-surface-secondary);
+        border-radius: 0;
+        max-width: none;
+        transform: none;
+        justify-content: flex-start;
+        gap: var(--spacing-sm);
+    }
+
+    .tab-button {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: var(--spacing-md) var(--spacing-lg);
+        gap: var(--spacing-md);
+        width: 100%;
+        min-height: 48px;
+        border-radius: var(--radius-md);
+        margin: 0 var(--spacing-sm);
+    }
+
+    .tab-button.active {
+        background: var(--color-surface-secondary);
+    }
+
+    .tab-label {
+        font-size: 0.95rem;
+    }
+
+    #tab-content {
+        grid-column: 2;
+    }
+
+    .tab-view .container {
+        max-width: 800px;
+        padding-bottom: 40px;
     }
 }

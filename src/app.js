@@ -13,9 +13,12 @@ import { GoalService } from './services/GoalService.js';
 import { SorenessService } from './services/SorenessService.js';
 import { CoachService } from './services/CoachService.js';
 import { NotificationService } from './services/NotificationService.js';
+import { ThemeService } from './services/ThemeService.js';
 import { UIController } from './ui/UIController.js';
 import { HistoryUIController } from './ui/HistoryUIController.js';
 import { CoachUIController } from './ui/CoachUIController.js';
+import { TabNavigationController } from './ui/TabNavigationController.js';
+import { SettingsController } from './ui/SettingsController.js';
 import { DIFFICULTY_LEVELS, WORKOUT_CONFIGS, MOTIVATIONAL_MESSAGES, SORENESS_LEVELS } from './config/constants.js';
 import { getRandomItem } from './utils/calculations.js';
 
@@ -64,6 +67,15 @@ class WorkoutApp {
 
         // Initialize notifications
         NotificationService.init();
+
+        // Initialize theme system (light/dark mode)
+        ThemeService.init();
+
+        // Initialize tab navigation (iOS-style bottom tabs)
+        TabNavigationController.init();
+
+        // Initialize settings controller
+        SettingsController.init();
 
         // Set up event listeners
         this.#setupEventListeners();
