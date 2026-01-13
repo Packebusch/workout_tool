@@ -723,10 +723,12 @@ header h1 {
 /* History Toggle */
 .history-toggle-section {
     margin-top: 24px;
+    display: flex;
+    gap: 12px;
 }
 
 .history-toggle-btn {
-    width: 100%;
+    flex: 1;
     padding: 14px 20px;
     background: transparent;
     border: 2px solid var(--bg-light);
@@ -1369,17 +1371,19 @@ body.celebrating {
 
 /* Coach Toggle Button */
 .coach-toggle-btn {
+    flex: 1;
     background: linear-gradient(135deg, #ffaa00, #ff6b9d);
     color: white;
     border: none;
-    padding: 14px 28px;
-    font-size: 1rem;
+    padding: 14px 20px;
+    font-size: 0.85rem;
     font-weight: 700;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(255, 170, 0, 0.3);
-    margin-left: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .coach-toggle-btn:hover {

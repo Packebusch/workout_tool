@@ -35,7 +35,8 @@ export class UIController {
             aboutToggle: document.getElementById('aboutToggle'),
             aboutDetails: document.getElementById('aboutDetails'),
             aboutSection: document.getElementById('aboutSection'),
-            historyToggleBtn: document.getElementById('historyToggleBtn')
+            historyToggleBtn: document.getElementById('historyToggleBtn'),
+            coachToggleBtn: document.getElementById('coachToggleBtn')
         };
     }
 
