@@ -1,206 +1,324 @@
-# Burpee Workout Tracker
+# Workout Tracker
 
-A motivational web application for tracking your 20-minute burpee workout sessions. Built with vanilla HTML, CSS, and JavaScript for a fast, simple, and effective workout companion.
+A privacy-focused Progressive Web App (PWA) for tracking multiple workout types with iOS-style design. Built with vanilla JavaScript to provide a native app experience that respects your privacy—all data stays on your device.
 
 ## Features
 
-### Core Functionality
-- **20-Minute Countdown Timer**: Visual timer counting down from 20:00 to 0:00
-- **Rep Counter**: Large, easy-to-tap button to count each burpee rep
-- **Progress Bar**: Visual representation of workout completion
-- **Keyboard Support**: Press spacebar to count reps (hands-free!)
+### 🎯 Core Workout Tracking
+- **Multiple Workout Types**: Burpees, push-ups, squats, pull-ups, and more
+- **Quick Count Buttons**: Fast, single-tap counting for rapid workout logging
+- **Countdown Timers**: Configurable rest timers with haptic feedback
+- **Progress Tracking**: Visual progress bars and live statistics
+- **Keyboard Support**: Spacebar for hands-free rep counting
 
-### Motivational System
-- **Dynamic Messages**: Encouraging text messages at time intervals and rep milestones
-- **Audio Cues**: Sound notifications for:
-  - Workout start/completion
-  - Time milestones (15min, 10min, 5min, 1min)
-  - Rep milestones (every 25 reps, 100, 150, 200+)
-- **Visual Effects**:
-  - Color-coded timer (green → yellow → orange → red)
-  - Pulsing animations on milestones
-  - Celebration effects for achievements
+### 📱 iOS-Style Interface
+- **Bottom Tab Navigation**: Four tabs - Workout, History, Coach, Settings
+- **Native-Like Design**: iOS design system with SF Symbols-inspired icons
+- **Dark Mode**: Beautiful dark theme optimized for OLED displays
+- **Haptic Feedback**: Tactile responses on supported devices
+- **Notch Support**: Respects iPhone safe areas and Dynamic Island
+- **Bottom Sheet Modals**: Native iOS-style modal interactions
 
-### Metrics & Analytics
-- **Calorie Estimation**: Real-time calorie burn calculation based on modified burpee formula
-- **Pace Tracking**: Live display of reps per minute
-- **Fitness Level Assessment**:
-  - Beginner: < 4 reps/min
-  - Intermediate: 4-7 reps/min
-  - Advanced: 7-10 reps/min
-  - Elite: > 10 reps/min
+### 📊 History & Analytics
+- **Complete Workout History**: Every session automatically saved
+- **Detailed Statistics**: View performance trends and averages
+- **7-Day & 30-Day Views**: Quick overview of recent activity
+- **Progressive Overload Tracking**: See your strength improvements over time
+- **Export Data**: Download all your data as JSON
 
-### Workout History
-- **Session Tracking**: Automatically saves completed workouts to browser storage
-- **Statistics Dashboard**: View total workouts, average reps, best performance, and total calories
-- **Performance Trends**: Track your progress over time
-- **Persistent Storage**: All data saved locally in your browser
+### 🎓 Personal Coach
+- **Smart Recommendations**: Daily workout suggestions based on your history
+- **Recovery Awareness**: Monitors workout frequency and suggests rest
+- **Goal Suggestions**: AI-powered goals tailored to your fitness level
+- **Soreness Tracking**: Log muscle soreness to optimize recovery
+- **Performance Insights**: Analyze trends and patterns
+
+### 🎯 Goal Setting
+- **Custom Goals**: Set targets for any workout type
+- **Progress Tracking**: Visual indicators showing goal completion
+- **Smart Milestones**: Automatically suggested based on your performance
+- **Achievement Tracking**: Celebrate when you hit your targets
+
+### 🔒 Privacy First
+- **100% Local Storage**: All data stored in your browser, never uploaded
+- **No Tracking**: Zero analytics, cookies, or third-party scripts
+- **No Account Required**: Start using immediately
+- **Full Data Control**: Export or delete your data anytime
+- **Offline-Ready**: Works without internet connection
+
+### 💾 Progressive Web App
+- **Install to Home Screen**: Feels like a native app
+- **Offline Support**: Service worker caching
+- **Fast Loading**: Optimized performance
+- **Regular Updates**: Auto-updates when online
 
 ## Installation
 
-1. Download or clone all files to a local directory:
-   - `index.html`
-   - `styles.css`
-   - `app.js`
-   - `README.md`
+### Web Browser
+1. Visit the hosted URL or open `index.html` locally
+2. Works on all modern browsers (Chrome, Firefox, Safari, Edge)
 
-2. Open `index.html` in a modern web browser:
-   - **Chrome** (recommended)
-   - **Firefox**
-   - **Safari**
-   - **Edge**
+### Install as PWA (Recommended)
 
-No server or installation required! Just open the HTML file directly.
+**iPhone/iPad:**
+1. Open in Safari
+2. Tap the Share button
+3. Select "Add to Home Screen"
+4. Tap "Add"
+
+**Android:**
+1. Open in Chrome
+2. Tap the menu (⋮)
+3. Select "Add to Home Screen" or "Install App"
+4. Tap "Install"
+
+**Desktop (Chrome/Edge):**
+1. Look for install icon in address bar
+2. Click "Install"
+3. App opens in standalone window
 
 ## Usage
 
-### Starting a Workout
+### Workout Tab
 
-1. Open `index.html` in your browser
-2. Click the **Start** button to begin your 20-minute countdown
-3. The rep counter button will activate
+**Starting a Workout:**
+1. Select your workout type from the dropdown
+2. Use Quick Count buttons (1, 3, 5 reps) for fast logging
+3. Or use the +/- buttons for precise control
+4. Timer automatically tracks your workout duration
+5. Complete and save when finished
 
-### Counting Reps
+**Rest Timers:**
+- Configure custom rest periods (30s, 60s, 90s, etc.)
+- Countdown with visual and haptic feedback
+- Audio notification when rest is complete
 
-**Two ways to count:**
-- Click/tap the large **+ COUNT REP** button
-- Press the **Spacebar** key (great for hands-free counting!)
+### History Tab
 
-### During the Workout
+**View Your Progress:**
+- See all completed workouts in chronological order
+- Toggle between 7-day and 30-day views
+- View detailed stats for each session
+- Export all data as JSON
+- Clear individual workouts or entire history
 
-- **Pause**: Click pause to take a break (timer and counter pause)
-- **Resume**: Click resume to continue
-- **Reset**: Click reset to start over (confirms before resetting)
+**Statistics Include:**
+- Total workouts completed
+- Total reps across all exercises
+- Average performance
+- Best single-session performance
+- Calorie estimates
 
-### After the Workout
+### Coach Tab
 
-When the timer reaches 0:00, you'll see:
-- Complete workout statistics
-- Your fitness level assessment
-- Options to **Save** or **Discard** the workout
+**Daily Recommendations:**
+- Personalized workout suggestions
+- Rest day recommendations when needed
+- Goal progress tracking
+- Soreness monitoring
+- Performance insights
 
-### Viewing History
+**Features:**
+- Smart rest day detection
+- Recovery-aware programming
+- Goal suggestion system
+- Muscle soreness logging
+- Trend analysis
 
-1. Click **📜 View History** at the bottom
-2. See all your past workouts with:
-   - Date and time
-   - Total reps and duration
-   - Calories burned
-   - Fitness level achieved
-3. View overall statistics (total workouts, averages, best performance)
-4. Clear history if needed
+### Settings Tab
 
-## Tips for Best Experience
-
-### Mobile Use
-- Works great on phones and tablets
-- Large touch targets for easy tapping during workouts
-- Add to home screen for quick access
-
-### Audio
-- Grant audio permissions when prompted for sound effects
-- Adjust device volume for optimal alert levels
-
-### Keyboard Shortcuts
-- **Spacebar**: Count a rep (when workout is active)
-- Great for using a wireless keyboard during floor workouts
-
-### Workout Style
-This tracker is optimized for:
-- Modified burpees (without jumping)
-- Mixing in knee pull-ups during the pushup position
-- 20-minute continuous session
-
-## Calorie Calculation Formula
-
-The app uses this formula for modified burpees (no jumping):
-```
-Calories = (elapsed_minutes × 10) + (total_reps × 1)
-```
-
-Based on:
-- Modified burpee workout: ~10 cal/min
-- Calorie burn per rep: ~1 calorie
-
-## Browser Compatibility
-
-**Requires:**
-- Modern browser (2020+)
-- JavaScript enabled
-- localStorage support (for history feature)
-- Web Audio API support (for sound effects)
-
-**Tested on:**
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-
-## Privacy
-
-All data is stored **locally in your browser**:
-- No server uploads
-- No account required
-- No tracking or analytics
-- Your workout data never leaves your device
-
-To clear all data:
-- Use the "Clear All History" button in the History panel
-- Or clear your browser's localStorage
-
-## Accessibility
-
-- Keyboard navigation support
-- ARIA labels for screen readers
-- High contrast colors for visibility
-- Large touch targets (min 44×44px)
-- Respects `prefers-reduced-motion` setting
+**Data Management:**
+- Export all data (JSON format)
+- Clear all data and reset app
+- View app information
 
 ## Technical Details
 
-**Built with:**
-- Vanilla JavaScript (ES6+)
-- CSS3 (Flexbox, Grid, Animations)
-- HTML5 (Semantic markup)
-- localStorage API
-- Web Audio API
+### Built With
+- **HTML5**: Semantic markup with accessibility
+- **CSS3**: Modern layouts with CSS Grid/Flexbox
+- **Vanilla JavaScript**: Zero dependencies, ES6+ features
+- **localStorage API**: Client-side data persistence
+- **Service Worker**: Offline support and caching
+- **Web Audio API**: Sound effects and notifications
+- **Vibration API**: Haptic feedback on supported devices
 
-**No dependencies or frameworks required!**
+### Architecture
+```
+workout_tool/
+├── index.html              # Main app shell
+├── styles.css              # iOS-style design system
+├── manifest.json           # PWA manifest
+├── sw.js                   # Service worker
+└── src/
+    ├── app.js              # Main application controller
+    ├── services/           # Core services
+    │   ├── StorageManager.js
+    │   └── ThemeService.js
+    ├── ui/                 # UI controllers
+    │   ├── HistoryUIController.js
+    │   ├── SettingsController.js
+    │   ├── TabNavigationController.js
+    │   └── BottomSheet.js
+    └── utils/
+        └── haptics.js      # Haptic feedback
+```
+
+### Design System
+- **Colors**: iOS semantic color system
+- **Typography**: SF Pro-inspired font stack
+- **Spacing**: 8px base grid system
+- **Radius**: Consistent border radius scale
+- **Shadows**: Layered shadow system
+- **Transitions**: Native-feeling animations
+
+### Browser Compatibility
+
+**Minimum Requirements:**
+- Modern browser (2020+)
+- JavaScript enabled
+- localStorage support
+- CSS Grid/Flexbox support
+
+**Tested On:**
+- iOS Safari 14+
+- Chrome 90+
+- Firefox 88+
+- Edge 90+
+
+**PWA Features:**
+- Service Worker support
+- Web App Manifest support
+- Add to Home Screen capability
+
+## Data & Privacy
+
+### What Gets Stored
+All data is stored locally in your browser using localStorage:
+- Workout sessions (date, type, reps, duration)
+- Goals and progress
+- Soreness logs
+- Coach insights
+- User preferences
+
+### What Does NOT Get Stored
+- ❌ No user accounts
+- ❌ No personal information
+- ❌ No analytics or tracking
+- ❌ No cookies (except localStorage)
+- ❌ No server uploads
+
+### Data Management
+- **Export**: Download all your data as JSON
+- **Clear**: Delete all data from the app
+- **Local Only**: Data never leaves your device
+- **Browser-Specific**: Data tied to browser/device
+
+## Keyboard Shortcuts
+
+- **Spacebar**: Count a rep (when workout active)
+- **Enter**: Start/complete workout
+- **Escape**: Close modals
 
 ## Troubleshooting
 
-### Audio not playing
-- Interact with the page first (click start)
-- Check browser audio permissions
-- Ensure device is not muted
+### PWA Not Installing
+- Ensure using HTTPS (or localhost)
+- Try clearing browser cache
+- Check browser supports PWA features
+- On iOS, must use Safari
 
-### History not saving
-- Check if browser allows localStorage
-- Try a different browser
-- Check browser privacy settings
+### Data Not Saving
+- Check localStorage is enabled
+- Verify not in private/incognito mode
+- Try different browser
+- Check storage quota not exceeded
 
-### Button not responding
-- Ensure workout is started
-- Check if workout is paused
-- Try refreshing the page
+### Haptics Not Working
+- Only works on supported devices (iPhone, Android)
+- Check device settings allow vibration
+- Web vibration API must be supported
+
+### Audio Not Playing
+- Interact with page before sounds play (browser requirement)
+- Check device not muted
+- Verify browser allows audio
+
+## Calorie Estimation
+
+**Modified Burpee Formula:**
+```
+Calories = (duration_minutes × 10) + (total_reps × 1)
+```
+
+**Other Exercises:**
+Estimates based on standard metabolic equivalents (METs) for each exercise type.
+
+Note: Calorie estimates are approximate and vary by individual factors (weight, intensity, form).
+
+## Accessibility
+
+- Semantic HTML structure
+- ARIA labels for screen readers
+- Keyboard navigation support
+- High contrast text (WCAG AA compliant)
+- Large touch targets (min 44×44px)
+- Respects prefers-reduced-motion
+- Focus visible indicators
+
+## Performance
+
+- **First Load**: < 1s (cached)
+- **Interaction**: < 100ms response time
+- **Bundle Size**: < 200KB total
+- **Offline**: Fully functional offline after first visit
+- **Optimized**: Minimal JavaScript, efficient rendering
+
+## Development
+
+### Local Development
+```bash
+# Serve locally
+python3 -m http.server 8080
+
+# Or use any static server
+npx serve .
+```
+
+### Project Structure
+- No build process required
+- No npm dependencies
+- Pure HTML/CSS/JS
+- ES6 modules for organization
 
 ## Future Enhancements
 
-Possible additions (not yet implemented):
-- Custom timer durations
-- Multiple workout types
-- Rest interval timers
-- Social sharing features
-- Export history as CSV
-- Progressive Web App (PWA) support
+Possible additions:
+- Light mode support
+- Custom workout types
+- Workout templates
+- Rest day scheduling
+- Charts and graphs
+- Social features
+- Apple Health integration
+- More detailed analytics
+
+## Contributing
+
+This is a personal project, but suggestions are welcome:
+1. Open an issue for bugs
+2. Suggest features via issues
+3. Privacy-first approach mandatory
+4. Keep dependencies at zero
 
 ## Support
 
-For issues or suggestions:
-- Check browser console for errors
-- Try a different browser
-- Ensure JavaScript is enabled
-- Clear browser cache and reload
+For issues:
+1. Check browser console for errors
+2. Verify JavaScript is enabled
+3. Try clearing browser cache
+4. Use a supported browser
+5. Check localStorage is available
 
 ## License
 
@@ -208,6 +326,6 @@ Free to use for personal fitness tracking.
 
 ---
 
-**Stay strong and keep pushing! 💪**
+**Track. Progress. Achieve. 💪**
 
-Built for burpee enthusiasts who want to track progress and stay motivated.
+Built for fitness enthusiasts who value privacy and want a simple, effective way to track their workouts without sharing data with third parties.
