@@ -81,11 +81,6 @@ export class TabNavigationController {
                     window.workoutApp.renderCoachView();
                 }
                 break;
-
-            case 'settings':
-                // Update theme selector to match current theme
-                this.updateThemeSelector();
-                break;
         }
     }
 
@@ -98,20 +93,6 @@ export class TabNavigationController {
         // Only restore if it's not the workout tab (workout is default)
         if (lastTab && lastTab !== 'workout') {
             this.switchTab(lastTab);
-        }
-    }
-
-    /**
-     * Update theme selector in settings to match current theme
-     */
-    static updateThemeSelector() {
-        const themeSelect = document.getElementById('theme-select');
-        if (themeSelect) {
-            // Import ThemeService dynamically to avoid circular dependency
-            import('../services/ThemeService.js').then(({ ThemeService }) => {
-                const savedPreference = ThemeService.getSavedPreference();
-                themeSelect.value = savedPreference;
-            });
         }
     }
 

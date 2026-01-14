@@ -1,7 +1,6 @@
 // Settings Controller - Settings tab management
 // ==============================================
 
-import { ThemeService } from '../services/ThemeService.js';
 import { StorageManager } from '../services/StorageManager.js';
 
 export class SettingsController {
@@ -10,21 +9,12 @@ export class SettingsController {
      */
     static init() {
         this.attachListeners();
-        this.updateThemeSelect();
     }
 
     /**
      * Attach event listeners
      */
     static attachListeners() {
-        // Theme selector
-        const themeSelect = document.getElementById('theme-select');
-        if (themeSelect) {
-            themeSelect.addEventListener('change', (e) => {
-                this.handleThemeChange(e.target.value);
-            });
-        }
-
         // Export data button
         const exportBtn = document.getElementById('export-data-btn');
         if (exportBtn) {
@@ -39,31 +29,6 @@ export class SettingsController {
             clearBtn.addEventListener('click', () => {
                 this.confirmClearData();
             });
-        }
-    }
-
-    /**
-     * Handle theme change
-     */
-    static handleThemeChange(theme) {
-        if (theme === 'auto') {
-            // Remove saved preference, let system decide
-            localStorage.removeItem(ThemeService.THEME_KEY);
-            ThemeService.init();
-        } else {
-            // Set specific theme
-            ThemeService.setTheme(theme);
-        }
-    }
-
-    /**
-     * Update theme select to match current setting
-     */
-    static updateThemeSelect() {
-        const themeSelect = document.getElementById('theme-select');
-        if (themeSelect) {
-            const savedPreference = ThemeService.getSavedPreference();
-            themeSelect.value = savedPreference;
         }
     }
 
