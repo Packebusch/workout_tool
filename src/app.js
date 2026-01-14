@@ -811,6 +811,13 @@ class WorkoutApp {
     }
 
     /**
+     * Public method to render coach view (called by TabNavigationController)
+     */
+    renderCoachView() {
+        this.#renderCoachPanel();
+    }
+
+    /**
      * Render chart
      */
     #renderChart() {

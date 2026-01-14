@@ -77,8 +77,8 @@ export class TabNavigationController {
 
             case 'coach':
                 // Refresh coach recommendations
-                if (window.workoutApp && window.workoutApp.coachUI) {
-                    window.workoutApp.coachUI.refresh();
+                if (window.workoutApp && window.workoutApp.renderCoachView) {
+                    window.workoutApp.renderCoachView();
                 }
                 break;
 

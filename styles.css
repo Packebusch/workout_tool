@@ -1873,7 +1873,7 @@ body.celebrating {
 .form-group textarea {
     width: 100%;
     background: var(--bg-light);
-    color: white;
+    color: var(--text-white);
     border: 2px solid rgba(0, 255, 204, 0.3);
     padding: 10px;
     border-radius: 8px;
