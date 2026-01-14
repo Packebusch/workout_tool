@@ -21,13 +21,123 @@
 </head>
 <body>
     <div id="app">
+        <!-- Landing Page (Desktop Only) -->
+        <div id="landing-page" class="landing-page">
+            <div class="landing-container">
+                <header class="landing-header">
+                    <div class="landing-logo">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 10H7M14 14H10M21 10V14C21 15.1046 20.1046 16 19 16H5C3.89543 16 3 15.1046 3 14V10C3 8.89543 3.89543 8 5 8H19C20.1046 8 21 8.89543 21 10Z"/>
+                            <circle cx="7" cy="5" r="2"/>
+                            <circle cx="17" cy="5" r="2"/>
+                            <circle cx="7" cy="19" r="2"/>
+                            <circle cx="17" cy="19" r="2"/>
+                        </svg>
+                        <h1>Workout Tracker</h1>
+                    </div>
+                </header>
+
+                <section class="landing-hero">
+                    <h2 class="landing-title">Your Privacy-First<br>Training Companion</h2>
+                    <p class="landing-subtitle">
+                        Track workouts, build streaks, and see real progress—all stored locally on your device.
+                        No tracking. No servers. No BS.
+                    </p>
+
+                    <div class="landing-cta">
+                        <button class="cta-primary" id="startAppBtn">Get Started Free</button>
+                        <p class="cta-note">No signup required • Works offline • 100% private</p>
+                    </div>
+
+                    <div class="landing-preview">
+                        <div class="preview-card">
+                            <div class="preview-icon">🔒</div>
+                            <h3>100% Private</h3>
+                            <p>Your data never leaves your device. We can't see it because we never collect it.</p>
+                        </div>
+                        <div class="preview-card">
+                            <div class="preview-icon">📊</div>
+                            <h3>Progressive Overload</h3>
+                            <p>Built-in coach tracks your performance and suggests optimal workout intensity.</p>
+                        </div>
+                        <div class="preview-card">
+                            <div class="preview-icon">🔥</div>
+                            <h3>Streak Tracking</h3>
+                            <p>Build momentum with daily streaks and visual progress charts.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="landing-features">
+                    <h3 class="features-title">Everything you need, nothing you don't</h3>
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span>
+                            <span>Timer-based workouts (10-30 min)</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span>
+                            <span>Multiple exercise types</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span>
+                            <span>Workout history & analytics</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span>
+                            <span>Goal setting & tracking</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span>
+                            <span>Soreness logging</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span>
+                            <span>Export/import your data</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span>
+                            <span>Dark mode</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-check">✓</span>
+                            <span>Works offline (PWA)</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="landing-privacy">
+                    <div class="privacy-badge">🔐</div>
+                    <h3>Privacy isn't a policy—it's a feature</h3>
+                    <p>
+                        Your workout history, goals, and progress live in your browser's local storage.
+                        No accounts, no cloud sync, no data collection. Export anytime, delete anytime.
+                        <a href="https://github.com/Packebusch/workout_tool" target="_blank" class="privacy-link">Open source</a> and transparent.
+                    </p>
+                </section>
+
+                <section class="landing-final-cta">
+                    <button class="cta-primary large" id="startAppBtn2">Start Your First Workout</button>
+                    <p class="final-note">Free forever • No credit card needed</p>
+                </section>
+
+                <footer class="landing-footer">
+                    <div class="footer-links">
+                        <a href="privacy.html">Privacy Policy</a>
+                        <a href="imprint.html">Imprint</a>
+                        <a href="https://github.com/Packebusch/workout_tool" target="_blank">GitHub</a>
+                    </div>
+                </footer>
+            </div>
+        </div>
+
         <!-- Tab Content Container -->
         <div id="tab-content">
             <!-- WORKOUT TAB -->
             <div id="workout-view" class="tab-view active">
                 <div class="container">
                     <header>
-                        <h1>WORKOUT TRACKER</h1>
+                        <h1 id="app-title" style="cursor: pointer;">WORKOUT TRACKER</h1>
                         <div class="streak-display" id="streakDisplay">
                             🔥 <span id="streakCount">0</span> Day Streak
                         </div>
@@ -283,6 +393,10 @@
                                     <span>Version</span>
                                     <span class="text-secondary">3.0.0-beta</span>
                                 </div>
+                                <button class="inset-list-item" id="view-landing-btn">
+                                    <span>View Landing Page</span>
+                                    <span class="chevron-right">›</span>
+                                </button>
                                 <a href="privacy.html" class="inset-list-item">
                                     <span>Privacy Policy</span>
                                     <span class="chevron-right">›</span>

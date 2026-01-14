@@ -3233,3 +3233,312 @@ a:focus:not(:focus-visible) {
 .empty-state.compact .empty-state-message {
     font-size: 0.9rem;
 }
+
+/* ========================================
+   Landing Page Styles
+   ======================================== */
+
+.landing-page {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--color-background);
+    z-index: 10000;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.landing-page.active {
+    display: block;
+}
+
+.landing-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+/* Landing Header */
+.landing-header {
+    margin-bottom: 60px;
+}
+
+.landing-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.landing-logo svg {
+    color: var(--color-accent-primary);
+}
+
+.landing-logo h1 {
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+/* Hero Section */
+.landing-hero {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.landing-title {
+    font-size: 3rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 24px 0;
+    line-height: 1.2;
+}
+
+.landing-subtitle {
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+    margin: 0 auto 40px;
+    max-width: 600px;
+    line-height: 1.6;
+}
+
+/* CTA Section */
+.landing-cta {
+    margin-bottom: 60px;
+}
+
+.cta-primary {
+    background: var(--color-accent-primary);
+    color: white;
+    border: none;
+    padding: 16px 48px;
+    font-size: 1.125rem;
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(225, 82, 61, 0.3);
+    font-family: var(--font-system);
+}
+
+.cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(225, 82, 61, 0.4);
+}
+
+.cta-primary:active {
+    transform: scale(0.98);
+}
+
+.cta-primary.large {
+    padding: 20px 56px;
+    font-size: 1.25rem;
+}
+
+.cta-note {
+    margin-top: 16px;
+    font-size: 0.9rem;
+    color: var(--color-text-tertiary);
+}
+
+/* Preview Cards */
+.landing-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 60px;
+}
+
+.preview-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-surface-secondary);
+    border-radius: var(--radius-lg);
+    padding: 32px 24px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.preview-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.preview-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+.preview-card h3 {
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 12px 0;
+}
+
+.preview-card p {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Features Section */
+.landing-features {
+    margin-bottom: 80px;
+}
+
+.features-title {
+    font-size: 2rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    text-align: center;
+    margin: 0 0 40px 0;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-surface-secondary);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    color: var(--color-text-primary);
+}
+
+.feature-check {
+    color: var(--color-accent-primary);
+    font-weight: var(--font-weight-bold);
+    font-size: 1.25rem;
+}
+
+/* Privacy Section */
+.landing-privacy {
+    text-align: center;
+    padding: 48px 32px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-surface-secondary);
+    border-radius: var(--radius-xl);
+    margin-bottom: 80px;
+}
+
+.privacy-badge {
+    font-size: 3.5rem;
+    margin-bottom: 24px;
+}
+
+.landing-privacy h3 {
+    font-size: 1.75rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 16px 0;
+}
+
+.landing-privacy p {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.privacy-link {
+    color: var(--color-accent-primary);
+    text-decoration: none;
+    font-weight: var(--font-weight-semibold);
+}
+
+.privacy-link:hover {
+    text-decoration: underline;
+}
+
+/* Final CTA */
+.landing-final-cta {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.final-note {
+    margin-top: 16px;
+    font-size: 0.9rem;
+    color: var(--color-text-tertiary);
+}
+
+/* Footer */
+.landing-footer {
+    text-align: center;
+    padding-top: 40px;
+    border-top: 1px solid var(--color-surface-secondary);
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+    color: var(--color-text-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .landing-title {
+        font-size: 2rem;
+    }
+
+    .landing-subtitle {
+        font-size: 1.125rem;
+    }
+
+    .landing-preview {
+        grid-template-columns: 1fr;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cta-primary {
+        padding: 14px 32px;
+        font-size: 1rem;
+    }
+
+    .cta-primary.large {
+        padding: 16px 40px;
+        font-size: 1.125rem;
+    }
+}
+
+/* Hide landing page on mobile by default */
+@media (max-width: 1023px) {
+    .landing-page {
+        display: none !important;
+    }
+}
+
+/* Hide "View Landing Page" button on mobile */
+@media (max-width: 1023px) {
+    #view-landing-btn {
+        display: none !important;
+    }
+}

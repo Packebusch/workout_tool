@@ -1000,12 +1000,97 @@ class WorkoutApp {
     }
 }
 
+// Landing Page Controller
+class LandingPageController {
+    static STORAGE_KEY = 'landing_page_seen';
+
+    static init() {
+        // Only show landing page on desktop
+        if (window.innerWidth < 1024) {
+            return;
+        }
+
+        // Check URL parameter to force show landing page
+        const urlParams = new URLSearchParams(window.location.search);
+        const forceLanding = urlParams.get('landing') === 'true';
+
+        const hasSeenLanding = localStorage.getItem(this.STORAGE_KEY);
+        const landingPage = document.getElementById('landing-page');
+        const tabContent = document.getElementById('tab-content');
+        const tabBar = document.getElementById('bottom-tabs');
+
+        if (!hasSeenLanding || forceLanding) {
+            this.showLanding();
+        }
+
+        // Set up CTA buttons
+        const startBtn1 = document.getElementById('startAppBtn');
+        const startBtn2 = document.getElementById('startAppBtn2');
+
+        if (startBtn1 && startBtn2) {
+            startBtn1.addEventListener('click', () => this.hideLanding());
+            startBtn2.addEventListener('click', () => this.hideLanding());
+        }
+
+        // Set up "View Landing Page" button in Settings
+        const viewLandingBtn = document.getElementById('view-landing-btn');
+        if (viewLandingBtn) {
+            viewLandingBtn.addEventListener('click', () => this.showLanding());
+        }
+
+        // Make app title clickable to return to landing page (desktop only)
+        const appTitle = document.getElementById('app-title');
+        if (appTitle && window.innerWidth >= 1024) {
+            appTitle.addEventListener('click', () => this.showLanding());
+        }
+    }
+
+    static showLanding() {
+        const landingPage = document.getElementById('landing-page');
+        const tabContent = document.getElementById('tab-content');
+        const tabBar = document.getElementById('bottom-tabs');
+
+        // Hide app content first
+        tabContent.style.display = 'none';
+        tabBar.style.display = 'none';
+
+        // Show landing page by removing inline style and adding active class
+        landingPage.style.display = 'block';
+        landingPage.classList.add('active');
+
+        // Clear URL parameter if present
+        if (window.location.search.includes('landing=true')) {
+            const url = new URL(window.location);
+            url.searchParams.delete('landing');
+            window.history.replaceState({}, '', url);
+        }
+    }
+
+    static hideLanding() {
+        const landingPage = document.getElementById('landing-page');
+        const tabContent = document.getElementById('tab-content');
+        const tabBar = document.getElementById('bottom-tabs');
+
+        localStorage.setItem(this.STORAGE_KEY, 'true');
+        landingPage.classList.remove('active');
+        tabContent.style.display = '';
+        tabBar.style.display = '';
+
+        // Smooth transition
+        setTimeout(() => {
+            landingPage.style.display = 'none';
+        }, 300);
+    }
+}
+
 // Initialize app when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
+        LandingPageController.init();
         window.workoutApp = new WorkoutApp();
     });
 } else {
+    LandingPageController.init();
     window.workoutApp = new WorkoutApp();
 }
 
