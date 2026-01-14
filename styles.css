@@ -292,7 +292,7 @@ button:disabled {
     max-width: 450px;
     background: var(--bg-dark);
     border-radius: 24px;
-    padding: 40px 32px;
+    padding: calc(40px + env(safe-area-inset-top, 0)) 32px 40px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     position: relative;
 }
@@ -1399,7 +1399,7 @@ header h1 {
     }
 
     .container {
-        padding: 24px 20px;
+        padding: calc(24px + env(safe-area-inset-top, 0)) 20px 24px;
         margin-top: 10px;
     }
 
@@ -2356,7 +2356,7 @@ body.celebrating {
 /* Tab Headers (for History, Coach, Settings) */
 .tab-header {
     text-align: center;
-    padding: calc(24px + env(safe-area-inset-top, 0)) 0 16px;
+    padding: 24px 0 16px;
     border-bottom: 1px solid var(--color-surface-secondary);
     margin-bottom: 24px;
 }
@@ -2490,7 +2490,7 @@ body.celebrating {
     box-shadow: none;
     max-width: 450px;
     background: transparent;
-    padding: 20px;
+    padding: calc(20px + env(safe-area-inset-top, 0)) 20px;
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0) + 20px);
 }
 
