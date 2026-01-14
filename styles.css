@@ -1163,7 +1163,7 @@ header h1 {
 }
 
 .history-date {
-    color: var(--bg-light);
+    color: var(--color-text-secondary);
     font-size: 0.7rem;
     margin-bottom: 6px;
     font-weight: 600;
@@ -1186,7 +1186,7 @@ header h1 {
 }
 
 .history-detail {
-    color: var(--bg-light);
+    color: var(--color-text-secondary);
     font-weight: 600;
 }
 
@@ -2356,7 +2356,7 @@ body.celebrating {
 /* Tab Headers (for History, Coach, Settings) */
 .tab-header {
     text-align: center;
-    padding: 24px 0 16px;
+    padding: calc(24px + env(safe-area-inset-top, 0)) 0 16px;
     border-bottom: 1px solid var(--color-surface-secondary);
     margin-bottom: 24px;
 }
