@@ -35,11 +35,16 @@ export class ThemeService {
      * Set theme (light or dark)
      */
     static setTheme(theme) {
+        // Remove both classes first
+        document.body.classList.remove('dark-mode', 'light-mode');
+
+        // Add the appropriate class
         if (theme === 'dark') {
             document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');
+        } else if (theme === 'light') {
+            document.body.classList.add('light-mode');
         }
+        // If neither, let system preference take over (no class)
 
         // Don't save if it's just following system preference
         if (theme !== 'auto') {

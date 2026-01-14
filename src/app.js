@@ -804,6 +804,13 @@ class WorkoutApp {
     }
 
     /**
+     * Public method to render history view (called by TabNavigationController)
+     */
+    renderHistoryView() {
+        this.#renderHistory();
+    }
+
+    /**
      * Render chart
      */
     #renderChart() {

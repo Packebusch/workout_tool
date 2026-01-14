@@ -70,8 +70,8 @@ export class TabNavigationController {
         switch(tabName) {
             case 'history':
                 // Refresh history view when tab becomes active
-                if (window.workoutApp && window.workoutApp.historyUI) {
-                    window.workoutApp.historyUI.render();
+                if (window.workoutApp && window.workoutApp.renderHistoryView) {
+                    window.workoutApp.renderHistoryView();
                 }
                 break;
 
