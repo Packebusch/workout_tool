@@ -1,6 +1,8 @@
-# Workout Tracker
+# Untracked
 
-A privacy-focused Progressive Web App (PWA) for tracking multiple workout types with iOS-style design. Built with vanilla JavaScript to provide a native app experience that respects your privacy—all data stays on your device.
+**Track Your Workouts. Stay Untracked.**
+
+A privacy-first Progressive Web App (PWA) for tracking workouts with zero surveillance. Built with vanilla JavaScript to provide a native app experience that respects your privacy—all data stays on your device. No servers, no tracking, no BS.
 
 ## Features
 
