@@ -5,8 +5,8 @@
   "start_url": "/workout_tool/",
   "scope": "/workout_tool/",
   "display": "standalone",
-  "background_color": "#0a0a12",
-  "theme_color": "#00ffcc",
+  "background_color": "#F2F2F7",
+  "theme_color": "#E1523D",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -27,6 +27,7 @@
   "share_target": {
     "action": "/workout_tool/",
     "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
     "params": {
       "title": "title",
       "text": "text"

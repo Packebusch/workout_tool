@@ -13,9 +13,12 @@ import { GoalService } from './services/GoalService.js';
 import { SorenessService } from './services/SorenessService.js';
 import { CoachService } from './services/CoachService.js';
 import { NotificationService } from './services/NotificationService.js';
+import { ThemeService } from './services/ThemeService.js';
 import { UIController } from './ui/UIController.js';
 import { HistoryUIController } from './ui/HistoryUIController.js';
 import { CoachUIController } from './ui/CoachUIController.js';
+import { TabNavigationController } from './ui/TabNavigationController.js';
+import { SettingsController } from './ui/SettingsController.js';
 import { DIFFICULTY_LEVELS, WORKOUT_CONFIGS, MOTIVATIONAL_MESSAGES, SORENESS_LEVELS } from './config/constants.js';
 import { getRandomItem } from './utils/calculations.js';
 
@@ -64,6 +67,15 @@ class WorkoutApp {
 
         // Initialize notifications
         NotificationService.init();
+
+        // Initialize theme system (light/dark mode)
+        ThemeService.init();
+
+        // Initialize tab navigation (iOS-style bottom tabs)
+        TabNavigationController.init();
+
+        // Initialize settings controller
+        SettingsController.init();
 
         // Set up event listeners
         this.#setupEventListeners();
@@ -215,38 +227,58 @@ class WorkoutApp {
      * Set up history panel handlers
      */
     #setupHistoryHandlers() {
-        // Toggle history
-        this.ui.getElement('historyToggleBtn').addEventListener('click', () => {
-            const isOpen = this.historyUI.toggleHistory();
-            if (isOpen) {
-                this.#renderHistory();
-            }
-        });
+        // Old panel buttons removed in tab-based layout - add null checks
+        const historyToggleBtn = document.getElementById('historyToggleBtn');
+        const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+        const historyPanel = document.getElementById('historyPanel');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 
-        document.getElementById('closeHistoryBtn').addEventListener('click', () => {
-            this.historyUI.closeHistory();
-        });
+        if (historyToggleBtn) {
+            historyToggleBtn.addEventListener('click', () => {
+                const isOpen = this.historyUI.toggleHistory();
+                if (isOpen) {
+                    this.#renderHistory();
+                }
+            });
+        }
+
+        if (closeHistoryBtn) {
+            closeHistoryBtn.addEventListener('click', () => {
+                this.historyUI.closeHistory();
+            });
+        }
 
         // Close on outside click
-        document.getElementById('historyPanel').addEventListener('click', (e) => {
-            if (e.target.id === 'historyPanel') {
-                this.historyUI.closeHistory();
-            }
-        });
+        if (historyPanel) {
+            historyPanel.addEventListener('click', (e) => {
+                if (e.target.id === 'historyPanel') {
+                    this.historyUI.closeHistory();
+                }
+            });
+        }
 
         // Clear history
-        document.getElementById('clearHistoryBtn').addEventListener('click', () => {
-            const confirmed = confirm('Are you sure you want to clear all workout history? This cannot be undone.');
-            if (confirmed) {
-                HistoryService.clearHistory();
-                this.#renderHistory();
-                this.ui.showMotivationalMessage('History cleared!');
-            }
-        });
+        if (clearHistoryBtn) {
+            clearHistoryBtn.addEventListener('click', () => {
+                const confirmed = confirm('Are you sure you want to clear all workout history? This cannot be undone.');
+                if (confirmed) {
+                    HistoryService.clearHistory();
+                    this.#renderHistory();
+                    this.ui.showMotivationalMessage('History cleared!');
+                }
+            });
+        }
 
         // Export/Import
-        document.getElementById('exportBtn').addEventListener('click', () => this.#exportData());
-        document.getElementById('importBtn').addEventListener('click', () => this.#importData());
+        const exportBtn = document.getElementById('exportBtn');
+        const importBtn = document.getElementById('importBtn');
+
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => this.#exportData());
+        }
+        if (importBtn) {
+            importBtn.addEventListener('click', () => this.#importData());
+        }
 
         // Chart period buttons
         document.querySelectorAll('.chart-period-btn').forEach(btn => {
@@ -276,109 +308,149 @@ class WorkoutApp {
      * Set up coach panel handlers
      */
     #setupCoachHandlers() {
-        // Toggle coach panel
-        this.ui.getElement('coachToggleBtn').addEventListener('click', () => {
-            const isOpen = this.coachUI.toggleCoachPanel();
-            if (isOpen) {
-                this.#renderCoachPanel();
-            }
-        });
+        // Old panel buttons - add null checks for tab-based layout
+        const coachToggleBtn = document.getElementById('coachToggleBtn');
+        const closeCoachBtn = document.getElementById('closeCoachBtn');
+        const coachPanel = document.getElementById('coachPanel');
 
-        document.getElementById('closeCoachBtn').addEventListener('click', () => {
-            this.coachUI.closeCoachPanel();
-        });
+        if (coachToggleBtn) {
+            coachToggleBtn.addEventListener('click', () => {
+                const isOpen = this.coachUI.toggleCoachPanel();
+                if (isOpen) {
+                    this.#renderCoachPanel();
+                }
+            });
+        }
+
+        if (closeCoachBtn) {
+            closeCoachBtn.addEventListener('click', () => {
+                this.coachUI.closeCoachPanel();
+            });
+        }
 
         // Close on outside click
-        document.getElementById('coachPanel').addEventListener('click', (e) => {
-            if (e.target.id === 'coachPanel') {
-                this.coachUI.closeCoachPanel();
-            }
-        });
+        if (coachPanel) {
+            coachPanel.addEventListener('click', (e) => {
+                if (e.target.id === 'coachPanel') {
+                    this.coachUI.closeCoachPanel();
+                }
+            });
+        }
 
-        // Tab switching
+        // Coach sub-tab switching (Goals, Soreness, Insights)
         document.querySelectorAll('.coach-tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
-                this.coachUI.switchTab(e.target.dataset.tab);
+                // Use currentTarget to get the button element, not the clicked child
+                const tabButton = e.currentTarget;
+                const tabName = tabButton.dataset.tab;
+                if (tabName) {
+                    this.coachUI.switchTab(tabName);
+                }
             });
         });
 
         // Create goal button
-        document.getElementById('createGoalBtn').addEventListener('click', () => {
-            this.coachUI.showGoalModal();
-        });
+        const createGoalBtn = document.getElementById('createGoalBtn');
+        if (createGoalBtn) {
+            createGoalBtn.addEventListener('click', () => {
+                this.coachUI.showGoalModal();
+            });
+        }
 
         // Cancel goal button
-        document.getElementById('cancelGoalBtn').addEventListener('click', () => {
-            this.coachUI.hideGoalModal();
-        });
+        const cancelGoalBtn = document.getElementById('cancelGoalBtn');
+        if (cancelGoalBtn) {
+            cancelGoalBtn.addEventListener('click', () => {
+                this.coachUI.hideGoalModal();
+            });
+        }
 
         // Goal form submission
-        document.getElementById('goalForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const goalData = {
-                workoutType: document.getElementById('goalWorkoutType').value,
-                difficulty: document.getElementById('goalDifficulty').value,
-                targetReps: parseInt(document.getElementById('goalTargetReps').value),
-                targetDuration: parseInt(document.getElementById('goalTargetTime').value) * 60,
-                deadline: document.getElementById('goalDeadline').value || null
-            };
+        const goalForm = document.getElementById('goalForm');
+        if (goalForm) {
+            goalForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const goalData = {
+                    workoutType: document.getElementById('goalWorkoutType').value,
+                    difficulty: document.getElementById('goalDifficulty').value,
+                    targetReps: parseInt(document.getElementById('goalTargetReps').value),
+                    targetDuration: parseInt(document.getElementById('goalTargetTime').value) * 60,
+                    deadline: document.getElementById('goalDeadline').value || null
+                };
 
-            GoalService.createGoal(goalData);
-            this.coachUI.hideGoalModal();
-            this.#renderCoachPanel();
-            this.ui.showMotivationalMessage('Goal created! Let\'s crush it! 🎯');
-        });
+                GoalService.createGoal(goalData);
+                this.coachUI.hideGoalModal();
+                this.#renderCoachPanel();
+                this.ui.showMotivationalMessage('Goal created! Let\'s crush it! 🎯');
+            });
+        }
 
         // Log soreness button
-        document.getElementById('logSorenessBtn').addEventListener('click', () => {
-            this.coachUI.showSorenessModal();
-        });
+        const logSorenessBtn = document.getElementById('logSorenessBtn');
+        if (logSorenessBtn) {
+            logSorenessBtn.addEventListener('click', () => {
+                this.coachUI.showSorenessModal();
+            });
+        }
 
         // Quick soreness button
-        document.getElementById('quickSorenessBtn').addEventListener('click', () => {
-            this.coachUI.showSorenessModal();
-        });
+        const quickSorenessBtn = document.getElementById('quickSorenessBtn');
+        if (quickSorenessBtn) {
+            quickSorenessBtn.addEventListener('click', () => {
+                this.coachUI.showSorenessModal();
+            });
+        }
 
         // Cancel soreness button
-        document.getElementById('cancelSorenessBtn').addEventListener('click', () => {
-            this.coachUI.hideSorenessModal();
-        });
+        const cancelSorenessBtn = document.getElementById('cancelSorenessBtn');
+        if (cancelSorenessBtn) {
+            cancelSorenessBtn.addEventListener('click', () => {
+                this.coachUI.hideSorenessModal();
+            });
+        }
 
         // Soreness slider update
-        document.getElementById('overallSoreness').addEventListener('input', (e) => {
-            const level = parseInt(e.target.value);
-            const levelText = SORENESS_LEVELS[level].name;
-            document.getElementById('sorenessLevelText').textContent = levelText;
-        });
+        const overallSoreness = document.getElementById('overallSoreness');
+        const sorenessLevelText = document.getElementById('sorenessLevelText');
+        if (overallSoreness && sorenessLevelText) {
+            overallSoreness.addEventListener('input', (e) => {
+                const level = parseInt(e.target.value);
+                const levelText = SORENESS_LEVELS[level].name;
+                sorenessLevelText.textContent = levelText;
+            });
+        }
 
         // Soreness form submission
-        document.getElementById('sorenessForm').addEventListener('submit', (e) => {
-            e.preventDefault();
+        const sorenessForm = document.getElementById('sorenessForm');
+        if (sorenessForm) {
+            sorenessForm.addEventListener('submit', (e) => {
+                e.preventDefault();
 
-            const overallLevel = parseInt(document.getElementById('overallSoreness').value);
-            const affectedAreas = [];
+                const overallLevel = parseInt(document.getElementById('overallSoreness').value);
+                const affectedAreas = [];
 
-            document.querySelectorAll('.muscle-group-item input[type="range"]').forEach(input => {
-                const level = parseInt(input.value);
-                if (level > 0) {
-                    affectedAreas.push({
-                        area: input.dataset.muscle,
-                        level: level
-                    });
-                }
+                document.querySelectorAll('.muscle-group-item input[type="range"]').forEach(input => {
+                    const level = parseInt(input.value);
+                    if (level > 0) {
+                        affectedAreas.push({
+                            area: input.dataset.muscle,
+                            level: level
+                        });
+                    }
+                });
+
+                const sorenessData = {
+                    overallLevel,
+                    affectedAreas,
+                    notes: document.getElementById('sorenessNotes').value
+                };
+
+                SorenessService.logSoreness(sorenessData);
+                this.coachUI.hideSorenessModal();
+                this.#renderCoachPanel();
+                this.ui.showMotivationalMessage('Soreness logged! Listen to your body! 💪');
             });
-
-            const sorenessData = {
-                overallLevel,
-                affectedAreas,
-                notes: document.getElementById('sorenessNotes').value
-            };
-
-            SorenessService.logSoreness(sorenessData);
-            this.coachUI.hideSorenessModal();
-            this.#renderCoachPanel();
-            this.ui.showMotivationalMessage('Soreness logged! Listen to your body! 💪');
-        });
+        }
 
         // Notification preferences
         const notificationsCheckbox = document.getElementById('notificationsEnabled');
@@ -789,6 +861,20 @@ class WorkoutApp {
 
         // Render workout list
         this.historyUI.renderWorkoutList(history.sessions);
+    }
+
+    /**
+     * Public method to render history view (called by TabNavigationController)
+     */
+    renderHistoryView() {
+        this.#renderHistory();
+    }
+
+    /**
+     * Public method to render coach view (called by TabNavigationController)
+     */
+    renderCoachView() {
+        this.#renderCoachPanel();
     }
 
     /**

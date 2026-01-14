@@ -144,8 +144,18 @@ export class HistoryUIController {
      */
     renderWorkoutList(sessions) {
         if (sessions.length === 0) {
-            this.#elements.historyList.innerHTML =
-                '<p style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">No workout history yet. Complete a workout to see it here!</p>';
+            this.#elements.historyList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📊</div>
+                    <h3 class="empty-state-title">No Workout History Yet</h3>
+                    <p class="empty-state-message">
+                        Start your fitness journey! Complete your first workout and it will appear here.
+                    </p>
+                    <button class="empty-state-button" onclick="document.querySelector('[data-tab=\\'workout\\']').click()">
+                        Start Your First Workout
+                    </button>
+                </div>
+            `;
             return;
         }
 
