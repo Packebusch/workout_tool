@@ -6,7 +6,7 @@ import { StorageManager } from './services/StorageManager.js';
 import { TimerService } from './services/TimerService.js';
 import { WorkoutService } from './services/WorkoutService.js';
 import { HistoryService } from './services/HistoryService.js';
-import { StreakService } from './services/StreakService.js';
+import { WeeklyStatsService } from './services/WeeklyStatsService.js';
 import { ChartService } from './services/ChartService.js';
 import { WakeLockService } from './services/WakeLockService.js';
 import { GoalService } from './services/GoalService.js';
@@ -82,7 +82,7 @@ class WorkoutApp {
 
         // Update initial UI
         this.#updateUI();
-        this.#updateStreak();
+        this.#updateWeeklyStats();
 
         // Initialize completion modal handlers
         this.#setupModalHandlers();
@@ -723,12 +723,11 @@ class WorkoutApp {
     }
 
     /**
-     * Update streak display
+     * Update weekly stats display
      */
-    #updateStreak() {
-        const streak = StreakService.getCurrentStreak();
-        const needsRest = StreakService.needsRestDay();
-        this.ui.updateStreak(streak, needsRest);
+    #updateWeeklyStats() {
+        const weeklyCount = WeeklyStatsService.getCurrentWeekCount();
+        this.ui.updateWeeklyStats(weeklyCount);
     }
 
     /**
@@ -796,7 +795,7 @@ class WorkoutApp {
         };
 
         HistoryService.saveWorkout(workout);
-        StreakService.updateStreak();
+        WeeklyStatsService.updateWeeklyStats();
 
         // Update goals - record attempts for matching goals
         const matchingGoals = GoalService.getGoalsForWorkout(summary.workoutType, summary.difficulty);
@@ -812,7 +811,7 @@ class WorkoutApp {
 
         this.historyUI.closeCompletionModal();
         this.#resetWorkout(true); // Skip confirmation, workout already saved
-        this.#updateStreak();
+        this.#updateWeeklyStats();
 
         // Show week summary
         const weekSummary = HistoryService.getWeekSummary();
@@ -938,7 +937,7 @@ class WorkoutApp {
 
                     StorageManager.importAll(data, merge);
 
-                    this.#updateStreak();
+                    this.#updateWeeklyStats();
                     this.#renderHistory();
 
                     this.ui.showMotivationalMessage(

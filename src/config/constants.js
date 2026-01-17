@@ -4,6 +4,7 @@
 export const STORAGE_KEYS = {
     HISTORY: 'burpeeWorkoutHistory',
     STREAK: 'workoutStreak',
+    WEEKLY_STATS: 'weeklyStats',
     GOALS: 'workoutGoals',
     SORENESS: 'sorenessLog',
     COACH_STATE: 'coachState',

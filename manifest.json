@@ -1,7 +1,7 @@
 {
   "name": "Untracked",
   "short_name": "Untracked",
-  "description": "Untracked - Privacy-first workout tracking. No servers, no tracking, no BS. Track your progress, build streaks, and crush goals - all stored locally on your device.",
+  "description": "Untracked - Privacy-first workout tracking. No servers, no tracking, no BS. Track your progress, build consistency, and crush goals - all stored locally on your device.",
   "start_url": "/workout_tool/",
   "scope": "/workout_tool/",
   "display": "standalone",

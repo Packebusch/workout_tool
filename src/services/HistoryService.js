@@ -233,6 +233,7 @@ export class HistoryService {
 
     /**
      * Get week stats (helper)
+     * Normalizes by using reps per minute to account for different workout durations
      */
     static #getWeekStats(sessions, weeksAgo) {
         const weekStart = getDaysAgo(weeksAgo * 7);
@@ -242,20 +243,26 @@ export class HistoryService {
 
         if (weekSessions.length === 0) return null;
 
-        const totalReps = weekSessions.reduce((sum, s) => sum + s.reps, 0);
+        // Calculate average reps per minute (normalized for duration)
+        const totalRepsPerMin = weekSessions.reduce((sum, s) => {
+            const minutes = s.duration / 60;
+            return sum + (s.reps / minutes);
+        }, 0);
+
         return {
-            avgReps: totalReps / weekSessions.length,
+            avgRepsPerMin: totalRepsPerMin / weekSessions.length,
             count: weekSessions.length
         };
     }
 
     /**
      * Compare weeks (helper)
+     * Uses reps per minute for fair comparison across different workout durations
      */
     static #compareWeeks(thisWeek, lastWeek) {
         if (!thisWeek || !lastWeek) return null;
 
-        const improvement = ((thisWeek.avgReps - lastWeek.avgReps) / lastWeek.avgReps) * 100;
+        const improvement = ((thisWeek.avgRepsPerMin - lastWeek.avgRepsPerMin) / lastWeek.avgRepsPerMin) * 100;
         return Math.round(improvement);
     }
 }

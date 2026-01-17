@@ -144,19 +144,13 @@ export class UIController {
     }
 
     /**
-     * Update streak display
+     * Update weekly stats display
      */
-    updateStreak(streak, needsRest = false) {
-        this.#elements.streakCount.textContent = streak;
-
-        if (needsRest) {
-            this.#elements.streakDisplay.style.color = '#ffaa00';
-            this.#elements.streakDisplay.title =
-                'You\'ve worked out 6+ days straight! Consider taking a rest day for recovery.';
-        } else {
-            this.#elements.streakDisplay.style.color = '';
-            this.#elements.streakDisplay.title = '';
-        }
+    updateWeeklyStats(weeklyCount) {
+        this.#elements.streakCount.textContent = weeklyCount;
+        // Reset any styling that may have been applied
+        this.#elements.streakDisplay.style.color = '';
+        this.#elements.streakDisplay.title = `${weeklyCount} workout${weeklyCount !== 1 ? 's' : ''} this week`;
     }
 
     /**

@@ -3,7 +3,7 @@
 
 import { GoalService } from './GoalService.js';
 import { SorenessService } from './SorenessService.js';
-import { StreakService } from './StreakService.js';
+import { WeeklyStatsService } from './WeeklyStatsService.js';
 import { HistoryService } from './HistoryService.js';
 import {
     TARGET_REPS,
@@ -148,7 +148,7 @@ export class CoachService {
      * Get comprehensive workout recommendation
      */
     static getWorkoutRecommendation(history) {
-        const streak = StreakService.getCurrentStreak();
+        const weeklyWorkouts = WeeklyStatsService.getCurrentWeekCount();
         const currentSoreness = SorenessService.getCurrentSorenessLevel();
         const affectedMuscles = SorenessService.getAffectedMuscleGroups();
 
@@ -301,14 +301,14 @@ export class CoachService {
             factors.push("Moderate soreness");
         }
 
-        // Factor 2: Streak (weight: 30%)
-        const streak = StreakService.getCurrentStreak();
-        if (streak >= 7) {
+        // Factor 2: Weekly workout frequency (weight: 30%)
+        const weeklyWorkouts = WeeklyStatsService.getCurrentWeekCount();
+        if (weeklyWorkouts >= 6) {
             score += 30;
-            factors.push("7+ day streak - recovery needed");
-        } else if (streak >= 6) {
+            factors.push("6+ workouts this week - recovery needed");
+        } else if (weeklyWorkouts >= 5) {
             score += 20;
-            factors.push("6 day streak");
+            factors.push("5 workouts this week");
         }
 
         // Factor 3: Recent intensity (weight: 20%)

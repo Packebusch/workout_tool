@@ -13,7 +13,7 @@ const urlsToCache = [
   '/workout_tool/src/services/TimerService.js',
   '/workout_tool/src/services/WorkoutService.js',
   '/workout_tool/src/services/HistoryService.js',
-  '/workout_tool/src/services/StreakService.js',
+  '/workout_tool/src/services/WeeklyStatsService.js',
   '/workout_tool/src/services/ChartService.js',
   '/workout_tool/src/services/WakeLockService.js',
   '/workout_tool/src/services/GoalService.js',

@@ -51,8 +51,25 @@ export class ChartService {
         }
 
         const ctx = canvas.getContext('2d');
-        const width = CHART_CONFIG.CANVAS_WIDTH;
-        const height = CHART_CONFIG.CANVAS_HEIGHT;
+
+        // Make chart larger on desktop for better clarity
+        const isDesktop = window.innerWidth >= 768;
+        const width = isDesktop ? 600 : CHART_CONFIG.CANVAS_WIDTH;
+        const height = isDesktop ? 330 : CHART_CONFIG.CANVAS_HEIGHT;
+
+        // Handle high-DPI displays
+        const dpr = window.devicePixelRatio || 1;
+
+        // Set canvas actual size (scaled for high-DPI)
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+
+        // Set canvas display size (CSS pixels)
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+
+        // Scale context to match DPI
+        ctx.scale(dpr, dpr);
 
         // Clear canvas
         ctx.clearRect(0, 0, width, height);
@@ -71,7 +88,7 @@ export class ChartService {
         const maxReps = Math.max(...allReps, 1);
 
         // Chart dimensions
-        const padding = CHART_CONFIG.PADDING;
+        const padding = isDesktop ? CHART_CONFIG.PADDING * 1.2 : CHART_CONFIG.PADDING;
         const chartWidth = width - padding * 2;
         const chartHeight = height - padding * 2;
 
@@ -118,8 +135,9 @@ export class ChartService {
      * Draw background grid
      */
     #drawGrid(ctx, width, height, padding, chartHeight) {
+        const isDesktop = window.innerWidth >= 768;
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-        ctx.lineWidth = 1;
+        ctx.lineWidth = isDesktop ? 1.5 : 1;
 
         for (let i = 0; i <= CHART_CONFIG.GRID_LINES; i++) {
             const y = padding + (chartHeight / CHART_CONFIG.GRID_LINES) * i;
@@ -134,8 +152,9 @@ export class ChartService {
      * Draw axes
      */
     #drawAxes(ctx, width, height, padding) {
+        const isDesktop = window.innerWidth >= 768;
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = isDesktop ? 2.5 : 2;
         ctx.beginPath();
         ctx.moveTo(padding, padding);
         ctx.lineTo(padding, height - padding);
@@ -148,13 +167,14 @@ export class ChartService {
      */
     #drawLine(ctx, data, type, padding, chartHeight, maxReps, pointSpacing, height) {
         const color = WORKOUT_TYPE_COLORS[type] || '#E1523D';
+        const isDesktop = window.innerWidth >= 768;
 
         // Skip if no data
         if (data.every(v => v === 0)) return;
 
         // Draw line
         ctx.strokeStyle = color;
-        ctx.lineWidth = CHART_CONFIG.LINE_WIDTH;
+        ctx.lineWidth = isDesktop ? CHART_CONFIG.LINE_WIDTH * 1.2 : CHART_CONFIG.LINE_WIDTH;
         ctx.beginPath();
 
         let firstPoint = true;
@@ -172,6 +192,7 @@ export class ChartService {
         ctx.stroke();
 
         // Draw points
+        const pointRadius = isDesktop ? CHART_CONFIG.POINT_RADIUS * 1.2 : CHART_CONFIG.POINT_RADIUS;
         data.forEach((reps, index) => {
             if (reps > 0) {
                 const x = padding + index * pointSpacing;
@@ -179,11 +200,11 @@ export class ChartService {
 
                 ctx.fillStyle = color;
                 ctx.beginPath();
-                ctx.arc(x, y, CHART_CONFIG.POINT_RADIUS, 0, Math.PI * 2);
+                ctx.arc(x, y, pointRadius, 0, Math.PI * 2);
                 ctx.fill();
 
                 // Glow effect
-                ctx.shadowBlur = 8;
+                ctx.shadowBlur = isDesktop ? 10 : 8;
                 ctx.shadowColor = color;
                 ctx.fill();
                 ctx.shadowBlur = 0;
@@ -195,8 +216,9 @@ export class ChartService {
      * Draw Y-axis labels
      */
     #drawYAxisLabels(ctx, maxReps, padding, chartHeight) {
+        const isDesktop = window.innerWidth >= 768;
         ctx.fillStyle = '#F5F5F5';
-        ctx.font = '10px -apple-system, sans-serif';
+        ctx.font = `${isDesktop ? 12 : 10}px -apple-system, sans-serif`;
         ctx.textAlign = 'right';
 
         for (let i = 0; i <= CHART_CONFIG.GRID_LINES; i++) {
@@ -210,8 +232,10 @@ export class ChartService {
      * Draw X-axis labels
      */
     #drawXAxisLabels(ctx, dates, period, padding, pointSpacing, height) {
+        const isDesktop = window.innerWidth >= 768;
         ctx.textAlign = 'center';
         ctx.fillStyle = '#F5F5F5';
+        ctx.font = `${isDesktop ? 12 : 10}px -apple-system, sans-serif`;
 
         const labelInterval = period === 7 ? 2 : 5;
 
