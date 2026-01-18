@@ -4,7 +4,6 @@
 import { StorageManager } from './StorageManager.js';
 import { STORAGE_KEYS } from '../config/constants.js';
 import { filterSessionsByDateRange, getWeekStart, getMonthStart, getDaysAgo, getWeekKey } from '../utils/dateUtils.js';
-import { calculateTrend } from '../utils/calculations.js';
 import { ProgressionService } from './ProgressionService.js';
 
 export class HistoryService {
@@ -121,10 +120,16 @@ export class HistoryService {
             const totalReps = sessions.reduce((sum, s) => sum + s.reps, 0);
             const avgReps = Math.round(totalReps / sessions.length);
 
-            const trend = calculateTrend(sessions);
-
-            // Compare last session to previous session (instead of weekly averages)
+            // Compare last session to previous session
             const sessionComparison = this.#compareLastSessions(sessions);
+
+            // Derive trend from session comparison (consistent metrics)
+            let trend = 'neutral';
+            if (sessionComparison !== null) {
+                if (sessionComparison > 5) trend = 'improving';
+                else if (sessionComparison < -5) trend = 'declining';
+                else trend = 'plateau';
+            }
 
             return {
                 type,
