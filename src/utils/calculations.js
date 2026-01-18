@@ -69,13 +69,19 @@ export function getTargetReps(workoutType, difficulty) {
 
 /**
  * Calculate trend from session data
+ * Uses normalized reps per minute to account for different workout durations
  */
 export function calculateTrend(sessions) {
     if (sessions.length < 3) return 'neutral';
 
-    const reps = sessions.map(s => s.reps);
-    const avg = reps.reduce((a, b) => a + b, 0) / reps.length;
-    const recent = reps.slice(0, Math.ceil(reps.length / 2));
+    // Normalize by duration - use reps per minute for fair comparison
+    const repsPerMin = sessions.map(s => {
+        const durationMinutes = s.duration / 60;
+        return durationMinutes > 0 ? s.reps / durationMinutes : 0;
+    });
+
+    const avg = repsPerMin.reduce((a, b) => a + b, 0) / repsPerMin.length;
+    const recent = repsPerMin.slice(0, Math.ceil(repsPerMin.length / 2));
     const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
 
     if (recentAvg > avg * 1.05) return 'improving';

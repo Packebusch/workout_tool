@@ -218,8 +218,8 @@ describe('CoachService - Progression Methods', () => {
         it('should return insufficient_data for less than 5 sessions', () => {
             const history = {
                 sessions: [
-                    { reps: 100 },
-                    { reps: 90 }
+                    { reps: 100, duration: 600 },
+                    { reps: 90, duration: 600 }
                 ]
             };
 
@@ -228,14 +228,14 @@ describe('CoachService - Progression Methods', () => {
         });
 
         it('should return improving for increasing trend', () => {
-            // Need >5% improvement from avg to recent avg
+            // Need >5% improvement from avg to recent avg (using reps per minute)
             const history = {
                 sessions: [
-                    { reps: 130 },
-                    { reps: 125 },
-                    { reps: 120 },
-                    { reps: 100 },
-                    { reps: 95 }
+                    { reps: 130, duration: 600 },  // 13 reps/min
+                    { reps: 125, duration: 600 },  // 12.5 reps/min
+                    { reps: 120, duration: 600 },  // 12 reps/min
+                    { reps: 100, duration: 600 },  // 10 reps/min
+                    { reps: 95, duration: 600 }    // 9.5 reps/min
                 ]
             };
 
@@ -246,11 +246,11 @@ describe('CoachService - Progression Methods', () => {
         it('should return declining for decreasing trend', () => {
             const history = {
                 sessions: [
-                    { reps: 80 },
-                    { reps: 85 },
-                    { reps: 90 },
-                    { reps: 95 },
-                    { reps: 100 }
+                    { reps: 80, duration: 600 },   // 8 reps/min
+                    { reps: 85, duration: 600 },   // 8.5 reps/min
+                    { reps: 90, duration: 600 },   // 9 reps/min
+                    { reps: 95, duration: 600 },   // 9.5 reps/min
+                    { reps: 100, duration: 600 }   // 10 reps/min
                 ]
             };
 

@@ -190,38 +190,85 @@ describe('calculatePace', () => {
 
 describe('calculateTrend', () => {
     it('should return neutral for less than 3 sessions', () => {
-        expect(calculateTrend([{ reps: 100 }, { reps: 110 }])).toBe('neutral');
+        expect(calculateTrend([{ reps: 100, duration: 600 }, { reps: 110, duration: 600 }])).toBe('neutral');
         expect(calculateTrend([])).toBe('neutral');
     });
 
-    it('should return improving for increasing performance', () => {
+    it('should return improving for increasing reps per minute', () => {
+        // Sessions ordered newest first
+        // Recent: 13 reps/min, 12 reps/min -> avg 12.5
+        // Overall avg: (13+12+11+10)/4 = 11.5
+        // 12.5 > 11.5 * 1.05 (12.075) -> improving
         const sessions = [
-            { reps: 130 },
-            { reps: 120 },
-            { reps: 110 },
-            { reps: 100 }
+            { reps: 130, duration: 600 },  // 13 reps/min
+            { reps: 120, duration: 600 },  // 12 reps/min
+            { reps: 110, duration: 600 },  // 11 reps/min
+            { reps: 100, duration: 600 }   // 10 reps/min
         ];
         expect(calculateTrend(sessions)).toBe('improving');
     });
 
-    it('should return declining for decreasing performance', () => {
+    it('should return declining for decreasing reps per minute', () => {
+        // Recent: 8 reps/min, 9 reps/min -> avg 8.5
+        // Overall avg: (8+9+10+11)/4 = 9.5
+        // 8.5 < 9.5 * 0.95 (9.025) -> declining
         const sessions = [
-            { reps: 80 },
-            { reps: 90 },
-            { reps: 100 },
-            { reps: 110 }
+            { reps: 80, duration: 600 },   // 8 reps/min
+            { reps: 90, duration: 600 },   // 9 reps/min
+            { reps: 100, duration: 600 },  // 10 reps/min
+            { reps: 110, duration: 600 }   // 11 reps/min
         ];
         expect(calculateTrend(sessions)).toBe('declining');
     });
 
-    it('should return plateau for stable performance', () => {
+    it('should return plateau for stable reps per minute', () => {
         const sessions = [
-            { reps: 100 },
-            { reps: 101 },
-            { reps: 99 },
-            { reps: 100 }
+            { reps: 100, duration: 600 },  // 10 reps/min
+            { reps: 101, duration: 600 },  // 10.1 reps/min
+            { reps: 99, duration: 600 },   // 9.9 reps/min
+            { reps: 100, duration: 600 }   // 10 reps/min
         ];
         expect(calculateTrend(sessions)).toBe('plateau');
+    });
+
+    it('should normalize by duration for fair comparison', () => {
+        // This tests the fix: different durations but improving rate
+        // Jan 17: 150 reps, 900 sec (15 min) = 10 reps/min
+        // Jan 12: 70 reps, 600 sec (10 min) = 7 reps/min
+        // Jan 4: 188 reps, 1200 sec (20 min) = 9.4 reps/min
+        // Recent avg: (10+7)/2 = 8.5, Overall avg: (10+7+9.4)/3 = 8.8
+        // This is close to plateau, but let's test a clearer case:
+
+        // Shorter workout, better rate = improving
+        const sessions = [
+            { reps: 100, duration: 600 },   // 10 reps/min (recent, shorter but faster)
+            { reps: 90, duration: 600 },    // 9 reps/min
+            { reps: 200, duration: 1200 },  // 10 reps/min (longer workout, same rate)
+            { reps: 150, duration: 1200 }   // 7.5 reps/min (oldest, poor rate despite more reps)
+        ];
+        // Recent: (10+9)/2 = 9.5, Overall: (10+9+10+7.5)/4 = 9.125
+        // 9.5 > 9.125 * 1.05 = 9.58 -> not quite improving
+        // Let me make a clearer case:
+
+        const clearerSessions = [
+            { reps: 120, duration: 600 },   // 12 reps/min
+            { reps: 110, duration: 600 },   // 11 reps/min
+            { reps: 180, duration: 1200 },  // 9 reps/min (more total reps but worse rate)
+            { reps: 160, duration: 1200 }   // 8 reps/min
+        ];
+        // Recent: (12+11)/2 = 11.5, Overall: (12+11+9+8)/4 = 10
+        // 11.5 > 10 * 1.05 (10.5) -> improving
+        expect(calculateTrend(clearerSessions)).toBe('improving');
+    });
+
+    it('should handle zero duration gracefully', () => {
+        const sessions = [
+            { reps: 100, duration: 600 },
+            { reps: 100, duration: 600 },
+            { reps: 100, duration: 0 }  // Edge case: zero duration
+        ];
+        // Should not throw, zero duration gives 0 reps/min
+        expect(() => calculateTrend(sessions)).not.toThrow();
     });
 });
 
