@@ -110,11 +110,11 @@ export class HistoryUIController {
             const trendColor = stat.trend === 'improving' ? '#00ffcc' : stat.trend === 'declining' ? '#ff6b9d' : '#ffaa00';
             const trendText = stat.trend === 'improving' ? 'Improving!' : stat.trend === 'declining' ? 'Declining' : 'Steady';
 
-            let weekHTML = '';
-            if (stat.weekComparison) {
-                const weekArrow = stat.weekComparison > 0 ? '↑' : stat.weekComparison < 0 ? '↓' : '→';
-                const weekColor = stat.weekComparison > 0 ? '#00ffcc' : stat.weekComparison < 0 ? '#ff6b9d' : '#ffaa00';
-                weekHTML = `<span style="color: ${weekColor};">${weekArrow} ${Math.abs(stat.weekComparison)}% vs last week</span>`;
+            let comparisonHTML = '';
+            if (stat.sessionComparison !== null && stat.sessionComparison !== undefined) {
+                const arrow = stat.sessionComparison > 0 ? '↑' : stat.sessionComparison < 0 ? '↓' : '→';
+                const color = stat.sessionComparison > 0 ? '#00ffcc' : stat.sessionComparison < 0 ? '#ff6b9d' : '#ffaa00';
+                comparisonHTML = `<span style="color: ${color};">${arrow} ${Math.abs(stat.sessionComparison)}% vs previous</span>`;
             }
 
             const name = WORKOUT_CONFIGS[stat.type]?.name || stat.type;
@@ -129,7 +129,7 @@ export class HistoryUIController {
                         <span style="color: rgba(255, 255, 255, 0.7);">${stat.count} sessions</span>
                         <span style="color: rgba(255, 255, 255, 0.7);">Avg: ${stat.avgRepsPerMin} reps/min</span>
                         <span style="color: rgba(255, 255, 255, 0.7);">Best: ${stat.bestRepsPerMin} reps/min</span>
-                        ${weekHTML ? `<span>${weekHTML}</span>` : ''}
+                        ${comparisonHTML ? `<span>${comparisonHTML}</span>` : ''}
                     </div>
                 </div>
             `;

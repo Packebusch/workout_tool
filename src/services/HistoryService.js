@@ -123,9 +123,8 @@ export class HistoryService {
 
             const trend = calculateTrend(sessions);
 
-            const lastWeek = this.#getWeekStats(sessions, 2);
-            const thisWeek = this.#getWeekStats(sessions, 1);
-            const weekComparison = this.#compareWeeks(thisWeek, lastWeek);
+            // Compare last session to previous session (instead of weekly averages)
+            const sessionComparison = this.#compareLastSessions(sessions);
 
             return {
                 type,
@@ -134,7 +133,7 @@ export class HistoryService {
                 avgRepsPerMin: avgRepsPerMin.toFixed(1),  // Normalized metric
                 bestRepsPerMin: bestRepsPerMin.toFixed(1),  // Normalized best
                 trend,
-                weekComparison
+                sessionComparison
             };
         }).sort((a, b) => b.count - a.count);
     }
@@ -246,37 +245,19 @@ export class HistoryService {
     }
 
     /**
-     * Get week stats (helper)
-     * Normalizes by using reps per minute to account for different workout durations
-     */
-    static #getWeekStats(sessions, weeksAgo) {
-        const weekStart = getDaysAgo(weeksAgo * 7);
-        const weekEnd = getDaysAgo((weeksAgo - 1) * 7);
-
-        const weekSessions = filterSessionsByDateRange(sessions, weekStart, weekEnd);
-
-        if (weekSessions.length === 0) return null;
-
-        // Calculate average reps per minute (normalized for duration)
-        const totalRepsPerMin = weekSessions.reduce((sum, s) => {
-            const minutes = s.duration / 60;
-            return sum + (s.reps / minutes);
-        }, 0);
-
-        return {
-            avgRepsPerMin: totalRepsPerMin / weekSessions.length,
-            count: weekSessions.length
-        };
-    }
-
-    /**
-     * Compare weeks (helper)
+     * Compare last session to previous session
      * Uses reps per minute for fair comparison across different workout durations
      */
-    static #compareWeeks(thisWeek, lastWeek) {
-        if (!thisWeek || !lastWeek) return null;
+    static #compareLastSessions(sessions) {
+        if (sessions.length < 2) return null;
 
-        const improvement = ((thisWeek.avgRepsPerMin - lastWeek.avgRepsPerMin) / lastWeek.avgRepsPerMin) * 100;
+        const lastSession = sessions[0];
+        const prevSession = sessions[1];
+
+        const lastRepsPerMin = lastSession.reps / (lastSession.duration / 60);
+        const prevRepsPerMin = prevSession.reps / (prevSession.duration / 60);
+
+        const improvement = ((lastRepsPerMin - prevRepsPerMin) / prevRepsPerMin) * 100;
         return Math.round(improvement);
     }
 
