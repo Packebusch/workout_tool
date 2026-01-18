@@ -78,13 +78,15 @@ export class CoachUIController {
         } else if (recommendation.type === 'workout') {
             const workoutName = WORKOUT_CONFIGS[recommendation.workoutType]?.name || 'Workout';
             const difficultyName = DIFFICULTY_LEVELS[recommendation.difficulty]?.name || '';
+            const level = ProgressionService.getCurrentLevel(recommendation.workoutType);
+            const levelStr = level ? ` (Lv${level})` : '';
 
             html = `
                 <div class="recommendation-workout">
                     <div class="recommendation-icon">💪</div>
                     <div class="recommendation-message">${recommendation.message}</div>
                     <div class="recommendation-workout-details">
-                        <strong>Suggested:</strong> ${workoutName} - ${difficultyName}
+                        <strong>Suggested:</strong> ${workoutName}${levelStr} - ${difficultyName}
                     </div>
                     <div class="recommendation-reason">Why: ${recommendation.reason}</div>
                     <button class="start-recommended-workout-btn"
@@ -115,6 +117,8 @@ export class CoachUIController {
         this.#elements.goalsList.innerHTML = goals.map(goal => {
             const workoutName = WORKOUT_CONFIGS[goal.workoutType]?.name || 'Workout';
             const difficultyName = DIFFICULTY_LEVELS[goal.difficulty]?.name || '';
+            const level = ProgressionService.getCurrentLevel(goal.workoutType);
+            const levelStr = level ? ` (Lv${level})` : '';
             const progress = goal.bestAttempt.percentageAchieved;
             const daysUntil = goal.deadline ?
                 Math.floor((new Date(goal.deadline) - new Date()) / (1000 * 60 * 60 * 24)) : null;
@@ -135,7 +139,7 @@ export class CoachUIController {
             return `
                 <div class="goal-item ${goal.status === 'completed' ? 'completed' : ''}">
                     <div class="goal-header">
-                        <div class="goal-workout-type">${workoutName} - ${difficultyName}</div>
+                        <div class="goal-workout-type">${workoutName}${levelStr} - ${difficultyName}</div>
                         <div class="goal-status">${goal.status}</div>
                     </div>
                     <div class="goal-target">
