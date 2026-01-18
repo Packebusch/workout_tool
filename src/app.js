@@ -84,9 +84,8 @@ class WorkoutApp {
         // Set up event listeners
         this.#setupEventListeners();
 
-        // Update initial progression display
-        const initialWorkoutType = this.ui.getSelectedWorkoutType();
-        this.ui.updateProgressionDisplay(initialWorkoutType);
+        // Update workout type dropdown with progression levels
+        this.ui.updateProgressionDisplay();
 
         // Update initial UI
         this.#updateUI();
@@ -148,11 +147,6 @@ class WorkoutApp {
                 });
                 this.#updateUI();
             }
-        });
-
-        // Workout type change - update progression display
-        this.ui.getElement('workoutType').addEventListener('change', (e) => {
-            this.ui.updateProgressionDisplay(e.target.value);
         });
 
         // About section toggle
@@ -260,8 +254,8 @@ class WorkoutApp {
             this.coachUI.hideProgressionSuggestion();
             this.pendingProgressionSuggestion = null;
 
-            // Update progression display
-            this.ui.updateProgressionDisplay(suggestion.exerciseType);
+            // Update workout type dropdown with new levels
+            this.ui.updateProgressionDisplay();
 
             // Refresh settings if visible
             SettingsController.renderProgressionSettings();

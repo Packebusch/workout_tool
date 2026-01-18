@@ -218,37 +218,22 @@ export class UIController {
     }
 
     /**
-     * Update the progression info display below workout type selector
-     * @param {string} workoutType - The selected workout type
+     * Update the workout type dropdown options to include progression level
      */
-    updateProgressionDisplay(workoutType) {
-        let infoElement = document.getElementById('progressionInfoDisplay');
+    updateProgressionDisplay() {
+        const select = this.#elements.workoutType;
+        if (!select) return;
 
-        // Create element if it doesn't exist
-        if (!infoElement) {
-            const configGroup = this.#elements.workoutType?.closest('.config-group');
-            if (!configGroup) return;
+        // Update each option with its level
+        Array.from(select.options).forEach(option => {
+            const workoutType = option.value;
+            const ladder = PROGRESSION_LADDERS[workoutType];
+            if (!ladder) return;
 
-            infoElement = document.createElement('div');
-            infoElement.id = 'progressionInfoDisplay';
-            infoElement.className = 'progression-info-display';
-            configGroup.appendChild(infoElement);
-        }
-
-        const summary = ProgressionService.getProgressionSummary(workoutType);
-        if (!summary) {
-            infoElement.style.display = 'none';
-            return;
-        }
-
-        infoElement.innerHTML = `
-            <div class="progression-current-level">
-                <span class="level-indicator">Lvl ${summary.currentLevel}</span>
-                <span class="variation-text">${summary.variation}</span>
-            </div>
-            ${summary.note ? `<div class="progression-note-hint">${summary.note}</div>` : ''}
-        `;
-        infoElement.style.display = 'block';
+            const level = ProgressionService.getCurrentLevel(workoutType);
+            const baseName = ladder.name;
+            option.textContent = `${baseName} (Lv${level})`;
+        });
     }
 
     /**
