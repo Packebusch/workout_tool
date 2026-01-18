@@ -169,11 +169,12 @@ export class HistoryUIController {
             const difficultyName = session.difficulty
                 ? DIFFICULTY_LEVELS[session.difficulty]?.name || ''
                 : '';
+            const levelStr = session.progressionLevel ? ` (Lv${session.progressionLevel})` : '';
 
             return `
                 <div class="history-item">
                     <div class="history-date">${dateStr}</div>
-                    <div class="history-workout-type">${workoutName} - ${difficultyName}</div>
+                    <div class="history-workout-type">${workoutName}${levelStr} - ${difficultyName}</div>
                     <div class="history-details">
                         <div class="history-detail"><strong>${session.reps}</strong> reps</div>
                         <div class="history-detail"><strong>${durationStr}</strong> time</div>

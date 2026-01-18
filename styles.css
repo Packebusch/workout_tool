@@ -1068,6 +1068,8 @@ header h1 {
     background: var(--bg-medium);
     border-radius: 16px;
     padding: 20px;
+    overflow: hidden;
+    max-width: 100%;
 }
 
 .chart-controls {
@@ -1104,8 +1106,9 @@ header h1 {
 
 #progressChart {
     display: block;
-    width: 100%;
-    height: auto;
+    width: 100% !important;
+    max-width: 100%;
+    height: auto !important;
     border-radius: 8px;
 }
 
@@ -2344,6 +2347,7 @@ body.celebrating {
     display: none;
     width: 100%;
     height: 100%;
+    overflow-x: hidden;
 }
 
 .tab-view.active {
