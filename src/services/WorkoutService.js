@@ -4,6 +4,7 @@
 import { REP_MILESTONES, TIME_MILESTONES, MOTIVATIONAL_MESSAGES } from '../config/constants.js';
 import { calculateCalories, calculateFitnessLevel, calculatePace, getTargetReps, getNextDifficulty } from '../utils/calculations.js';
 import { getRandomItem } from '../utils/calculations.js';
+import { ProgressionService } from './ProgressionService.js';
 
 export class WorkoutService {
     #stateManager;
@@ -109,8 +110,11 @@ export class WorkoutService {
         const remaining = this.#stateManager.get('remainingSeconds');
         const elapsedMinutes = (totalSeconds - remaining) / 60;
 
+        // Get current progression level for calorie multiplier
+        const progressionLevel = ProgressionService.getCurrentLevel(workoutType);
+
         return {
-            calories: calculateCalories(workoutType, reps, elapsedMinutes),
+            calories: calculateCalories(workoutType, reps, elapsedMinutes, progressionLevel),
             pace: calculatePace(reps, elapsedMinutes),
             elapsed: totalSeconds - remaining,
             elapsedMinutes
@@ -124,11 +128,14 @@ export class WorkoutService {
         const state = this.#stateManager.getState();
         const metrics = this.getMetrics();
 
+        // Get current progression level for fitness level calculation
+        const progressionLevel = ProgressionService.getCurrentLevel(state.workoutType);
+
         return {
             reps: state.reps,
             duration: metrics.elapsed,
             calories: metrics.calories,
-            fitnessLevel: calculateFitnessLevel(state.reps, metrics.elapsed),
+            fitnessLevel: calculateFitnessLevel(state.reps, metrics.elapsed, state.workoutType, progressionLevel),
             workoutType: state.workoutType,
             difficulty: state.difficulty,
             pace: metrics.pace

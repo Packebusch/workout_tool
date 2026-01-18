@@ -1,27 +1,52 @@
 // Calculation Utilities
 // ======================
 
-import { WORKOUT_CONFIGS, TARGET_REPS } from '../config/constants.js';
+import { WORKOUT_CONFIGS, TARGET_REPS, PROGRESSION_LADDERS, PROGRESSION_CALORIE_MULTIPLIERS } from '../config/constants.js';
 
 /**
  * Calculate calories burned
+ * @param {string} workoutType - The workout type
+ * @param {number} reps - Total reps completed
+ * @param {number} elapsedMinutes - Duration in minutes
+ * @param {number} progressionLevel - Current progression level (1-5)
+ * @returns {number} - Calories burned
  */
-export function calculateCalories(workoutType, reps, elapsedMinutes) {
+export function calculateCalories(workoutType, reps, elapsedMinutes, progressionLevel = 1) {
     const config = WORKOUT_CONFIGS[workoutType];
     if (!config) return 0;
 
+    // Apply progression multiplier (higher levels burn more calories)
+    const multiplier = PROGRESSION_CALORIE_MULTIPLIERS[Math.min(progressionLevel, 5)] || 1;
+
     return Math.round(
-        (elapsedMinutes * config.caloriesPerMinute) +
-        (reps * config.caloriesPerRep)
+        ((elapsedMinutes * config.caloriesPerMinute) + (reps * config.caloriesPerRep)) * multiplier
     );
 }
 
 /**
  * Calculate fitness level based on reps per minute
+ * Uses progression-specific thresholds when workoutType and progressionLevel are provided
+ * @param {number} reps - Total reps completed
+ * @param {number} durationSeconds - Duration in seconds
+ * @param {string|null} workoutType - The workout type (optional)
+ * @param {number} progressionLevel - Current progression level (1-5)
+ * @returns {string} - Fitness level: 'Beginner', 'Intermediate', 'Advanced', or 'Elite'
  */
-export function calculateFitnessLevel(reps, durationSeconds) {
+export function calculateFitnessLevel(reps, durationSeconds, workoutType = null, progressionLevel = 1) {
     const repsPerMin = reps / (durationSeconds / 60);
 
+    // If workoutType provided, use progression-specific thresholds
+    if (workoutType && PROGRESSION_LADDERS[workoutType]) {
+        const levelConfig = PROGRESSION_LADDERS[workoutType].levels.find(l => l.level === progressionLevel);
+        if (levelConfig) {
+            if (repsPerMin >= levelConfig.elite) return 'Elite';
+            if (repsPerMin >= levelConfig.advanced) return 'Advanced';
+            if (repsPerMin >= levelConfig.intermediate) return 'Intermediate';
+            return 'Beginner';
+        }
+    }
+
+    // Fallback to existing generic thresholds
     if (repsPerMin >= 10) return 'Elite';
     if (repsPerMin >= 7) return 'Advanced';
     if (repsPerMin >= 4) return 'Intermediate';

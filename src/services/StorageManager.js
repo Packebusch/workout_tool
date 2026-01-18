@@ -102,12 +102,18 @@ export class StorageManager {
      * Migrate data from old versions
      */
     static #migrate(versionedData) {
-        const { version, data } = versionedData;
+        let { version, data } = versionedData;
 
-        // Future: handle version migrations
-        // if (version < 2) {
-        //     data = migrateV1toV2(data);
-        // }
+        // V1 -> V2: Add progression support
+        // Note: Progression data is initialized separately on first access
+        // by ProgressionService.initializeDefaultProgressions()
+        // This migration just updates the version tracking
+        if (version < 2) {
+            // No data transformation needed for progressions
+            // Old workout sessions will work without progressionLevel/variation
+            // New sessions will have these fields added by HistoryService
+            version = 2;
+        }
 
         return data;
     }
@@ -182,7 +188,8 @@ export class StorageManager {
                     reminderFrequency: 'daily'
                 },
                 achievements: []
-            })
+            }),
+            progressions: this.load(STORAGE_KEYS.PROGRESSIONS, {})
         };
     }
 
@@ -212,6 +219,7 @@ export class StorageManager {
                 },
                 achievements: []
             };
+            if (!data.progressions) data.progressions = {};
 
             if (merge) {
                 return this.#mergeImportData(data);
@@ -221,6 +229,7 @@ export class StorageManager {
                 this.save(STORAGE_KEYS.GOALS, data.goals);
                 this.save(STORAGE_KEYS.SORENESS, data.soreness);
                 this.save(STORAGE_KEYS.COACH_STATE, data.coachState);
+                this.save(STORAGE_KEYS.PROGRESSIONS, data.progressions);
                 return { success: true, merged: false };
             }
         } catch (error) {
@@ -250,7 +259,8 @@ export class StorageManager {
                     reminderFrequency: 'daily'
                 },
                 achievements: []
-            })
+            }),
+            progressions: this.load(STORAGE_KEYS.PROGRESSIONS, {})
         };
 
         // Merge sessions (avoid duplicates by date)
@@ -326,12 +336,29 @@ export class StorageManager {
         existing.coachState.achievements = [...existing.coachState.achievements, ...newAchievements]
             .sort((a, b) => new Date(b.date) - new Date(a.date));
 
+        // Merge progressions - prefer higher level for each exercise
+        const mergedProgressions = { ...existing.progressions };
+        if (importedData.progressions) {
+            for (const [exerciseType, importedProg] of Object.entries(importedData.progressions)) {
+                const existingProg = mergedProgressions[exerciseType];
+                if (!existingProg) {
+                    // No existing progression, use imported
+                    mergedProgressions[exerciseType] = importedProg;
+                } else if (importedProg.currentLevel > existingProg.currentLevel) {
+                    // Imported is higher level, use imported
+                    mergedProgressions[exerciseType] = importedProg;
+                }
+                // Otherwise keep existing (it's higher or equal)
+            }
+        }
+
         // Save merged data
         this.save(STORAGE_KEYS.HISTORY, existing.history);
         this.save(STORAGE_KEYS.STREAK, mergedStreak);
         this.save(STORAGE_KEYS.GOALS, existing.goals);
         this.save(STORAGE_KEYS.SORENESS, existing.soreness);
         this.save(STORAGE_KEYS.COACH_STATE, existing.coachState);
+        this.save(STORAGE_KEYS.PROGRESSIONS, mergedProgressions);
 
         return {
             success: true,

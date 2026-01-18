@@ -2402,7 +2402,7 @@ body.celebrating {
 .inset-list-item {
     background: var(--color-surface);
     padding: var(--spacing-md);
-    border-bottom: 0.5px solid var(--color-surface-secondary);
+    border-bottom: 1px solid var(--border-medium);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -2411,7 +2411,9 @@ body.celebrating {
     cursor: pointer;
     transition: background-color 0.15s ease;
     text-decoration: none;
-    border: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
     width: 100%;
     text-align: left;
     font-family: var(--font-system);
@@ -3541,4 +3543,484 @@ a:focus:not(:focus-visible) {
     #view-landing-btn {
         display: none !important;
     }
+}
+
+/* ================================================
+   EXERCISE PROGRESSIONS
+   ================================================ */
+
+/* Progression Info Display (below workout type selector) */
+.progression-info-display {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-surface-secondary);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+}
+
+.progression-current-level {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.level-indicator {
+    background: var(--color-accent-primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-semibold);
+}
+
+.variation-text {
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+.progression-note-hint {
+    margin-top: var(--spacing-xs);
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+    font-style: italic;
+}
+
+/* Progression Suggestion Card (in completion modal) */
+.progression-suggestion-card {
+    margin: var(--spacing-md) 0;
+    padding: var(--spacing-md);
+    background: linear-gradient(135deg, var(--color-surface-secondary) 0%, var(--color-surface) 100%);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+}
+
+.progression-suggestion-content {
+    text-align: center;
+}
+
+.progression-suggestion-content.regression {
+    border-left: 4px solid var(--color-warning);
+}
+
+.progression-suggestion-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.progression-suggestion-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+}
+
+.progression-icon {
+    font-size: 1.5rem;
+}
+
+.progression-message {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.4;
+}
+
+.progression-reason {
+    color: var(--color-text-tertiary);
+    font-size: 0.85rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.progression-details {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+    padding: var(--spacing-md);
+    background: var(--overlay-light);
+    border-radius: var(--radius-sm);
+}
+
+.progression-current,
+.progression-next {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.progression-arrow {
+    font-size: 1.5rem;
+    color: var(--color-text-tertiary);
+}
+
+.level-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--color-surface-secondary);
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: var(--font-weight-semibold);
+}
+
+.level-badge.level-up {
+    background: var(--color-success);
+    color: white;
+}
+
+.level-badge.level-down {
+    background: var(--color-warning);
+    color: white;
+}
+
+.variation-name {
+    font-size: 0.9rem;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+.progression-note {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--overlay-light);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    text-align: left;
+}
+
+.progression-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: center;
+    margin-top: var(--spacing-md);
+}
+
+.progression-btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.progression-btn.accept {
+    background: var(--color-accent-primary);
+    color: white;
+}
+
+.progression-btn.accept:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.progression-btn.dismiss {
+    background: transparent;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--border-medium);
+}
+
+.progression-btn.dismiss:hover {
+    background: var(--overlay-light);
+}
+
+/* Progression Settings Section */
+.progression-settings {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.section-description {
+    font-size: 0.85rem;
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--spacing-md);
+}
+
+.progression-setting-item {
+    background: var(--color-surface);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+}
+
+.progression-setting-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xs);
+}
+
+.progression-exercise-name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+.progression-level-badge {
+    background: var(--color-accent-primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-semibold);
+}
+
+.progression-setting-variation {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.progression-setting-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.progression-level-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: var(--color-surface-secondary);
+    color: var(--color-text-primary);
+    font-size: 1.2rem;
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progression-level-btn:hover:not(:disabled) {
+    background: var(--color-accent-primary);
+    color: white;
+}
+
+.progression-level-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.progression-level-display {
+    min-width: 60px;
+    text-align: center;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+/* Progression Info Card (in coach panel) */
+.progression-info {
+    background: var(--color-surface-secondary);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.progression-level {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.progression-progress {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: 0.8rem;
+    color: var(--color-text-tertiary);
+}
+
+/* Dark Mode Adjustments */
+@media (prefers-color-scheme: dark) {
+    .progression-suggestion-card {
+        background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-secondary) 100%);
+    }
+
+    .progression-details {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .progression-note {
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
+
+body.dark-mode .progression-suggestion-card {
+    background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-secondary) 100%);
+}
+
+body.dark-mode .progression-details {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .progression-note {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Progression Info Button */
+.progression-info-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--color-text-tertiary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    margin-left: var(--spacing-xs);
+    flex-shrink: 0;
+}
+
+.progression-info-btn:hover {
+    color: var(--color-accent);
+    background: rgba(var(--color-accent-rgb), 0.1);
+}
+
+.progression-info-btn:active {
+    transform: scale(0.95);
+}
+
+.progression-setting-variation {
+    display: flex;
+    align-items: center;
+}
+
+/* Exercise Info Modal */
+.exercise-info-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.exercise-info-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.exercise-info-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.exercise-info-content {
+    position: relative;
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    max-width: 400px;
+    width: calc(100% - 40px);
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.exercise-info-modal.active .exercise-info-content {
+    transform: translateY(0);
+}
+
+.exercise-info-close {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-tertiary);
+    padding: 4px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.exercise-info-close:hover {
+    color: var(--color-text-primary);
+    background: var(--color-surface-secondary);
+}
+
+.exercise-info-title {
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-md) 0;
+    padding-right: 40px;
+}
+
+.exercise-info-description {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0 0 var(--spacing-lg) 0;
+}
+
+.exercise-info-tips-section h3,
+.exercise-info-note h3 {
+    font-size: 0.85rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+.exercise-info-tips {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--spacing-lg) 0;
+}
+
+.exercise-info-tips li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: var(--spacing-sm);
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.exercise-info-tips li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--color-success);
+    font-weight: bold;
+}
+
+.exercise-info-note {
+    background: var(--color-surface-secondary);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--color-accent);
+}
+
+.exercise-info-note-text {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.5;
 }

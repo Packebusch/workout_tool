@@ -5,13 +5,15 @@ import { GoalService } from './GoalService.js';
 import { SorenessService } from './SorenessService.js';
 import { WeeklyStatsService } from './WeeklyStatsService.js';
 import { HistoryService } from './HistoryService.js';
+import { ProgressionService } from './ProgressionService.js';
 import {
     TARGET_REPS,
     DIFFICULTY_LEVELS,
     WORKOUT_MUSCLE_IMPACT,
     COACH_MESSAGES,
     RECOVERY_THRESHOLDS,
-    WORKOUT_CONFIGS
+    WORKOUT_CONFIGS,
+    PROGRESSION_MESSAGES
 } from '../config/constants.js';
 import { addWeeks, calculateWorkoutFrequency, average, lastN, roundToInt, randomItem } from '../utils/utils.js';
 import { calculateTrend } from '../utils/calculations.js';
@@ -495,6 +497,139 @@ export class CoachService {
         return {
             trend,
             message: messages[trend] || messages.plateau
+        };
+    }
+
+    /**
+     * Assess if progression/regression suggestion is needed after a workout
+     * @param {string} exerciseType - The workout type (e.g., 'squats')
+     * @param {Object} currentWorkout - The just-completed workout
+     * @param {Object} history - Full workout history
+     * @returns {Object|null} - Suggestion object or null if no suggestion
+     */
+    static assessProgressionSuggestion(exerciseType, currentWorkout, history) {
+        const progression = ProgressionService.getExerciseProgression(exerciseType);
+
+        // If no progression data, no suggestion
+        if (!progression) {
+            return null;
+        }
+
+        const soreness = SorenessService.getCurrentSorenessLevel();
+        const trend = this.getPerformanceTrend(history).trend;
+
+        // Check progression eligibility
+        const progressCheck = ProgressionService.checkProgressionEligibility(exerciseType, soreness, trend);
+        if (progressCheck.eligible) {
+            const nextLevel = progression.currentLevel + 1;
+            const nextConfig = ProgressionService.getLevelConfig(exerciseType, nextLevel);
+
+            if (nextConfig) {
+                return {
+                    type: 'progress',
+                    exerciseType,
+                    currentLevel: progression.currentLevel,
+                    currentVariation: progression.variation,
+                    nextLevel,
+                    nextVariation: nextConfig.variation,
+                    nextNote: nextConfig.note,
+                    eliteThreshold: nextConfig.elite,
+                    message: this.#getProgressionMessage('up', exerciseType, nextConfig.variation)
+                };
+            }
+        }
+
+        // Check regression
+        const recentLevels = progression.recentFitnessLevels || [];
+        const regressionCheck = ProgressionService.checkRegressionNeeded(exerciseType, recentLevels, soreness);
+
+        if (regressionCheck.needed && progression.currentLevel > 1) {
+            const prevLevel = progression.currentLevel - 1;
+            const prevConfig = ProgressionService.getLevelConfig(exerciseType, prevLevel);
+
+            if (prevConfig) {
+                return {
+                    type: 'regress',
+                    exerciseType,
+                    currentLevel: progression.currentLevel,
+                    currentVariation: progression.variation,
+                    previousLevel: prevLevel,
+                    previousVariation: prevConfig.variation,
+                    reason: regressionCheck.reason,
+                    message: this.#getProgressionMessage('down', exerciseType, prevConfig.variation)
+                };
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get contextual coach message for a new progression level
+     * @param {string} exerciseType
+     * @param {number} sessionNumber - Which session at this level (1 = first)
+     * @returns {string} - Contextual message
+     */
+    static getProgressionContextMessage(exerciseType, sessionNumber) {
+        const variation = ProgressionService.getCurrentVariation(exerciseType);
+        const level = ProgressionService.getCurrentLevel(exerciseType);
+
+        if (sessionNumber === 1) {
+            const messages = PROGRESSION_MESSAGES.firstSessionAtLevel;
+            const message = randomItem(messages);
+            return message.replace('{variation}', variation).replace('{level}', level);
+        }
+
+        const summary = ProgressionService.getProgressionSummary(exerciseType);
+        if (summary) {
+            const { sessionsNeeded, eliteNeeded } = summary.progressToNext;
+            if (sessionsNeeded > 0 || eliteNeeded > 0) {
+                if (eliteNeeded > 0) {
+                    return `${eliteNeeded} more Elite performance${eliteNeeded > 1 ? 's' : ''} to unlock the next level!`;
+                }
+                return `${sessionsNeeded} more session${sessionsNeeded > 1 ? 's' : ''} at this level to progress!`;
+            }
+        }
+
+        return `Keep pushing with ${variation}! You're doing great.`;
+    }
+
+    /**
+     * Get a progression-related coach message
+     * @private
+     */
+    static #getProgressionMessage(direction, exerciseType, variation) {
+        if (direction === 'up') {
+            const messages = PROGRESSION_MESSAGES.readyToProgress;
+            return randomItem(messages);
+        } else {
+            const messages = PROGRESSION_MESSAGES.suggestRegression;
+            const message = randomItem(messages);
+            return message.replace('{previousVariation}', variation);
+        }
+    }
+
+    /**
+     * Get full progression status for display
+     * @param {string} exerciseType
+     * @returns {Object} - Complete progression status
+     */
+    static getProgressionStatus(exerciseType) {
+        const summary = ProgressionService.getProgressionSummary(exerciseType);
+        if (!summary) return null;
+
+        const soreness = SorenessService.getCurrentSorenessLevel();
+        const history = HistoryService.getHistory();
+        const trend = this.getPerformanceTrend(history).trend;
+
+        const eligibility = ProgressionService.checkProgressionEligibility(exerciseType, soreness, trend);
+
+        return {
+            ...summary,
+            readyToProgress: eligibility.eligible,
+            progressBlockedReason: eligibility.eligible ? null : eligibility.reason,
+            currentSoreness: soreness,
+            performanceTrend: trend
         };
     }
 }

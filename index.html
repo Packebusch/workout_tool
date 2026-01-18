@@ -373,6 +373,14 @@
 
                     <main class="tab-main">
                         <section class="settings-section">
+                            <h3 class="section-header">EXERCISE PROGRESSIONS</h3>
+                            <p class="section-description">Adjust your current progression level for each exercise.</p>
+                            <div id="progressionSettings" class="progression-settings">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </section>
+
+                        <section class="settings-section">
                             <h3 class="section-header">DATA</h3>
                             <div class="inset-list">
                                 <button class="inset-list-item" id="export-data-btn">
@@ -461,6 +469,9 @@
             <div class="modal-content">
                 <h2>Workout Complete!</h2>
                 <div class="completion-stats" id="completionStats">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                <div class="progression-suggestion-card" id="progressionSuggestionCard" style="display: none;">
                     <!-- Will be populated by JavaScript -->
                 </div>
                 <div class="goal-suggestion-card" id="goalSuggestionCard" style="display: none;">
@@ -575,6 +586,29 @@
                         <button type="button" class="modal-btn secondary" id="cancelSorenessBtn">Cancel</button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- Exercise Info Modal -->
+        <div class="exercise-info-modal" id="exerciseInfoModal">
+            <div class="exercise-info-backdrop"></div>
+            <div class="exercise-info-content">
+                <button class="exercise-info-close" aria-label="Close">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+                <h2 class="exercise-info-title">Exercise Name</h2>
+                <p class="exercise-info-description">Exercise description goes here.</p>
+                <div class="exercise-info-tips-section">
+                    <h3>Form Tips</h3>
+                    <ul class="exercise-info-tips"></ul>
+                </div>
+                <div class="exercise-info-note">
+                    <h3>Note</h3>
+                    <p class="exercise-info-note-text"></p>
+                </div>
             </div>
         </div>
     </div>

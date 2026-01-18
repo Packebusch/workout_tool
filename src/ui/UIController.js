@@ -1,8 +1,9 @@
 // UI Controller - Main UI management
 // ====================================
 
-import { CSS_CLASSES } from '../config/constants.js';
+import { CSS_CLASSES, PROGRESSION_LADDERS } from '../config/constants.js';
 import { formatTime } from '../utils/dateUtils.js';
+import { ProgressionService } from '../services/ProgressionService.js';
 
 export class UIController {
     #elements;
@@ -214,5 +215,46 @@ export class UIController {
      */
     getSelectedDifficulty() {
         return this.#elements.difficulty.value;
+    }
+
+    /**
+     * Update the progression info display below workout type selector
+     * @param {string} workoutType - The selected workout type
+     */
+    updateProgressionDisplay(workoutType) {
+        let infoElement = document.getElementById('progressionInfoDisplay');
+
+        // Create element if it doesn't exist
+        if (!infoElement) {
+            const configGroup = this.#elements.workoutType?.closest('.config-group');
+            if (!configGroup) return;
+
+            infoElement = document.createElement('div');
+            infoElement.id = 'progressionInfoDisplay';
+            infoElement.className = 'progression-info-display';
+            configGroup.appendChild(infoElement);
+        }
+
+        const summary = ProgressionService.getProgressionSummary(workoutType);
+        if (!summary) {
+            infoElement.style.display = 'none';
+            return;
+        }
+
+        infoElement.innerHTML = `
+            <div class="progression-current-level">
+                <span class="level-indicator">Lvl ${summary.currentLevel}</span>
+                <span class="variation-text">${summary.variation}</span>
+            </div>
+            ${summary.note ? `<div class="progression-note-hint">${summary.note}</div>` : ''}
+        `;
+        infoElement.style.display = 'block';
+    }
+
+    /**
+     * Get the current workout type from selector
+     */
+    getSelectedWorkoutType() {
+        return this.#elements.workoutType?.value || 'burpees';
     }
 }

@@ -14,6 +14,7 @@ import { SorenessService } from './services/SorenessService.js';
 import { CoachService } from './services/CoachService.js';
 import { NotificationService } from './services/NotificationService.js';
 import { ThemeService } from './services/ThemeService.js';
+import { ProgressionService } from './services/ProgressionService.js';
 import { UIController } from './ui/UIController.js';
 import { HistoryUIController } from './ui/HistoryUIController.js';
 import { CoachUIController } from './ui/CoachUIController.js';
@@ -77,8 +78,15 @@ class WorkoutApp {
         // Initialize settings controller
         SettingsController.init();
 
+        // Initialize progressions for all exercises
+        ProgressionService.initializeDefaultProgressions();
+
         // Set up event listeners
         this.#setupEventListeners();
+
+        // Update initial progression display
+        const initialWorkoutType = this.ui.getSelectedWorkoutType();
+        this.ui.updateProgressionDisplay(initialWorkoutType);
 
         // Update initial UI
         this.#updateUI();
@@ -142,6 +150,11 @@ class WorkoutApp {
             }
         });
 
+        // Workout type change - update progression display
+        this.ui.getElement('workoutType').addEventListener('change', (e) => {
+            this.ui.updateProgressionDisplay(e.target.value);
+        });
+
         // About section toggle
         const aboutToggle = this.ui.getElement('aboutToggle');
         const aboutDetails = this.ui.getElement('aboutDetails');
@@ -179,6 +192,10 @@ class WorkoutApp {
                 this.#handleModifyGoal();
             } else if (e.target.id === 'dismissGoalBtn') {
                 this.#handleDismissGoal();
+            } else if (e.target.id === 'acceptProgressionBtn') {
+                this.#handleAcceptProgression();
+            } else if (e.target.id === 'dismissProgressionBtn') {
+                this.#handleDismissProgression();
             }
         });
     }
@@ -221,6 +238,42 @@ class WorkoutApp {
     #handleDismissGoal() {
         this.coachUI.hideGoalSuggestion();
         this.pendingGoalSuggestion = null;
+    }
+
+    /**
+     * Handle accepting progression suggestion
+     */
+    #handleAcceptProgression() {
+        if (this.pendingProgressionSuggestion) {
+            const suggestion = this.pendingProgressionSuggestion;
+
+            if (suggestion.type === 'progress') {
+                ProgressionService.progressToNextLevel(suggestion.exerciseType);
+                const message = ProgressionService.getMessage('levelUp', { variation: suggestion.nextVariation });
+                this.ui.showMotivationalMessage(message);
+            } else if (suggestion.type === 'regress') {
+                ProgressionService.regressToPreviousLevel(suggestion.exerciseType);
+                const message = ProgressionService.getMessage('levelDown', { variation: suggestion.previousVariation });
+                this.ui.showMotivationalMessage(message);
+            }
+
+            this.coachUI.hideProgressionSuggestion();
+            this.pendingProgressionSuggestion = null;
+
+            // Update progression display
+            this.ui.updateProgressionDisplay(suggestion.exerciseType);
+
+            // Refresh settings if visible
+            SettingsController.renderProgressionSettings();
+        }
+    }
+
+    /**
+     * Handle dismissing progression suggestion
+     */
+    #handleDismissProgression() {
+        this.coachUI.hideProgressionSuggestion();
+        this.pendingProgressionSuggestion = null;
     }
 
     /**
@@ -776,6 +829,19 @@ class WorkoutApp {
 
         // Render goal suggestion in completion modal
         this.coachUI.renderGoalSuggestion(goalSuggestion);
+
+        // Get progression suggestion
+        const progressionSuggestion = CoachService.assessProgressionSuggestion(
+            state.workoutType,
+            currentWorkout,
+            history
+        );
+
+        // Store progression suggestion for later use
+        this.pendingProgressionSuggestion = progressionSuggestion;
+
+        // Render progression suggestion in completion modal
+        this.coachUI.renderProgressionSuggestion(progressionSuggestion);
     }
 
     /**
@@ -783,6 +849,8 @@ class WorkoutApp {
      */
     #saveWorkout() {
         const summary = this.workoutService.getWorkoutSummary();
+        const progressionLevel = ProgressionService.getCurrentLevel(summary.workoutType);
+        const variation = ProgressionService.getCurrentVariation(summary.workoutType);
 
         const workout = {
             date: new Date().toISOString(),
@@ -791,8 +859,13 @@ class WorkoutApp {
             calories: summary.calories,
             fitnessLevel: summary.fitnessLevel,
             workoutType: summary.workoutType,
-            difficulty: summary.difficulty
+            difficulty: summary.difficulty,
+            progressionLevel: progressionLevel,
+            variation: variation
         };
+
+        // Record session in ProgressionService (tracks elite count, sessions at level, etc.)
+        ProgressionService.recordSession(summary.workoutType, summary.fitnessLevel);
 
         HistoryService.saveWorkout(workout);
         WeeklyStatsService.updateWeeklyStats();

@@ -1,8 +1,9 @@
 // Coach UI Controller - Coach panel and modal management
 // ========================================================
 
-import { WORKOUT_CONFIGS, DIFFICULTY_LEVELS, SORENESS_LEVELS, MUSCLE_GROUPS } from '../config/constants.js';
+import { WORKOUT_CONFIGS, DIFFICULTY_LEVELS, SORENESS_LEVELS, MUSCLE_GROUPS, PROGRESSION_LADDERS } from '../config/constants.js';
 import { formatTime, formatDateForDisplay } from '../utils/dateUtils.js';
+import { ProgressionService } from '../services/ProgressionService.js';
 
 export class CoachUIController {
     #elements;
@@ -30,6 +31,7 @@ export class CoachUIController {
             goalForm: document.getElementById('goalForm'),
             sorenessForm: document.getElementById('sorenessForm'),
             goalSuggestionCard: document.getElementById('goalSuggestionCard'),
+            progressionSuggestionCard: document.getElementById('progressionSuggestionCard'),
             quickSorenessBtn: document.getElementById('quickSorenessBtn')
         };
     }
@@ -371,5 +373,115 @@ export class CoachUIController {
      */
     getCoachPanel() {
         return this.#elements.coachPanel;
+    }
+
+    /**
+     * Render progression suggestion in completion modal
+     * @param {Object|null} suggestion - Progression suggestion from CoachService
+     */
+    renderProgressionSuggestion(suggestion) {
+        if (!this.#elements.progressionSuggestionCard) return;
+
+        if (!suggestion) {
+            this.#elements.progressionSuggestionCard.style.display = 'none';
+            return;
+        }
+
+        const ladder = PROGRESSION_LADDERS[suggestion.exerciseType];
+        const exerciseName = ladder?.name || suggestion.exerciseType;
+
+        if (suggestion.type === 'progress') {
+            this.#elements.progressionSuggestionCard.innerHTML = `
+                <div class="progression-suggestion-content">
+                    <div class="progression-suggestion-header">
+                        <span class="progression-icon">🎯</span>
+                        <h3>Ready to Level Up!</h3>
+                    </div>
+                    <div class="progression-message">${suggestion.message}</div>
+                    <div class="progression-details">
+                        <div class="progression-current">
+                            <span class="level-badge">Level ${suggestion.currentLevel}</span>
+                            <span class="variation-name">${suggestion.currentVariation}</span>
+                        </div>
+                        <div class="progression-arrow">→</div>
+                        <div class="progression-next">
+                            <span class="level-badge level-up">Level ${suggestion.nextLevel}</span>
+                            <span class="variation-name">${suggestion.nextVariation}</span>
+                        </div>
+                    </div>
+                    ${suggestion.nextNote ? `
+                        <div class="progression-note">
+                            <strong>Form tip:</strong> ${suggestion.nextNote}
+                        </div>
+                    ` : ''}
+                    <div class="progression-actions">
+                        <button class="progression-btn accept" id="acceptProgressionBtn">Level Up!</button>
+                        <button class="progression-btn dismiss" id="dismissProgressionBtn">Not Yet</button>
+                    </div>
+                </div>
+            `;
+        } else if (suggestion.type === 'regress') {
+            this.#elements.progressionSuggestionCard.innerHTML = `
+                <div class="progression-suggestion-content regression">
+                    <div class="progression-suggestion-header">
+                        <span class="progression-icon">💪</span>
+                        <h3>Build Your Foundation</h3>
+                    </div>
+                    <div class="progression-message">${suggestion.message}</div>
+                    <div class="progression-reason">
+                        <em>${suggestion.reason}</em>
+                    </div>
+                    <div class="progression-details">
+                        <div class="progression-current">
+                            <span class="level-badge">Level ${suggestion.currentLevel}</span>
+                            <span class="variation-name">${suggestion.currentVariation}</span>
+                        </div>
+                        <div class="progression-arrow">→</div>
+                        <div class="progression-next">
+                            <span class="level-badge level-down">Level ${suggestion.previousLevel}</span>
+                            <span class="variation-name">${suggestion.previousVariation}</span>
+                        </div>
+                    </div>
+                    <div class="progression-actions">
+                        <button class="progression-btn accept" id="acceptProgressionBtn">Step Back</button>
+                        <button class="progression-btn dismiss" id="dismissProgressionBtn">Stay Here</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        this.#elements.progressionSuggestionCard.style.display = 'block';
+    }
+
+    /**
+     * Hide progression suggestion card
+     */
+    hideProgressionSuggestion() {
+        if (this.#elements.progressionSuggestionCard) {
+            this.#elements.progressionSuggestionCard.style.display = 'none';
+        }
+    }
+
+    /**
+     * Render current progression level info in coach panel
+     * @param {string} exerciseType - The exercise type
+     */
+    renderProgressionInfo(exerciseType) {
+        const summary = ProgressionService.getProgressionSummary(exerciseType);
+        if (!summary) return '';
+
+        return `
+            <div class="progression-info">
+                <div class="progression-level">
+                    <span class="level-badge">Level ${summary.currentLevel}/${summary.maxLevel}</span>
+                    <span class="variation-name">${summary.variation}</span>
+                </div>
+                ${summary.note ? `<div class="progression-note">${summary.note}</div>` : ''}
+                <div class="progression-progress">
+                    <span>Sessions: ${summary.sessionsAtLevel}/${summary.progressToNext.sessionsNeeded + summary.sessionsAtLevel}</span>
+                    <span>Elite: ${summary.eliteCountAtLevel}/${summary.progressToNext.eliteNeeded + summary.eliteCountAtLevel}</span>
+                </div>
+            </div>
+        `;
     }
 }

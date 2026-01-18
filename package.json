@@ -1,0 +1,15 @@
+{
+  "name": "workout-tool",
+  "version": "3.0.0",
+  "type": "module",
+  "description": "Privacy-first workout tracking app",
+  "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0",
+    "happy-dom": "^16.0.0"
+  }
+}

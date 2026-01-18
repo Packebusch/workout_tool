@@ -5,6 +5,7 @@ import { StorageManager } from './StorageManager.js';
 import { STORAGE_KEYS } from '../config/constants.js';
 import { filterSessionsByDateRange, getWeekStart, getMonthStart, getDaysAgo, getWeekKey } from '../utils/dateUtils.js';
 import { calculateTrend } from '../utils/calculations.js';
+import { ProgressionService } from './ProgressionService.js';
 
 export class HistoryService {
     /**
@@ -16,10 +17,23 @@ export class HistoryService {
 
     /**
      * Save workout to history
+     * Automatically enriches workout with progression info if available
      */
     static saveWorkout(workout) {
         const history = this.getHistory();
-        history.sessions.unshift(workout);
+
+        // Enrich workout with progression info if not already present
+        let enrichedWorkout = workout;
+        if (workout.workoutType && !workout.hasOwnProperty('progressionLevel')) {
+            const progression = ProgressionService.getExerciseProgression(workout.workoutType);
+            enrichedWorkout = {
+                ...workout,
+                progressionLevel: progression?.currentLevel || 1,
+                variation: progression?.variation || null
+            };
+        }
+
+        history.sessions.unshift(enrichedWorkout);
 
         // Keep only last 50 workouts
         if (history.sessions.length > 50) {
@@ -264,5 +278,47 @@ export class HistoryService {
 
         const improvement = ((thisWeek.avgRepsPerMin - lastWeek.avgRepsPerMin) / lastWeek.avgRepsPerMin) * 100;
         return Math.round(improvement);
+    }
+
+    /**
+     * Get recent fitness levels for a specific workout type
+     * @param {string} workoutType - The workout type (e.g., 'squats')
+     * @param {number} count - Number of recent sessions to return
+     * @returns {string[]} - Array of fitness levels (most recent first)
+     */
+    static getRecentFitnessLevels(workoutType, count = 2) {
+        const history = this.getHistory();
+        return history.sessions
+            .filter(s => s.workoutType === workoutType)
+            .slice(0, count)
+            .map(s => s.fitnessLevel);
+    }
+
+    /**
+     * Get workout history for a specific progression level
+     * @param {string} workoutType - The workout type
+     * @param {number} progressionLevel - The progression level
+     * @returns {Object[]} - Array of sessions at that level
+     */
+    static getSessionsByProgressionLevel(workoutType, progressionLevel) {
+        const history = this.getHistory();
+        return history.sessions.filter(
+            s => s.workoutType === workoutType && s.progressionLevel === progressionLevel
+        );
+    }
+
+    /**
+     * Get best performance at a specific progression level
+     * @param {string} workoutType - The workout type
+     * @param {number} progressionLevel - The progression level
+     * @returns {Object|null} - Best session or null
+     */
+    static getBestAtProgressionLevel(workoutType, progressionLevel) {
+        const sessions = this.getSessionsByProgressionLevel(workoutType, progressionLevel);
+        if (sessions.length === 0) return null;
+
+        return sessions.reduce((best, current) =>
+            current.reps > best.reps ? current : best
+        );
     }
 }
