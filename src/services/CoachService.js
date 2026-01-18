@@ -15,8 +15,8 @@ import {
     WORKOUT_CONFIGS,
     PROGRESSION_MESSAGES
 } from '../config/constants.js';
-import { addWeeks, calculateWorkoutFrequency, average, lastN, roundToInt, randomItem } from '../utils/utils.js';
-import { calculateTrend } from '../utils/calculations.js';
+import { addWeeks, calculateWorkoutFrequency, average, lastN, roundToInt } from '../utils/utils.js';
+import { calculateTrend, getRandomItem } from '../utils/calculations.js';
 
 export class CoachService {
     /**
@@ -159,7 +159,7 @@ export class CoachService {
         if (restCheck.shouldRest && restCheck.confidence !== 'low') {
             return {
                 type: 'rest',
-                message: randomItem(COACH_MESSAGES.restDay),
+                message: getRandomItem(COACH_MESSAGES.restDay),
                 reason: restCheck.factors.join(', '),
                 confidence: restCheck.confidence
             };
@@ -210,7 +210,7 @@ export class CoachService {
                     type: 'workout',
                     workoutType: suggested,
                     difficulty: this.#suggestDifficulty(suggested, history),
-                    message: randomItem(COACH_MESSAGES.sorenessAwareness),
+                    message: getRandomItem(COACH_MESSAGES.sorenessAwareness),
                     reason: `Your ${affectedMuscles.join(', ')} muscles need recovery`,
                     confidence: 'medium'
                 };
@@ -231,7 +231,7 @@ export class CoachService {
                         type: 'workout',
                         workoutType: suggested,
                         difficulty: this.#suggestDifficulty(suggested, history),
-                        message: randomItem(COACH_MESSAGES.varietySuggestion),
+                        message: getRandomItem(COACH_MESSAGES.varietySuggestion),
                         reason: `You've done ${WORKOUT_CONFIGS[lastType].name} 3 times in a row`,
                         confidence: 'medium'
                     };
@@ -359,7 +359,7 @@ export class CoachService {
 
         // Milestone celebrations
         if (progress >= 100) {
-            return randomItem(COACH_MESSAGES.goalCompleted);
+            return getRandomItem(COACH_MESSAGES.goalCompleted);
         } else if (progress >= 75) {
             return "🔥 75% there! You're SO close - don't give up now!";
         } else if (progress >= 50) {
@@ -394,11 +394,11 @@ export class CoachService {
     static getMotivationalMessage(context) {
         switch (context.context) {
             case 'workout_completed':
-                return randomItem(COACH_MESSAGES.goalEncouragement);
+                return getRandomItem(COACH_MESSAGES.goalEncouragement);
             case 'goal_milestone':
                 return this.getGoalProgressUpdate(context.goalId);
             case 'rest_day':
-                return randomItem(COACH_MESSAGES.restDay);
+                return getRandomItem(COACH_MESSAGES.restDay);
             default:
                 return "Keep pushing! You're doing great!";
         }
@@ -410,7 +410,7 @@ export class CoachService {
     static celebrateGoalMilestone(goalId, progress) {
         if (progress >= 100) {
             return {
-                message: randomItem(COACH_MESSAGES.goalCompleted),
+                message: getRandomItem(COACH_MESSAGES.goalCompleted),
                 animation: 'confetti',
                 level: 'epic'
             };
@@ -576,7 +576,7 @@ export class CoachService {
 
         if (sessionNumber === 1) {
             const messages = PROGRESSION_MESSAGES.firstSessionAtLevel;
-            const message = randomItem(messages);
+            const message = getRandomItem(messages);
             return message.replace('{variation}', variation).replace('{level}', level);
         }
 
@@ -601,10 +601,10 @@ export class CoachService {
     static #getProgressionMessage(direction, exerciseType, variation) {
         if (direction === 'up') {
             const messages = PROGRESSION_MESSAGES.readyToProgress;
-            return randomItem(messages);
+            return getRandomItem(messages);
         } else {
             const messages = PROGRESSION_MESSAGES.suggestRegression;
-            const message = randomItem(messages);
+            const message = getRandomItem(messages);
             return message.replace('{previousVariation}', variation);
         }
     }

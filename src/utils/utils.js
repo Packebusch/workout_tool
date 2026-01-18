@@ -13,13 +13,6 @@ export function generateId() {
 }
 
 /**
- * Get a random item from an array
- */
-export function randomItem(array) {
-    return array[Math.floor(Math.random() * array.length)];
-}
-
-/**
  * Add weeks to a date
  */
 export function addWeeks(date, weeks) {
