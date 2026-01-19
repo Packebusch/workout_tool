@@ -228,14 +228,12 @@ describe('CoachService - Progression Methods', () => {
         });
 
         it('should return improving for increasing trend', () => {
-            // Need >5% improvement from avg to recent avg (using reps per minute)
+            // Need >5% improvement: last session vs previous session
             const history = {
                 sessions: [
-                    { reps: 130, duration: 600 },  // 13 reps/min
-                    { reps: 125, duration: 600 },  // 12.5 reps/min
-                    { reps: 120, duration: 600 },  // 12 reps/min
-                    { reps: 100, duration: 600 },  // 10 reps/min
-                    { reps: 95, duration: 600 }    // 9.5 reps/min
+                    { reps: 120, duration: 600, workoutType: 'burpees' },  // 12 reps/min (last)
+                    { reps: 100, duration: 600, workoutType: 'burpees' },  // 10 reps/min (previous) → +20%
+                    { reps: 90, duration: 600, workoutType: 'burpees' }
                 ]
             };
 
@@ -244,13 +242,12 @@ describe('CoachService - Progression Methods', () => {
         });
 
         it('should return declining for decreasing trend', () => {
+            // Need >5% decline: last session vs previous session
             const history = {
                 sessions: [
-                    { reps: 80, duration: 600 },   // 8 reps/min
-                    { reps: 85, duration: 600 },   // 8.5 reps/min
-                    { reps: 90, duration: 600 },   // 9 reps/min
-                    { reps: 95, duration: 600 },   // 9.5 reps/min
-                    { reps: 100, duration: 600 }   // 10 reps/min
+                    { reps: 80, duration: 600, workoutType: 'burpees' },   // 8 reps/min (last)
+                    { reps: 100, duration: 600, workoutType: 'burpees' },  // 10 reps/min (previous) → -20%
+                    { reps: 110, duration: 600, workoutType: 'burpees' }
                 ]
             };
 

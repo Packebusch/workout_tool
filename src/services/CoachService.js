@@ -16,7 +16,7 @@ import {
     PROGRESSION_MESSAGES
 } from '../config/constants.js';
 import { addWeeks, calculateWorkoutFrequency, average, lastN, roundToInt } from '../utils/utils.js';
-import { calculateTrend, getRandomItem } from '../utils/calculations.js';
+import { getRandomItem } from '../utils/calculations.js';
 
 export class CoachService {
     /**
@@ -264,10 +264,10 @@ export class CoachService {
         // Get most recent difficulty
         const lastDifficulty = relevantWorkouts[0].difficulty;
 
-        // Check performance trend
-        const trend = calculateTrend(relevantWorkouts);
+        // Check performance trend (last vs previous session)
+        const trend = this.#getSessionTrend(relevantWorkouts);
 
-        if (trend === 'improving' && relevantWorkouts.length >= 3) {
+        if (trend === 'improving' && relevantWorkouts.length >= 2) {
             // Suggest next difficulty level
             const difficulties = Object.keys(DIFFICULTY_LEVELS);
             const currentIndex = difficulties.indexOf(lastDifficulty);
@@ -284,6 +284,22 @@ export class CoachService {
         }
 
         return lastDifficulty; // Maintain current difficulty
+    }
+
+    /**
+     * Get trend based on last vs previous session comparison
+     */
+    static #getSessionTrend(sessions) {
+        if (sessions.length < 2) return 'neutral';
+
+        const lastRepsPerMin = sessions[0].reps / (sessions[0].duration / 60);
+        const prevRepsPerMin = sessions[1].reps / (sessions[1].duration / 60);
+
+        const change = ((lastRepsPerMin - prevRepsPerMin) / prevRepsPerMin) * 100;
+
+        if (change > 5) return 'improving';
+        if (change < -5) return 'declining';
+        return 'plateau';
     }
 
     /**
@@ -329,8 +345,8 @@ export class CoachService {
         }
 
         // Factor 4: Performance decline (weight: 10%)
-        if (history.sessions.length >= 5) {
-            const trend = calculateTrend(lastN(history.sessions, 5));
+        if (history.sessions.length >= 3) {
+            const trend = this.getPerformanceTrend(history).trend;
             if (trend === 'declining') {
                 score += 10;
                 factors.push("Performance declining");
@@ -476,17 +492,48 @@ export class CoachService {
 
     /**
      * Get performance trend analysis
+     * Aggregates per-workout-type trends to avoid comparing different exercises
      */
     static getPerformanceTrend(history) {
-        if (history.sessions.length < 5) {
+        if (history.sessions.length < 3) {
             return {
                 trend: 'insufficient_data',
                 message: 'Complete a few more workouts for trend analysis'
             };
         }
 
-        const recent = lastN(history.sessions, 5);
-        const trend = calculateTrend(recent);
+        // Group sessions by workout type
+        const byType = {};
+        history.sessions.forEach(session => {
+            const type = session.workoutType || 'default';
+            if (!byType[type]) byType[type] = [];
+            byType[type].push(session);
+        });
+
+        // Calculate trend for each type (last vs previous session)
+        const typeTrends = Object.entries(byType)
+            .filter(([_, sessions]) => sessions.length >= 2)
+            .map(([type, sessions]) => this.#getSessionTrend(sessions));
+
+        if (typeTrends.length === 0) {
+            return {
+                trend: 'insufficient_data',
+                message: 'Complete more sessions of each workout type for trend analysis'
+            };
+        }
+
+        const improving = typeTrends.filter(t => t === 'improving').length;
+        const declining = typeTrends.filter(t => t === 'declining').length;
+
+        // Determine overall trend based on majority
+        let trend;
+        if (improving > declining) {
+            trend = 'improving';
+        } else if (declining > improving) {
+            trend = 'declining';
+        } else {
+            trend = 'plateau';
+        }
 
         const messages = {
             improving: "📈 You're improving! Your recent performance is trending upward!",
