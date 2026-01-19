@@ -309,6 +309,16 @@ export class CoachService {
         const factors = [];
         let score = 0;
 
+        // Factor 0: Already worked out today (weight: 50% - high priority)
+        const today = new Date().toDateString();
+        const workedOutToday = history.sessions.some(s =>
+            new Date(s.date).toDateString() === today
+        );
+        if (workedOutToday) {
+            score += 50;
+            factors.push("Already completed a workout today");
+        }
+
         // Factor 1: Soreness (weight: 40%)
         const currentSoreness = SorenessService.getCurrentSorenessLevel();
         if (currentSoreness >= 4) {
@@ -458,7 +468,26 @@ export class CoachService {
      */
     static getRecoveryRecommendation() {
         const currentSoreness = SorenessService.getCurrentSorenessLevel();
-        const pattern = SorenessService.getSorenessPattern(14);
+
+        // Check if user already worked out today
+        const history = HistoryService.getHistory();
+        const today = new Date().toDateString();
+        const workedOutToday = history.sessions.some(s =>
+            new Date(s.date).toDateString() === today
+        );
+
+        if (workedOutToday) {
+            return {
+                recommendation: 'Rest and recover',
+                reason: "You've completed a workout today. Give your muscles time to repair and grow stronger.",
+                tips: [
+                    'Stay hydrated',
+                    'Get quality sleep tonight',
+                    'Eat protein within 2 hours',
+                    'Light stretching can help recovery'
+                ]
+            };
+        }
 
         if (currentSoreness >= 4) {
             return {
