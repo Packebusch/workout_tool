@@ -120,12 +120,17 @@ export class HistoryService {
             const totalReps = sessions.reduce((sum, s) => sum + s.reps, 0);
             const avgReps = Math.round(totalReps / sessions.length);
 
-            // Compare last session to previous session
-            const sessionComparison = this.#compareLastSessions(sessions);
+            // Check if user leveled up (progression change)
+            const leveledUp = this.#checkLeveledUp(sessions);
+
+            // Compare last session to previous session at same level
+            const sessionComparison = leveledUp ? null : this.#compareLastSessions(sessions);
 
             // Derive trend from session comparison (consistent metrics)
             let trend = 'neutral';
-            if (sessionComparison !== null) {
+            if (leveledUp) {
+                trend = 'leveled_up';
+            } else if (sessionComparison !== null) {
                 if (sessionComparison > 5) trend = 'improving';
                 else if (sessionComparison < -5) trend = 'declining';
                 else trend = 'plateau';
@@ -138,7 +143,8 @@ export class HistoryService {
                 avgRepsPerMin: avgRepsPerMin.toFixed(1),  // Normalized metric
                 bestRepsPerMin: bestRepsPerMin.toFixed(1),  // Normalized best
                 trend,
-                sessionComparison
+                sessionComparison,
+                leveledUp
             };
         }).sort((a, b) => b.count - a.count);
     }
@@ -250,14 +256,34 @@ export class HistoryService {
     }
 
     /**
+     * Check if user leveled up (progressed to harder variation)
+     */
+    static #checkLeveledUp(sessions) {
+        if (sessions.length < 2) return false;
+
+        const lastLevel = sessions[0].progressionLevel || 1;
+        const prevLevel = sessions[1].progressionLevel || 1;
+
+        return lastLevel > prevLevel;
+    }
+
+    /**
      * Compare last session to previous session
      * Uses reps per minute for fair comparison across different workout durations
+     * Only compares sessions at the same progression level
      */
     static #compareLastSessions(sessions) {
         if (sessions.length < 2) return null;
 
         const lastSession = sessions[0];
-        const prevSession = sessions[1];
+        const lastLevel = lastSession.progressionLevel || 1;
+
+        // Find most recent session at the same level
+        const prevSession = sessions.find((s, i) =>
+            i > 0 && (s.progressionLevel || 1) === lastLevel
+        );
+
+        if (!prevSession) return null;
 
         const lastRepsPerMin = lastSession.reps / (lastSession.duration / 60);
         const prevRepsPerMin = prevSession.reps / (prevSession.duration / 60);

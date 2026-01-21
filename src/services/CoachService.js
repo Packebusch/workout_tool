@@ -288,12 +288,31 @@ export class CoachService {
 
     /**
      * Get trend based on last vs previous session comparison
+     * Accounts for progression level changes
      */
     static #getSessionTrend(sessions) {
         if (sessions.length < 2) return 'neutral';
 
-        const lastRepsPerMin = sessions[0].reps / (sessions[0].duration / 60);
-        const prevRepsPerMin = sessions[1].reps / (sessions[1].duration / 60);
+        const lastSession = sessions[0];
+        const prevSession = sessions[1];
+
+        // Check if user leveled up (progressed to harder variation)
+        const lastLevel = lastSession.progressionLevel || 1;
+        const prevLevel = prevSession.progressionLevel || 1;
+
+        if (lastLevel > prevLevel) {
+            return 'leveled_up';  // This is progress!
+        }
+
+        // Only compare sessions at the same level
+        const sameLevelPrev = sessions.find((s, i) =>
+            i > 0 && (s.progressionLevel || 1) === lastLevel
+        );
+
+        if (!sameLevelPrev) return 'neutral';
+
+        const lastRepsPerMin = lastSession.reps / (lastSession.duration / 60);
+        const prevRepsPerMin = sameLevelPrev.reps / (sameLevelPrev.duration / 60);
 
         const change = ((lastRepsPerMin - prevRepsPerMin) / prevRepsPerMin) * 100;
 
@@ -551,12 +570,16 @@ export class CoachService {
             };
         }
 
-        const improving = typeTrends.filter(t => t === 'improving').length;
+        // Count leveled_up as positive progress (like improving)
+        const improving = typeTrends.filter(t => t === 'improving' || t === 'leveled_up').length;
+        const leveledUp = typeTrends.filter(t => t === 'leveled_up').length;
         const declining = typeTrends.filter(t => t === 'declining').length;
 
         // Determine overall trend based on majority
         let trend;
-        if (improving > declining) {
+        if (leveledUp > 0 && improving > declining) {
+            trend = 'leveled_up';
+        } else if (improving > declining) {
             trend = 'improving';
         } else if (declining > improving) {
             trend = 'declining';
@@ -565,6 +588,7 @@ export class CoachService {
         }
 
         const messages = {
+            leveled_up: "⬆️ You've progressed to harder exercises! Great work pushing your limits!",
             improving: "📈 You're improving! Your recent performance is trending upward!",
             declining: "📉 Performance has dipped. Consider more rest or adjusting intensity.",
             plateau: "➡️ You're maintaining steady performance. Ready to level up?"

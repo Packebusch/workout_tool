@@ -106,12 +106,30 @@ export class HistoryUIController {
         `;
 
         typeStats.forEach(stat => {
-            const trendIcon = stat.trend === 'improving' ? '📈' : stat.trend === 'declining' ? '📉' : '➡️';
-            const trendColor = stat.trend === 'improving' ? '#00ffcc' : stat.trend === 'declining' ? '#ff6b9d' : '#ffaa00';
-            const trendText = stat.trend === 'improving' ? 'Improving!' : stat.trend === 'declining' ? 'Declining' : 'Steady';
+            let trendIcon, trendColor, trendText;
+
+            if (stat.trend === 'leveled_up') {
+                trendIcon = '⬆️';
+                trendColor = '#FFD700';  // Gold
+                trendText = 'Leveled up!';
+            } else if (stat.trend === 'improving') {
+                trendIcon = '📈';
+                trendColor = '#00ffcc';
+                trendText = 'Improving!';
+            } else if (stat.trend === 'declining') {
+                trendIcon = '📉';
+                trendColor = '#ff6b9d';
+                trendText = 'Declining';
+            } else {
+                trendIcon = '➡️';
+                trendColor = '#ffaa00';
+                trendText = 'Steady';
+            }
 
             let comparisonHTML = '';
-            if (stat.sessionComparison !== null && stat.sessionComparison !== undefined) {
+            if (stat.leveledUp) {
+                comparisonHTML = `<span style="color: #FFD700;">Now at harder progression!</span>`;
+            } else if (stat.sessionComparison !== null && stat.sessionComparison !== undefined) {
                 const arrow = stat.sessionComparison > 0 ? '↑' : stat.sessionComparison < 0 ? '↓' : '→';
                 const color = stat.sessionComparison > 0 ? '#00ffcc' : stat.sessionComparison < 0 ? '#ff6b9d' : '#ffaa00';
                 comparisonHTML = `<span style="color: ${color};">${arrow} ${Math.abs(stat.sessionComparison)}% vs previous</span>`;
