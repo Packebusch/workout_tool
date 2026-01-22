@@ -821,6 +821,43 @@ header h1 {
     overflow: hidden;
 }
 
+/* Personal Best Display */
+.personal-best-section {
+    text-align: center;
+    margin: 16px 0;
+}
+
+.personal-best-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--bg-medium), var(--bg-dark));
+    border: 2px solid var(--secondary);
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.personal-best-label {
+    color: var(--secondary);
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.personal-best-value {
+    color: var(--text-white);
+    font-weight: 900;
+    font-size: 1.8rem;
+}
+
+.personal-best-detail {
+    color: var(--bg-light);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
 /* Metrics */
 .metrics-section {
     display: flex;

@@ -37,7 +37,10 @@ export class UIController {
             aboutDetails: document.getElementById('aboutDetails'),
             aboutSection: document.getElementById('aboutSection'),
             historyToggleBtn: document.getElementById('historyToggleBtn'),
-            coachToggleBtn: document.getElementById('coachToggleBtn')
+            coachToggleBtn: document.getElementById('coachToggleBtn'),
+            personalBestSection: document.getElementById('personalBestSection'),
+            personalBestValue: document.getElementById('personalBestValue'),
+            personalBestDetail: document.getElementById('personalBestDetail')
         };
     }
 
@@ -241,5 +244,34 @@ export class UIController {
      */
     getSelectedWorkoutType() {
         return this.#elements.workoutType?.value || 'burpees';
+    }
+
+    /**
+     * Show personal best display
+     * @param {number|null} bestReps - Best reps at this level, or null if no history
+     * @param {string} variationName - Name of the current variation
+     * @param {string} difficultyName - Name of the difficulty level
+     */
+    showPersonalBest(bestReps, variationName, difficultyName) {
+        if (!this.#elements.personalBestSection) return;
+
+        if (bestReps === null) {
+            this.#elements.personalBestValue.textContent = 'First time!';
+            this.#elements.personalBestDetail.textContent = `Set your record for ${variationName}`;
+        } else {
+            this.#elements.personalBestValue.textContent = `${bestReps} reps`;
+            this.#elements.personalBestDetail.textContent = `${variationName} • ${difficultyName}`;
+        }
+
+        this.#elements.personalBestSection.style.display = 'block';
+    }
+
+    /**
+     * Hide personal best display
+     */
+    hidePersonalBest() {
+        if (this.#elements.personalBestSection) {
+            this.#elements.personalBestSection.style.display = 'none';
+        }
     }
 }
