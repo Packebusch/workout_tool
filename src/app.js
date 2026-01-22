@@ -20,7 +20,7 @@ import { HistoryUIController } from './ui/HistoryUIController.js';
 import { CoachUIController } from './ui/CoachUIController.js';
 import { TabNavigationController } from './ui/TabNavigationController.js';
 import { SettingsController } from './ui/SettingsController.js';
-import { DIFFICULTY_LEVELS, WORKOUT_CONFIGS, MOTIVATIONAL_MESSAGES, SORENESS_LEVELS } from './config/constants.js';
+import { DIFFICULTY_LEVELS, WORKOUT_CONFIGS, MOTIVATIONAL_MESSAGES, SORENESS_LEVELS, PROGRESSION_LADDERS } from './config/constants.js';
 import { getRandomItem } from './utils/calculations.js';
 
 class WorkoutApp {
@@ -541,9 +541,10 @@ class WorkoutApp {
 
         // Start recommended workout (event delegation for dynamic button)
         document.getElementById('recommendationContent').addEventListener('click', (e) => {
-            if (e.target.classList.contains('start-recommended-workout-btn')) {
-                const workoutType = e.target.dataset.workoutType;
-                const difficulty = e.target.dataset.difficulty;
+            const btn = e.target.closest('.start-recommended-workout-btn');
+            if (btn) {
+                const workoutType = btn.dataset.workoutType;
+                const difficulty = btn.dataset.difficulty;
 
                 // Set workout configuration
                 document.getElementById('workoutType').value = workoutType;
@@ -611,8 +612,21 @@ class WorkoutApp {
         this.ui.setWorkoutControls('started');
         this.wakeLockService.request();
 
-        const workoutName = WORKOUT_CONFIGS[config.workoutType].name;
+        // Show personal best for this workout configuration
+        const progressionLevel = ProgressionService.getCurrentLevel(config.workoutType);
+        const bestSession = HistoryService.getBestAtProgressionLevel(config.workoutType, progressionLevel);
+        const ladder = PROGRESSION_LADDERS[config.workoutType];
+        const levelConfig = ladder?.levels?.find(l => l.level === progressionLevel);
+        const variationName = levelConfig?.variation || WORKOUT_CONFIGS[config.workoutType].name;
         const difficultyName = DIFFICULTY_LEVELS[config.difficulty].name;
+
+        this.ui.showPersonalBest(
+            bestSession?.reps || null,
+            variationName,
+            difficultyName
+        );
+
+        const workoutName = WORKOUT_CONFIGS[config.workoutType].name;
         this.ui.showMotivationalMessage(`${workoutName} - ${difficultyName} mode! LET'S GO!`);
 
         this.timerService.start();
@@ -663,6 +677,7 @@ class WorkoutApp {
 
         this.#updateUI();
         this.ui.setWorkoutControls('reset');
+        this.ui.hidePersonalBest();
         this.ui.showMotivationalMessage("Ready to start? Choose your workout and hit Start!");
     }
 
