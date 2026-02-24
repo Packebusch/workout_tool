@@ -139,7 +139,9 @@
                     <header>
                         <h1 id="app-title" style="cursor: pointer;">UNTRACKED</h1>
                         <div class="streak-display" id="streakDisplay">
-                            💪 <span id="streakCount">0</span> This Week
+                            <div id="compactHeatmap">
+                                <!-- Populated by HeatmapComponent.renderCompactWeek() -->
+                            </div>
                         </div>
                     </header>
 
@@ -271,6 +273,11 @@
                     </header>
 
                     <main class="tab-main">
+                        <!-- Activity Heatmap -->
+                        <div class="heatmap-section" id="activityHeatmap">
+                            <p class="heatmap-empty">Complete your first workout to see your activity here!</p>
+                        </div>
+
                         <!-- Lifetime Stats Dashboard -->
                         <div class="lifetime-stats" id="lifetimeStats">
                             <!-- Will be populated by JavaScript -->

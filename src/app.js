@@ -20,6 +20,7 @@ import { HistoryUIController } from './ui/HistoryUIController.js';
 import { CoachUIController } from './ui/CoachUIController.js';
 import { TabNavigationController } from './ui/TabNavigationController.js';
 import { SettingsController } from './ui/SettingsController.js';
+import { HeatmapComponent } from './ui/HeatmapComponent.js';
 import { DIFFICULTY_LEVELS, WORKOUT_CONFIGS, MOTIVATIONAL_MESSAGES, SORENESS_LEVELS, PROGRESSION_LADDERS } from './config/constants.js';
 import { getRandomItem } from './utils/calculations.js';
 
@@ -788,6 +789,11 @@ class WorkoutApp {
      * Update weekly stats display
      */
     #updateWeeklyStats() {
+        const history = HistoryService.getHistory();
+        const compactEl = document.getElementById('compactHeatmap');
+        if (compactEl) {
+            HeatmapComponent.renderCompactWeek(compactEl, history.sessions);
+        }
         const weeklyCount = WeeklyStatsService.getCurrentWeekCount();
         this.ui.updateWeeklyStats(weeklyCount);
     }
@@ -928,6 +934,12 @@ class WorkoutApp {
      */
     #renderHistory() {
         const history = HistoryService.getHistory();
+
+        // Render activity heatmap
+        const heatmapEl = document.getElementById('activityHeatmap');
+        if (heatmapEl) {
+            HeatmapComponent.renderFull(heatmapEl, history.sessions, window.innerWidth >= 1024);
+        }
 
         // Render lifetime stats
         const lifetimeStats = HistoryService.getLifetimeStats();

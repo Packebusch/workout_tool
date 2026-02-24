@@ -207,18 +207,24 @@ export class StorageManager {
                 throw new Error('Invalid import data: history.sessions must be an array');
             }
 
-            // Ensure new fields exist with defaults
-            if (!data.goals) data.goals = { goals: [] };
-            if (!data.soreness) data.soreness = { entries: [], latestEntry: null };
-            if (!data.coachState) data.coachState = {
-                lastRecommendation: null,
-                preferences: {
-                    notificationsEnabled: true,
-                    coachingStyle: 'balanced',
-                    reminderFrequency: 'daily'
-                },
-                achievements: []
-            };
+            // Ensure new fields exist with correct structure
+            // Guard against truthy-but-wrong-shape values (e.g. old format stored as array)
+            if (!data.goals || !Array.isArray(data.goals.goals)) data.goals = { goals: [] };
+            if (!data.soreness || !Array.isArray(data.soreness.entries)) data.soreness = { entries: [], latestEntry: null };
+            if (!data.coachState) {
+                data.coachState = {
+                    lastRecommendation: null,
+                    preferences: {
+                        notificationsEnabled: true,
+                        coachingStyle: 'balanced',
+                        reminderFrequency: 'daily'
+                    },
+                    achievements: []
+                };
+            } else if (!Array.isArray(data.coachState.achievements)) {
+                // coachState exists but achievements field is missing (old export format)
+                data.coachState.achievements = [];
+            }
             if (!data.progressions) data.progressions = {};
 
             if (merge) {
@@ -297,16 +303,20 @@ export class StorageManager {
         }
 
         // Merge goals (avoid duplicates by id)
-        const existingGoalIds = new Set(existing.goals.goals.map(g => g.id));
-        const newGoals = importedData.goals.goals.filter(g => !existingGoalIds.has(g.id));
-        existing.goals.goals = [...existing.goals.goals, ...newGoals]
+        const existingGoalList = existing.goals?.goals ?? [];
+        const importedGoalList = importedData.goals?.goals ?? [];
+        const existingGoalIds = new Set(existingGoalList.map(g => g.id));
+        const newGoals = importedGoalList.filter(g => !existingGoalIds.has(g.id));
+        existing.goals.goals = [...existingGoalList, ...newGoals]
             .sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate))
             .slice(0, 30); // Keep max 30 most recent
 
         // Merge soreness entries (avoid duplicates by id)
-        const existingSorenessIds = new Set(existing.soreness.entries.map(e => e.id));
-        const newSorenessEntries = importedData.soreness.entries.filter(e => !existingSorenessIds.has(e.id));
-        existing.soreness.entries = [...existing.soreness.entries, ...newSorenessEntries]
+        const existingSorenessList = existing.soreness?.entries ?? [];
+        const importedSorenessList = importedData.soreness?.entries ?? [];
+        const existingSorenessIds = new Set(existingSorenessList.map(e => e.id));
+        const newSorenessEntries = importedSorenessList.filter(e => !existingSorenessIds.has(e.id));
+        existing.soreness.entries = [...existingSorenessList, ...newSorenessEntries]
             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
             .slice(0, 200); // Keep max 200 most recent entries
 
@@ -327,13 +337,15 @@ export class StorageManager {
         }
 
         // Merge achievements (avoid duplicates)
-        const existingAchievements = new Set(existing.coachState.achievements.map(a =>
+        const existingAchievementList = existing.coachState?.achievements ?? [];
+        const importedAchievementList = importedData.coachState?.achievements ?? [];
+        const existingAchievements = new Set(existingAchievementList.map(a =>
             `${a.type}-${a.date}`
         ));
-        const newAchievements = importedData.coachState.achievements.filter(a =>
+        const newAchievements = importedAchievementList.filter(a =>
             !existingAchievements.has(`${a.type}-${a.date}`)
         );
-        existing.coachState.achievements = [...existing.coachState.achievements, ...newAchievements]
+        existing.coachState.achievements = [...existingAchievementList, ...newAchievements]
             .sort((a, b) => new Date(b.date) - new Date(a.date));
 
         // Merge progressions - prefer higher level for each exercise

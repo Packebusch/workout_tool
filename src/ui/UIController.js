@@ -151,10 +151,11 @@ export class UIController {
      * Update weekly stats display
      */
     updateWeeklyStats(weeklyCount) {
-        this.#elements.streakCount.textContent = weeklyCount;
-        // Reset any styling that may have been applied
-        this.#elements.streakDisplay.style.color = '';
-        this.#elements.streakDisplay.title = `${weeklyCount} workout${weeklyCount !== 1 ? 's' : ''} this week`;
+        if (this.#elements.streakCount) {
+            this.#elements.streakCount.textContent = weeklyCount;
+            this.#elements.streakDisplay.style.color = '';
+            this.#elements.streakDisplay.title = `${weeklyCount} workout${weeklyCount !== 1 ? 's' : ''} this week`;
+        }
     }
 
     /**
